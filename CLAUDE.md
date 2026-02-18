@@ -37,6 +37,7 @@ Start every new tool from this template:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tool Name</title>
+  <meta name="description" content="One sentence describing what this tool does.">
   <style>
     /* styles here */
     body {
@@ -163,13 +164,17 @@ if (params.get('input')) inputEl.value = params.get('input');
 
 ---
 
-## Adding a tool to the README
+## Registering a tool
 
-After creating a new tool, add a row to the Tools table in `README.md`:
+After creating a new tool, run the update script to regenerate the tools table in `README.md` and the tools list in `index.html`:
 
-```markdown
-| [Tool Name](tool-name.html) | One sentence description |
 ```
+python3 update-tools.py
+```
+
+The script reads the `<title>` and `<meta name="description">` from every `.html` file in the repo root (excluding `index.html`). Any file missing a `<title>` is silently ignored, so only intentional tools appear in the list.
+
+Commit the changes to `README.md` and `index.html` alongside your new tool.
 
 ---
 

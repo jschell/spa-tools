@@ -16,9 +16,11 @@ These tools follow the design ethos described by [Simon Willison](https://web.ar
 
 ## Tools
 
+<!-- tools-start -->
 | Tool | Description |
 |------|-------------|
-| _(add tools here as they are created)_ | |
+| _(no tools yet)_ | |
+<!-- tools-end -->
 
 ## Development
 
