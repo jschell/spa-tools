@@ -6,6 +6,9 @@
   <title>F1 Tracker</title>
   <meta name="description" content="Live Formula 1 countdown, circuit weather, standings, and news — all in one page.">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <!-- Reader view: Mozilla Readability (Firefox's reader mode engine) + DOMPurify for sanitization -->
+  <script src="https://cdn.jsdelivr.net/npm/@mozilla/readability@0.6.0/Readability.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.3/dist/purify.min.js"></script>
 
   <script>
     // Apply theme before paint to prevent flash
@@ -84,6 +87,22 @@
     .muted { color: var(--pico-muted-color); }
     dialog article { max-width: 520px; max-height: 85vh; overflow-y: auto; }
     dialog::backdrop { background: rgba(0,0,0,0.5); }
+
+    /* Reader view dialog */
+    #reader-dialog article { max-width: 720px; }
+    #reader-meta { font-size: 0.85em; color: var(--pico-muted-color); margin-bottom: 0.5rem; }
+    #reader-body { line-height: 1.7; }
+    #reader-body img { max-width: 100%; height: auto; border-radius: 4px; margin: 0.75rem 0; }
+    #reader-body h1, #reader-body h2, #reader-body h3 { margin-top: 1.25rem; }
+    #reader-body p { margin-bottom: 0.75rem; }
+    #reader-body figure { margin: 0.75rem 0; }
+    #reader-body figcaption { font-size: 0.85em; color: var(--pico-muted-color); }
+    #reader-body a { color: var(--pico-primary); }
+    #reader-footer { font-size: 0.85em; color: var(--pico-muted-color); padding-top: 0.5rem; border-top: 1px solid var(--pico-muted-border-color); }
+    .reader-btn { font-size: 0.8em; padding: 0.2em 0.6em; }
+    @media (max-width: 600px) {
+      .reader-btn { padding: 0.4em 0.8em; min-height: 36px; }
+    }
     @media (max-width: 600px) {
       /* Countdown */
       #countdown-display { font-size: 1.4rem; }
@@ -206,6 +225,17 @@
     </article>
   </dialog>
 
+  <dialog id="reader-dialog">
+    <article id="reader-article">
+      <header>
+        <button aria-label="Close" rel="prev" id="reader-close"></button>
+        <div id="reader-meta"></div>
+      </header>
+      <div id="reader-body"></div>
+      <footer id="reader-footer"></footer>
+    </article>
+  </dialog>
+
   <footer>
     <p><a href="https://github.com/jschell/spa-tools/blob/main/f1-tracker.html">View source</a></p>
   </footer>
@@ -258,7 +288,7 @@
       const iso = time ? `${date}T${time}` : `${date}T00:00:00Z`;
       return new Intl.DateTimeFormat(undefined, {
         weekday: 'short', month: 'short', day: 'numeric',
-        hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+        hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short',
       }).format(new Date(iso));
     }
 
@@ -662,6 +692,92 @@
       };
     })();
 
+    // ── readerClient ──────────────────────────────────────────────────────────
+    // Fetches an article URL via a CORS proxy, extracts the readable content using
+    // Mozilla Readability, and sanitizes it with DOMPurify before display.
+    // Falls back gracefully if Readability is unavailable, extraction fails, or
+    // the proxy returns an unusable response.
+
+    const readerClient = (() => {
+      const PROXY_PRIMARY   = 'https://corsproxy.io/?url=';
+      const PROXY_FALLBACK  = 'https://api.allorigins.win/raw?url=';
+      const TIMEOUT_MS = 12000;
+      const MIN_CONTENT_LENGTH = 200; // chars — below this Readability probably extracted nothing useful
+
+      async function fetchHtml(url, proxyBase) {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+        try {
+          const res = await fetch(proxyBase + encodeURIComponent(url), { signal: ctrl.signal });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return await res.text();
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+      function extract(html, articleUrl) {
+        if (typeof Readability === 'undefined') return null;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        // Inject base so relative URLs resolve correctly
+        const base = doc.createElement('base');
+        base.href = articleUrl;
+        doc.head.appendChild(base);
+        try {
+          return new Readability(doc).parse();
+        } catch {
+          return null;
+        }
+      }
+
+      function sanitize(html) {
+        if (typeof DOMPurify === 'undefined') return '';
+        return DOMPurify.sanitize(html, {
+          ALLOWED_TAGS: ['p','a','b','strong','i','em','u','s','br','ul','ol','li',
+                         'h1','h2','h3','h4','blockquote','pre','code','figure',
+                         'figcaption','img','table','thead','tbody','tr','th','td'],
+          ALLOWED_ATTR: ['href','src','alt','title','width','height','loading'],
+          ALLOW_DATA_ATTR: false,
+        });
+      }
+
+      return {
+        /**
+         * Fetch and extract article content.
+         * @param {string} url
+         * @returns {Promise<{title:string, byline:string, content:string, siteName:string}|null>}
+         *   Returns null if extraction failed — caller should open original URL instead.
+         */
+        async fetch(url) {
+          // Readability and DOMPurify must be loaded
+          if (typeof Readability === 'undefined' || typeof DOMPurify === 'undefined') return null;
+
+          // Try primary proxy, then fallback
+          let html = null;
+          for (const proxy of [PROXY_PRIMARY, PROXY_FALLBACK]) {
+            try {
+              html = await fetchHtml(url, proxy);
+              break;
+            } catch {
+              // Try next proxy
+            }
+          }
+          if (!html) return null;
+
+          const article = extract(html, url);
+          if (!article || !article.content || article.content.length < MIN_CONTENT_LENGTH) return null;
+
+          return {
+            title:    article.title    ?? '',
+            byline:   article.byline   ?? '',
+            siteName: article.siteName ?? '',
+            content:  sanitize(article.content),
+          };
+        },
+      };
+    })();
+
     // ── settings ──────────────────────────────────────────────────────────────
 
     const settings = (() => {
@@ -882,7 +998,7 @@
       }
 
       const shown = appState.news.slice(0, appState.newsDisplayCount);
-      const items = shown.map(item => {
+      const items = shown.map((item, idx) => {
         const img = item.imageUrl
           ? `<img class="news-thumb" src="${escapeHtml(item.imageUrl)}" alt="" loading="lazy" onerror="this.style.display='none'">`
           : `<div class="news-thumb-placeholder">${escapeHtml(item.source.slice(0, 1))}</div>`;
@@ -893,6 +1009,10 @@
               <div class="news-meta"><mark class="source-badge">${escapeHtml(item.source)}</mark> &middot; ${escapeHtml(formatRelativeTime(item.publishedAt))}</div>
               <p class="news-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a></p>
               <p class="news-summary">${escapeHtml(item.summary)}</p>
+              <div style="margin-top:0.3rem">
+                <button class="secondary outline reader-btn" data-news-idx="${idx}">📖 Read</button>
+                <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" role="button" class="secondary outline reader-btn" style="margin-left:0.3rem">↗ Open</a>
+              </div>
             </div>
           </div>
         </article>`;
@@ -911,6 +1031,15 @@
         params.set('newsPage', String(Math.ceil(next / 20)));
         history.replaceState(null, '', '?' + params.toString());
         renderNews();
+      });
+
+      // Reader view buttons — open dialog, attempt extraction, fall back to original URL
+      el.querySelectorAll('.reader-btn[data-news-idx]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const item = shown[parseInt(btn.dataset.newsIdx, 10)];
+          if (!item) return;
+          openReaderDialog(item, btn);
+        });
       });
     }
 
@@ -1212,6 +1341,57 @@
       });
     }
 
+    // ── Reader dialog ─────────────────────────────────────────────────────────
+
+    async function openReaderDialog(item, triggerBtn) {
+      const dialog  = document.getElementById('reader-dialog');
+      const metaEl  = document.getElementById('reader-meta');
+      const bodyEl  = document.getElementById('reader-body');
+      const footerEl = document.getElementById('reader-footer');
+      if (!dialog) return;
+
+      // Show loading state immediately
+      metaEl.textContent  = '';
+      bodyEl.innerHTML    = '<progress></progress>';
+      footerEl.innerHTML  = '';
+      dialog.showModal();
+
+      const origText = triggerBtn.textContent;
+      triggerBtn.textContent = '⏳';
+      triggerBtn.disabled    = true;
+
+      try {
+        const article = await readerClient.fetch(item.link);
+
+        if (!article) {
+          // Extraction failed — close dialog and open original URL in new tab
+          dialog.close();
+          window.open(item.link, '_blank', 'noopener,noreferrer');
+          return;
+        }
+
+        // Render extracted article
+        metaEl.innerHTML = [
+          article.byline   ? `<span>${escapeHtml(article.byline)}</span>` : '',
+          article.siteName ? `<span>${escapeHtml(article.siteName)}</span>` : `<span>${escapeHtml(item.source)}</span>`,
+          `<span>${escapeHtml(formatRelativeTime(item.publishedAt))}</span>`,
+        ].filter(Boolean).join(' &middot; ');
+
+        // Title is set by Readability; already escaped in the sanitized content.
+        // We prepend it as a heading so the dialog header stays clean.
+        bodyEl.innerHTML = (article.title ? `<h2>${escapeHtml(article.title)}</h2>` : '') + article.content;
+
+        footerEl.innerHTML = `<a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">View original article ↗</a>`;
+
+      } catch {
+        dialog.close();
+        window.open(item.link, '_blank', 'noopener,noreferrer');
+      } finally {
+        triggerBtn.textContent = origText;
+        triggerBtn.disabled    = false;
+      }
+    }
+
     // ── init ──────────────────────────────────────────────────────────────────
 
     let pollingInterval = null;
@@ -1252,6 +1432,11 @@
       });
       document.getElementById('settings-close')?.addEventListener('click', () => dialog?.close());
       dialog?.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
+
+      // Reader dialog close
+      const readerDialog = document.getElementById('reader-dialog');
+      document.getElementById('reader-close')?.addEventListener('click', () => readerDialog?.close());
+      readerDialog?.addEventListener('click', e => { if (e.target === readerDialog) readerDialog.close(); });
 
       // 6. Settings form listeners
       document.querySelectorAll('input[name="theme"]').forEach(r => {
