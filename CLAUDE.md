@@ -164,17 +164,32 @@ if (params.get('input')) inputEl.value = params.get('input');
 
 ---
 
+## Companion docs file
+
+Each tool has a companion `*.docs.md` file with the same base name as the HTML file:
+
+- `epub-preparer.html` → `epub-preparer.docs.md`
+- `json-formatter.html` → `json-formatter.docs.md`
+
+The docs file contains a plain-prose description of what the tool does and how to use it — typically 1–3 short paragraphs. No headings, no code blocks. Write it as if describing the tool to someone who hasn't seen it.
+
+```markdown
+This tool does X. You can Y by doing Z. It also supports W.
+```
+
+---
+
 ## Registering a tool
 
 After creating a new tool, run the update script to regenerate the tools table in `README.md` and the tools list in `index.html`:
 
 ```
-python3 update-tools.py
+python update-tools.py
 ```
 
 The script reads the `<title>` and `<meta name="description">` from every `.html` file in the repo root (excluding `index.html`). Any file missing a `<title>` is silently ignored, so only intentional tools appear in the list.
 
-Commit the changes to `README.md` and `index.html` alongside your new tool.
+Commit the `.html` file, the `.docs.md` file, and the updated `README.md` and `index.html` together.
 
 ---
 

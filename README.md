@@ -19,7 +19,7 @@ These tools follow the design ethos described by [Simon Willison](https://web.ar
 <!-- tools-start -->
 | Tool | Description |
 |------|-------------|
-| _(no tools yet)_ | |
+| [EPUB Preparer](epub-preparer.html) | Edit EPUB metadata, strip Project Gutenberg boilerplate, and download the corrected file. |
 <!-- tools-end -->
 
 ## Development
