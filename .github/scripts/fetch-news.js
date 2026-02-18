@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Fetches F1 RSS feeds via rss2json.com and writes news-cache.json to the repo root.
+// Fetches F1 RSS feeds via rss2json.com and writes f1-tracker-news-cache.json to the repo root.
 // Runs as part of the update-f1-news GitHub Actions workflow.
 // Uses only built-in Node.js modules — no npm install required.
 
@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 const RSS2JSON_BASE = 'https://api.rss2json.com/v1/api.json?rss_url=';
-const OUTPUT_PATH = path.join(__dirname, '..', '..', 'news-cache.json');
+const OUTPUT_PATH = path.join(__dirname, '..', '..', 'f1-tracker-news-cache.json');
 const TIMEOUT_MS = 15000;
 const MAX_ITEMS = 60;
 
@@ -88,7 +88,7 @@ async function main() {
   }).slice(0, MAX_ITEMS);
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(deduped, null, 2) + '\n', 'utf8');
-  console.log(`Wrote ${deduped.length} items to news-cache.json`);
+  console.log(`Wrote ${deduped.length} items to f1-tracker-news-cache.json`);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });

@@ -567,11 +567,11 @@
 
     // ── rssClient ─────────────────────────────────────────────────────────────
     // Primary: api.rss2json.com (free, CORS-enabled, no key required)
-    // Fallback: news-cache.json (same-origin static file, updated by GitHub Actions)
+    // Fallback: f1-tracker-news-cache.json (same-origin static file, updated by GitHub Actions)
 
     const rssClient = (() => {
       const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
-      const NEWS_CACHE_URL = 'news-cache.json';
+      const NEWS_CACHE_URL = 'f1-tracker-news-cache.json';
       const TIMEOUT_MS = 10000;
 
       const FEEDS = {
