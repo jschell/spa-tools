@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F1 Tracker</title>
+  <meta name="description" content="Live Formula 1 countdown, circuit weather, standings, and news — all in one page.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/rss-parser@3/dist/rss-parser.min.js"></script>
+  <script>
+    // Apply theme before paint to prevent flash
+    try {
+      const s = JSON.parse(localStorage.getItem('f1-tracker-settings') || '{}');
+      const t = s.theme;
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <style>
+    body { max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+    section { margin-bottom: 2rem; }
+    section h2 { margin-bottom: 0.75rem; }
+
+    /* Session badges */
+    .badge {
+      display: inline-block; padding: 0.15em 0.5em; border-radius: 4px;
+      font-size: 0.78em; font-weight: 600; letter-spacing: 0.03em; vertical-align: middle;
+    }
+    .badge-fp   { background: #64748b; color: #fff; }
+    .badge-q    { background: #eab308; color: #000; }
+    .badge-sq   { background: #fb923c; color: #000; }
+    .badge-s    { background: #f97316; color: #fff; }
+    .badge-r    { background: #dc2626; color: #fff; }
+
+    /* Countdown */
+    #countdown-display { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; }
+    #countdown-race    { font-size: 1.1rem; color: var(--pico-muted-color); margin-top: 0.25rem; }
+    .pulse-dot {
+      display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+      background: #22c55e; margin-right: 6px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* Weather */
+    .weather-cards { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .weather-day { flex: 0 0 auto; min-width: 110px; text-align: center; padding: 0.75rem; }
+    .weather-day .wday { font-weight: 600; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.05em; }
+    .weather-day .wicon { font-size: 1.8rem; line-height: 1.2; }
+    .weather-day .wtemp { font-size: 0.9em; }
+    .weather-day .wmeta { font-size: 0.78em; color: var(--pico-muted-color); }
+
+    /* News */
+    .news-item { display: grid; grid-template-columns: 72px 1fr; gap: 0.75rem; align-items: start; }
+    .news-thumb { width: 72px; height: 54px; object-fit: cover; border-radius: 4px; }
+    .news-thumb-placeholder {
+      width: 72px; height: 54px; border-radius: 4px;
+      background: var(--pico-secondary-background); display: flex;
+      align-items: center; justify-content: center; font-size: 1.2rem;
+      color: var(--pico-muted-color);
+    }
+    .news-meta { font-size: 0.78em; color: var(--pico-muted-color); margin-top: 0.25rem; }
+    .news-title { margin: 0.2rem 0; font-size: 0.95em; }
+    .news-summary { font-size: 0.85em; color: var(--pico-muted-color); margin: 0; }
+    .source-badge { font-size: 0.75em; }
+
+    /* Calendar */
+    .calendar-table { width: 100%; font-size: 0.9em; }
+    .calendar-table tr.past td { opacity: 0.5; }
+    .calendar-table tr.next td { border-left: 4px solid #dc2626; padding-left: calc(var(--pico-spacing) - 4px); }
+    .calendar-table tr.sessions-detail td { background: var(--pico-card-background-color); font-size: 0.85em; }
+    .session-list { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.5rem 0; }
+    .session-item { display: flex; align-items: center; gap: 0.3rem; }
+
+    /* Standings tabs */
+    .tab-buttons { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .tab-buttons button { flex: 0 0 auto; }
+
+    /* Misc */
+    .stale-notice { font-size: 0.78em; color: var(--pico-muted-color); font-style: italic; margin-left: 0.5rem; }
+    .section-error { color: var(--pico-del-color); font-size: 0.9em; padding: 0.5rem 0; }
+    .muted { color: var(--pico-muted-color); }
+    dialog article { max-width: 520px; max-height: 85vh; overflow-y: auto; }
+    dialog::backdrop { background: rgba(0,0,0,0.5); }
+    @media (max-width: 600px) {
+      #countdown-display { font-size: 1.4rem; }
+      .news-item { grid-template-columns: 1fr; }
+      .news-thumb, .news-thumb-placeholder { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <p><a href="index.html">&larr; All tools</a></p>
+  <header>
+    <nav>
+      <ul><li><strong>F1 Tracker</strong></li></ul>
+      <ul><li><a href="#" id="settings-btn" role="button" class="secondary outline">&#9881; Settings</a></li></ul>
+    </nav>
+    <p class="muted" style="margin-top:-0.5rem">Live countdown, weather, standings, and news for Formula 1.</p>
+  </header>
+
+  <main>
+    <section id="countdown">
+      <h2>Next Session</h2>
+      <div id="countdown-content"><progress></progress></div>
+    </section>
+
+    <section id="weather">
+      <h2>Race Weekend Weather</h2>
+      <div id="weather-content"><progress></progress></div>
+    </section>
+
+    <section id="news">
+      <h2>F1 News</h2>
+      <div id="news-content"><progress></progress></div>
+    </section>
+
+    <section id="calendar">
+      <h2>2025 Season Calendar</h2>
+      <div id="calendar-content"><progress></progress></div>
+    </section>
+
+    <section id="standings">
+      <h2>Standings</h2>
+      <div class="tab-buttons">
+        <button id="tab-drivers" aria-selected="true">Drivers</button>
+        <button id="tab-constructors" aria-selected="false">Constructors</button>
+      </div>
+      <div id="standings-content"><progress></progress></div>
+    </section>
+  </main>
+
+  <dialog id="settings-dialog">
+    <article>
+      <header>
+        <button aria-label="Close" rel="prev" id="settings-close"></button>
+        <h2>Settings</h2>
+      </header>
+
+      <fieldset>
+        <legend><strong>Theme</strong></legend>
+        <label><input type="radio" name="theme" value="system"> System default</label>
+        <label><input type="radio" name="theme" value="light"> Light</label>
+        <label><input type="radio" name="theme" value="dark"> Dark</label>
+      </fieldset>
+
+      <fieldset>
+        <legend><strong>Temperature</strong></legend>
+        <label><input type="radio" name="tempUnit" value="celsius"> Celsius (°C)</label>
+        <label><input type="radio" name="tempUnit" value="fahrenheit"> Fahrenheit (°F)</label>
+      </fieldset>
+
+      <label for="refresh-interval"><strong>Refresh interval</strong>
+        <select id="refresh-interval">
+          <option value="5">5 minutes</option>
+          <option value="10">10 minutes</option>
+          <option value="15" selected>15 minutes</option>
+          <option value="30">30 minutes</option>
+          <option value="60">60 minutes</option>
+        </select>
+      </label>
+
+      <fieldset>
+        <legend><strong>News feeds</strong></legend>
+        <label><input type="checkbox" name="feed" value="f1-official"> Formula 1</label>
+        <label><input type="checkbox" name="feed" value="bbc-f1"> BBC Sport</label>
+        <label><input type="checkbox" name="feed" value="autosport"> Autosport</label>
+        <label><input type="checkbox" name="feed" value="motorsport"> Motorsport.com</label>
+        <label><input type="checkbox" name="feed" value="racingnews365"> RacingNews365</label>
+        <label><input type="checkbox" name="feed" value="racer"> RACER</label>
+      </fieldset>
+
+      <label for="cors-proxy-url"><strong>CORS proxy URL</strong>
+        <input type="url" id="cors-proxy-url" placeholder="https://your-worker.your-name.workers.dev">
+        <small>Required for news feeds. Any proxy adding <code>Access-Control-Allow-Origin: *</code> works.</small>
+      </label>
+
+      <footer>
+        <small>F1 Tracker v1.0 &middot; Data: <a href="https://jolpi.ca/" target="_blank" rel="noopener">Jolpica</a>, <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></small>
+      </footer>
+    </article>
+  </dialog>
+
+  <footer>
+    <p><a href="https://github.com/jschell/spa-tools/blob/main/f1-tracker.html">View source</a></p>
+  </footer>
+
+  <script>
+    'use strict';
+
+    // ── JSDoc type definitions ────────────────────────────────────────────────
+
+    /**
+     * @typedef {'FP1'|'FP2'|'FP3'|'Qualifying'|'Sprint'|'Sprint Qualifying'|'Race'} SessionType
+     * @typedef {{ type: SessionType, date: string, time: string }} Session
+     * @typedef {{ circuitId: string, circuitName: string, lat: number, lon: number, locality: string, country: string }} Circuit
+     * @typedef {{ season: string, round: string, raceName: string, circuit: Circuit, date: string, time: string, sessions: Session[] }} Race
+     * @typedef {{ position: number, points: number, wins: number, driverId: string, code: string, givenName: string, familyName: string, nationality: string, constructorName: string }} DriverStanding
+     * @typedef {{ position: number, points: number, wins: number, constructorId: string, name: string, nationality: string }} ConstructorStanding
+     * @typedef {{ id: string, title: string, link: string, source: string, publishedAt: Date, summary: string, imageUrl: string|null }} NewsItem
+     * @typedef {{ date: string, tempMinC: number, tempMaxC: number, precipMm: number, precipProb: number, windKmh: number, weatherCode: number }} DayForecast
+     * @typedef {{ circuitId: string, fetchedAt: Date, daily: DayForecast[] }} CircuitWeather
+     * @typedef {{ theme: string, temperatureUnit: string, refreshIntervalMinutes: number, enabledFeeds: string[], corsProxyUrl: string }} UserSettings
+     */
+
+    // ── cacheManager ─────────────────────────────────────────────────────────
+
+    const cacheManager = (() => {
+      /** @type {Map<string, {data: any, expiresAt: number}>} */
+      const store = new Map();
+      return {
+        get(key) {
+          const entry = store.get(key);
+          if (!entry) return null;
+          if (Date.now() > entry.expiresAt) { store.delete(key); return null; }
+          return entry.data;
+        },
+        set(key, data, ttlMs) { store.set(key, { data, expiresAt: Date.now() + ttlMs }); },
+        invalidate(key) { store.delete(key); },
+        clear() { store.clear(); },
+      };
+    })();
+
+    // ── formatters ───────────────────────────────────────────────────────────
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function formatSessionDate(date, time) {
+      const iso = time ? `${date}T${time}` : `${date}T00:00:00Z`;
+      return new Intl.DateTimeFormat(undefined, {
+        weekday: 'short', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+      }).format(new Date(iso));
+    }
+
+    function formatCountdown(totalSeconds) {
+      if (totalSeconds <= 0) return 'Now';
+      const d = Math.floor(totalSeconds / 86400);
+      const h = Math.floor((totalSeconds % 86400) / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      const parts = [];
+      if (d > 0) parts.push(`${d}d`);
+      if (h > 0 || d > 0) parts.push(`${h}h`);
+      parts.push(`${m}m`);
+      parts.push(`${s}s`);
+      return parts.join(' ');
+    }
+
+    function formatTemp(celsius, unit) {
+      if (unit === 'fahrenheit') return `${Math.round(celsius * 9 / 5 + 32)}°F`;
+      return `${Math.round(celsius)}°C`;
+    }
+
+    function formatRelativeTime(date) {
+      const diff = (date - Date.now()) / 1000;
+      const abs = Math.abs(diff);
+      const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+      if (abs < 60) return rtf.format(Math.round(diff), 'second');
+      if (abs < 3600) return rtf.format(Math.round(diff / 60), 'minute');
+      if (abs < 86400) return rtf.format(Math.round(diff / 3600), 'hour');
+      return rtf.format(Math.round(diff / 86400), 'day');
+    }
+
+    // ── wmoCodeMap ────────────────────────────────────────────────────────────
+
+    const WMO = {
+      0:  { label: 'Clear sky',               icon: '☀️' },
+      1:  { label: 'Mainly clear',             icon: '🌤️' },
+      2:  { label: 'Partly cloudy',            icon: '⛅' },
+      3:  { label: 'Overcast',                 icon: '☁️' },
+      45: { label: 'Fog',                      icon: '🌫️' },
+      48: { label: 'Depositing rime fog',      icon: '🌫️' },
+      51: { label: 'Light drizzle',            icon: '🌦️' },
+      53: { label: 'Moderate drizzle',         icon: '🌦️' },
+      55: { label: 'Dense drizzle',            icon: '🌧️' },
+      56: { label: 'Light freezing drizzle',   icon: '🌧️' },
+      57: { label: 'Dense freezing drizzle',   icon: '🌧️' },
+      61: { label: 'Slight rain',              icon: '🌦️' },
+      63: { label: 'Moderate rain',            icon: '🌧️' },
+      65: { label: 'Heavy rain',               icon: '🌧️' },
+      66: { label: 'Light freezing rain',      icon: '🌧️' },
+      67: { label: 'Heavy freezing rain',      icon: '🌧️' },
+      71: { label: 'Slight snowfall',          icon: '🌨️' },
+      73: { label: 'Moderate snowfall',        icon: '🌨️' },
+      75: { label: 'Heavy snowfall',           icon: '🌨️' },
+      77: { label: 'Snow grains',              icon: '🌨️' },
+      80: { label: 'Slight rain showers',      icon: '🌦️' },
+      81: { label: 'Moderate rain showers',    icon: '🌧️' },
+      82: { label: 'Violent rain showers',     icon: '🌧️' },
+      85: { label: 'Slight snow showers',      icon: '🌨️' },
+      86: { label: 'Heavy snow showers',       icon: '🌨️' },
+      95: { label: 'Thunderstorm',             icon: '⛈️' },
+      96: { label: 'Thunderstorm w/ hail',     icon: '⛈️' },
+      99: { label: 'Thunderstorm, heavy hail', icon: '⛈️' },
+    };
+    const wmoCodeMap = {
+      getLabel: (code) => WMO[code]?.label ?? 'Unknown',
+      getIcon:  (code) => WMO[code]?.icon  ?? '❓',
+    };
+
+    // ── dedup ─────────────────────────────────────────────────────────────────
+
+    const STOP_WORDS = new Set(['the','a','an','is','at','in','on','for','to','of','and','or']);
+
+    function normalizeTitle(title) {
+      return title
+        .toLowerCase()
+        .replace(/[^\w\s]/g, '')
+        .split(/\s+/)
+        .filter(w => w && !STOP_WORDS.has(w))
+        .join(' ')
+        .trim();
+    }
+
+    async function hashTitle(title) {
+      const normalized = normalizeTitle(title);
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(normalized));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function deduplicateNews(items) {
+      /** @type {Map<string, NewsItem>} */
+      const byHash = new Map();
+      for (const item of items) {
+        const hash = await hashTitle(item.title);
+        const existing = byHash.get(hash);
+        if (!existing || item.publishedAt < existing.publishedAt) {
+          byHash.set(hash, { ...item, id: hash });
+        }
+      }
+      return [...byHash.values()].sort((a, b) => b.publishedAt - a.publishedAt);
+    }
+
+    // ── jolpicaClient ─────────────────────────────────────────────────────────
+
+    const jolpicaClient = (() => {
+      const BASE = 'https://api.jolpi.ca/ergast/f1';
+      const QUEUE_GAP_MS = 250;
+      const TIMEOUT_MS = 15000;
+      const RETRY_WAIT_MS = 5000;
+
+      /** @type {Array<{url: string, resolve: Function, reject: Function}>} */
+      const queue = [];
+      let draining = false;
+
+      async function drain() {
+        if (draining || queue.length === 0) return;
+        draining = true;
+        const { url, resolve, reject } = queue.shift();
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+        try {
+          let res = await fetch(url, { signal: ctrl.signal });
+          if (res.status === 429) {
+            await new Promise(r => setTimeout(r, RETRY_WAIT_MS));
+            res = await fetch(url, { signal: ctrl.signal });
+            if (res.status === 429) throw new Error('Rate limited');
+          }
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          resolve(await res.json());
+        } catch (err) {
+          reject(err);
+        } finally {
+          clearTimeout(timer);
+          draining = false;
+          setTimeout(drain, QUEUE_GAP_MS);
+        }
+      }
+
+      function enqueue(path) {
+        return new Promise((resolve, reject) => {
+          queue.push({ url: `${BASE}${path}`, resolve, reject });
+          drain();
+        });
+      }
+
+      function normalizeSessions(race) {
+        const KEY_MAP = [
+          ['FirstPractice',    'FP1'],
+          ['SecondPractice',   'FP2'],
+          ['ThirdPractice',    'FP3'],
+          ['SprintQualifying', 'Sprint Qualifying'],
+          ['SprintShootout',   'Sprint Qualifying'],
+          ['Sprint',           'Sprint'],
+          ['Qualifying',       'Qualifying'],
+        ];
+        const sessions = [];
+        for (const [key, type] of KEY_MAP) {
+          if (race[key]?.date) {
+            sessions.push({ type, date: race[key].date, time: race[key].time || '00:00:00Z' });
+          }
+        }
+        sessions.push({ type: 'Race', date: race.date, time: race.time || '00:00:00Z' });
+        return sessions;
+      }
+
+      function parseCircuit(c) {
+        const lat = parseFloat(c.Location?.lat);
+        const lon = parseFloat(c.Location?.long);
+        if (isNaN(lat) || isNaN(lon)) console.warn('NaN coords for', c.circuitId);
+        return {
+          circuitId: c.circuitId,
+          circuitName: c.circuitName,
+          lat: isNaN(lat) ? 0 : lat,
+          lon: isNaN(lon) ? 0 : lon,
+          locality: c.Location?.locality ?? '',
+          country: c.Location?.country ?? '',
+        };
+      }
+
+      function parseRace(r) {
+        return {
+          season: r.season, round: r.round, raceName: r.raceName,
+          circuit: parseCircuit(r.Circuit),
+          date: r.date, time: r.time || '00:00:00Z',
+          sessions: normalizeSessions(r),
+        };
+      }
+
+      return {
+        async fetchSeasonSchedule(season = 'current') {
+          const cached = cacheManager.get(`schedule:${season}`);
+          if (cached) return cached;
+          const data = await enqueue(`/${season}.json?limit=100`);
+          const races = (data?.MRData?.RaceTable?.Races ?? []).map(parseRace);
+          cacheManager.set(`schedule:${season}`, races, 86_400_000);
+          return races;
+        },
+
+        async fetchNextRace() {
+          const cached = cacheManager.get('nextRace');
+          if (cached) return cached;
+          const data = await enqueue('/current/next.json');
+          const r = data?.MRData?.RaceTable?.Races?.[0];
+          const result = r ? parseRace(r) : null;
+          cacheManager.set('nextRace', result, 3_600_000);
+          return result;
+        },
+
+        async fetchDriverStandings() {
+          const cached = cacheManager.get('standings:drivers');
+          if (cached) return cached;
+          const data = await enqueue('/current/driverStandings.json');
+          const list = data?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings ?? [];
+          const result = list.map(s => ({
+            position: parseInt(s.position, 10),
+            points: parseFloat(s.points),
+            wins: parseInt(s.wins, 10),
+            driverId: s.Driver.driverId,
+            code: s.Driver.code ?? s.Driver.driverId.toUpperCase().slice(0, 3),
+            givenName: s.Driver.givenName,
+            familyName: s.Driver.familyName,
+            nationality: s.Driver.nationality,
+            constructorName: s.Constructors?.[0]?.name ?? '',
+          }));
+          cacheManager.set('standings:drivers', result, 3_600_000);
+          return result;
+        },
+
+        async fetchConstructorStandings() {
+          const cached = cacheManager.get('standings:constructors');
+          if (cached) return cached;
+          const data = await enqueue('/current/constructorStandings.json');
+          const list = data?.MRData?.StandingsTable?.StandingsLists?.[0]?.ConstructorStandings ?? [];
+          const result = list.map(s => ({
+            position: parseInt(s.position, 10),
+            points: parseFloat(s.points),
+            wins: parseInt(s.wins, 10),
+            constructorId: s.Constructor.constructorId,
+            name: s.Constructor.name,
+            nationality: s.Constructor.nationality,
+          }));
+          cacheManager.set('standings:constructors', result, 3_600_000);
+          return result;
+        },
+      };
+    })();
+
+    // ── weatherClient ─────────────────────────────────────────────────────────
+
+    const weatherClient = (() => {
+      const BASE = 'https://api.open-meteo.com/v1/forecast';
+      const TIMEOUT_MS = 10000;
+      const DAILY = [
+        'temperature_2m_max','temperature_2m_min','precipitation_sum',
+        'precipitation_probability_max','wind_speed_10m_max','weather_code',
+      ].join(',');
+
+      return {
+        async fetchForecast(circuitId, lat, lon, unit = 'celsius') {
+          const cacheKey = `weather:${circuitId}:${unit}`;
+          const cached = cacheManager.get(cacheKey);
+          if (cached) return cached;
+
+          const url = `${BASE}?latitude=${lat}&longitude=${lon}&daily=${DAILY}` +
+            `&temperature_unit=${unit}&wind_speed_unit=kmh&forecast_days=7&timezone=auto`;
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+          try {
+            const res = await fetch(url, { signal: ctrl.signal });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+            const d = json.daily;
+            /** @type {CircuitWeather} */
+            const result = {
+              circuitId, fetchedAt: new Date(),
+              daily: (d.time ?? []).map((date, i) => ({
+                date,
+                tempMaxC: d.temperature_2m_max[i],
+                tempMinC: d.temperature_2m_min[i],
+                precipMm: d.precipitation_sum[i],
+                precipProb: d.precipitation_probability_max[i] ?? 0,
+                windKmh: d.wind_speed_10m_max[i],
+                weatherCode: d.weather_code[i],
+              })),
+            };
+            cacheManager.set(cacheKey, result, 7_200_000);
+            return result;
+          } catch {
+            return null;
+          } finally {
+            clearTimeout(timer);
+          }
+        },
+
+        async fetchRaceWeekendForecast(circuit, raceDate, unit) {
+          const raceMs = new Date(raceDate).getTime();
+          const daysUntil = (raceMs - Date.now()) / 86_400_000;
+          if (daysUntil > 7) {
+            // Out of forecast range — return sentinel
+            return { outOfRange: true, availableDate: new Date(raceMs - 7 * 86_400_000) };
+          }
+          return this.fetchForecast(circuit.circuitId, circuit.lat, circuit.lon, unit);
+        },
+      };
+    })();
+
+    // ── rssClient ─────────────────────────────────────────────────────────────
+
+    const rssClient = (() => {
+      const FEEDS = {
+        'f1-official': { name: 'Formula 1',    url: 'https://www.formula1.com/en/latest/all.xml' },
+        'bbc-f1':      { name: 'BBC Sport',     url: 'https://feeds.bbci.co.uk/sport/formula1/rss.xml' },
+        'autosport':   { name: 'Autosport',     url: 'https://www.autosport.com/rss/f1/news' },
+        'motorsport':  { name: 'Motorsport.com',url: 'https://www.motorsport.com/rss/f1/news/' },
+        'racingnews365':{ name: 'RacingNews365',url: 'https://racingnews365.com/feed/news.xml' },
+        'racer':       { name: 'RACER',         url: 'https://racer.com/f1/feed/' },
+      };
+
+      function extractImage(item) {
+        if (item.enclosure?.url && item.enclosure.type?.startsWith('image/')) return item.enclosure.url;
+        if (item['media:content']?.$?.url) return item['media:content'].$.url;
+        const m = (item.content || '').match(/<img[^>]+src="([^"]+)"/i);
+        if (m) return m[1];
+        return null;
+      }
+
+      function truncateSummary(text, max = 280) {
+        if (!text) return '';
+        const stripped = text.replace(/<[^>]+>/g, '').trim();
+        if (stripped.length <= max) return stripped;
+        const cut = stripped.lastIndexOf(' ', max);
+        return stripped.slice(0, cut > 0 ? cut : max) + '…';
+      }
+
+      async function fetchSingleFeed(feedKey, proxyUrl) {
+        if (typeof RSSParser === 'undefined') throw new Error('rss-parser not loaded');
+        const feed = FEEDS[feedKey];
+        if (!feed) return [];
+        const parser = new RSSParser({ timeout: 12000 });
+        const url = `${proxyUrl}/${feed.url}`;
+        const parsed = await parser.parseURL(url);
+        return (parsed.items ?? []).map(item => ({
+          id: '',
+          title: item.title ?? '',
+          link: item.link ?? '',
+          source: feed.name,
+          publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(0),
+          summary: truncateSummary(item.contentSnippet || item.content || item.title),
+          imageUrl: extractImage(item),
+        }));
+      }
+
+      return {
+        FEEDS,
+        async fetchAllFeeds(enabledFeeds, proxyUrl) {
+          if (!proxyUrl) return { items: [], error: 'no-proxy' };
+          if (typeof RSSParser === 'undefined') return { items: [], error: 'no-parser' };
+          const results = await Promise.allSettled(
+            enabledFeeds.map(key => fetchSingleFeed(key, proxyUrl))
+          );
+          const all = results
+            .filter(r => r.status === 'fulfilled')
+            .flatMap(r => r.value);
+          if (all.length === 0 && results.every(r => r.status === 'rejected')) {
+            return { items: [], error: 'all-failed' };
+          }
+          const deduped = await deduplicateNews(all);
+          return { items: deduped.slice(0, 50), error: null };
+        },
+      };
+    })();
+
+    // ── settings ──────────────────────────────────────────────────────────────
+
+    const settings = (() => {
+      const KEY = 'f1-tracker-settings';
+      const DEFAULTS = {
+        theme: 'system',
+        temperatureUnit: 'celsius',
+        refreshIntervalMinutes: 15,
+        enabledFeeds: ['f1-official','bbc-f1','autosport','motorsport','racingnews365','racer'],
+        corsProxyUrl: '',
+      };
+      const VALID_THEMES = new Set(['light','dark','system']);
+      const VALID_UNITS  = new Set(['celsius','fahrenheit']);
+      const KNOWN_FEEDS  = new Set(Object.keys(rssClient.FEEDS));
+
+      let current = null;
+
+      function validate(obj) {
+        return {
+          theme: VALID_THEMES.has(obj.theme) ? obj.theme : DEFAULTS.theme,
+          temperatureUnit: VALID_UNITS.has(obj.temperatureUnit) ? obj.temperatureUnit : DEFAULTS.temperatureUnit,
+          refreshIntervalMinutes: Math.min(60, Math.max(5, parseInt(obj.refreshIntervalMinutes, 10) || 15)),
+          enabledFeeds: Array.isArray(obj.enabledFeeds)
+            ? obj.enabledFeeds.filter(f => KNOWN_FEEDS.has(f))
+            : [...DEFAULTS.enabledFeeds],
+          corsProxyUrl: typeof obj.corsProxyUrl === 'string' ? obj.corsProxyUrl.trim() : '',
+        };
+      }
+
+      return {
+        load() {
+          try {
+            const raw = JSON.parse(localStorage.getItem(KEY) || '{}');
+            current = validate({ ...DEFAULTS, ...raw });
+          } catch {
+            current = { ...DEFAULTS };
+          }
+          try { localStorage.setItem(KEY, JSON.stringify(current)); } catch {}
+          return current;
+        },
+        save(s) {
+          current = s;
+          try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {}
+        },
+        get() { return current ?? this.load(); },
+        update(key, value) {
+          const s = { ...this.get(), [key]: value };
+          this.save(validate(s));
+        },
+        onExternalChange(cb) {
+          window.addEventListener('storage', e => {
+            if (e.key === KEY) {
+              try {
+                const next = validate({ ...DEFAULTS, ...JSON.parse(e.newValue || '{}') });
+                current = next;
+                cb(next);
+              } catch {}
+            }
+          });
+        },
+      };
+    })();
+
+    // ── appState ──────────────────────────────────────────────────────────────
+
+    const appState = {
+      races: [],
+      nextRace: null,
+      driverStandings: [],
+      constructorStandings: [],
+      news: [],
+      newsError: null,
+      newsDisplayCount: 20,
+      weather: null,
+      weatherSentinel: null,
+      loading: { schedule: false, standings: false, news: false, weather: false },
+      errors: {},
+      lastUpdated: {},
+      fetching: false,
+      activeTab: 'drivers',
+    };
+
+    function updateState(patch) {
+      Object.assign(appState, patch);
+      renderAll();
+    }
+
+    // ── UI: countdown ─────────────────────────────────────────────────────────
+
+    const BADGE_CLASS = {
+      'FP1': 'badge-fp', 'FP2': 'badge-fp', 'FP3': 'badge-fp',
+      'Qualifying': 'badge-q',
+      'Sprint Qualifying': 'badge-sq',
+      'Sprint': 'badge-s',
+      'Race': 'badge-r',
+    };
+
+    function renderCountdown() {
+      const el = document.getElementById('countdown-content');
+      if (!el) return;
+      const { nextRace } = appState;
+
+      if (!nextRace) {
+        if (appState.loading.schedule) { el.innerHTML = '<progress></progress>'; return; }
+        el.innerHTML = '<p class="muted">Season break — check back for next season\'s calendar.</p>';
+        return;
+      }
+
+      const now = Date.now();
+      let nextSession = null;
+      for (const s of nextRace.sessions) {
+        const ts = new Date(`${s.date}T${s.time}`).getTime();
+        if (ts > now) { nextSession = { ...s, ts }; break; }
+        // Check in-progress: started < 2h ago
+        if (now - ts < 7_200_000) { nextSession = { ...s, ts, inProgress: true }; break; }
+      }
+
+      if (!nextSession) {
+        el.innerHTML = `<p class="muted">All sessions complete for the <strong>${escapeHtml(nextRace.raceName)}</strong>.</p>`;
+        return;
+      }
+
+      const badgeClass = BADGE_CLASS[nextSession.type] || 'badge-fp';
+
+      if (nextSession.inProgress) {
+        el.innerHTML = `
+          <div><span class="pulse-dot"></span><span class="badge ${escapeHtml(badgeClass)}">${escapeHtml(nextSession.type)}</span></div>
+          <div style="font-size:1.3rem;font-weight:600;margin-top:0.5rem">🟢 Session in progress</div>
+          <div id="countdown-race">${escapeHtml(nextRace.raceName)}</div>`;
+        return;
+      }
+
+      const secsLeft = Math.max(0, Math.floor((nextSession.ts - now) / 1000));
+      const countdownStr = formatCountdown(secsLeft);
+
+      el.innerHTML = `
+        <div><span class="badge ${escapeHtml(badgeClass)}">${escapeHtml(nextSession.type)}</span></div>
+        <div id="countdown-display">${escapeHtml(countdownStr)}</div>
+        <div id="countdown-race">${escapeHtml(nextRace.raceName)} &mdash; ${escapeHtml(nextRace.circuit.circuitName)}, ${escapeHtml(nextRace.circuit.country)}</div>
+        <div style="margin-top:0.5rem">
+          <small class="muted">${escapeHtml(formatSessionDate(nextSession.date, nextSession.time))}</small>
+          &nbsp;<button class="secondary outline" id="copy-countdown" style="font-size:0.8em;padding:0.2em 0.6em">📋 Copy</button>
+        </div>`;
+
+      document.getElementById('copy-countdown')?.addEventListener('click', () => {
+        const btn = document.getElementById('copy-countdown');
+        navigator.clipboard.writeText(`${nextSession.type} — ${nextRace.raceName}: ${countdownStr}`).then(() => {
+          if (btn) { btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = '📋 Copy'; }, 1500); }
+        });
+      });
+    }
+
+    // ── UI: weather ───────────────────────────────────────────────────────────
+
+    function renderWeather() {
+      const el = document.getElementById('weather-content');
+      if (!el) return;
+      const { nextRace, weather, weatherSentinel } = appState;
+      const unit = settings.get().temperatureUnit;
+
+      if (!nextRace) { el.innerHTML = ''; return; }
+
+      if (appState.loading.weather) { el.innerHTML = '<progress></progress>'; return; }
+
+      if (appState.errors.weather) {
+        el.innerHTML = `<p class="section-error">Weather data unavailable.</p>`;
+        return;
+      }
+
+      if (weatherSentinel?.outOfRange) {
+        const avail = weatherSentinel.availableDate;
+        const dateStr = avail.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+        el.innerHTML = `
+          <p class="muted">Forecast not yet available for <strong>${escapeHtml(nextRace.circuit.locality)}, ${escapeHtml(nextRace.circuit.country)}</strong>.</p>
+          <p class="muted">Check back around ${escapeHtml(dateStr)}.</p>`;
+        return;
+      }
+
+      if (!weather) { el.innerHTML = '<p class="muted">Loading weather&hellip;</p>'; return; }
+
+      const cards = weather.daily.map(day => {
+        const d = new Date(day.date + 'T12:00:00');
+        const dayName = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+        const icon = wmoCodeMap.getIcon(day.weatherCode);
+        const label = wmoCodeMap.getLabel(day.weatherCode);
+        const tmax = formatTemp(day.tempMaxC, unit);
+        const tmin = formatTemp(day.tempMinC, unit);
+        const wind = unit === 'fahrenheit'
+          ? `${Math.round(day.windKmh * 0.621371)} mph`
+          : `${Math.round(day.windKmh)} km/h`;
+        const precip = day.precipProb > 0 ? `${day.precipProb}% precip` : '';
+        return `<article class="weather-day">
+          <div class="wday">${escapeHtml(dayName)}</div>
+          <div class="wicon" title="${escapeHtml(label)}">${icon}</div>
+          <div class="wtemp">${escapeHtml(tmax)} / ${escapeHtml(tmin)}</div>
+          <div class="wmeta">${escapeHtml(wind)}${precip ? ' &middot; ' + escapeHtml(precip) : ''}</div>
+        </article>`;
+      }).join('');
+
+      el.innerHTML = `
+        <p class="muted" style="margin-bottom:0.5rem">${escapeHtml(nextRace.circuit.circuitName)}, ${escapeHtml(nextRace.circuit.country)}</p>
+        <div class="weather-cards">${cards}</div>`;
+    }
+
+    // ── UI: news ──────────────────────────────────────────────────────────────
+
+    function renderNews() {
+      const el = document.getElementById('news-content');
+      if (!el) return;
+      const proxy = settings.get().corsProxyUrl;
+
+      if (!proxy) {
+        el.innerHTML = `<p>News feeds require a CORS proxy. Configure one in <a href="#" id="news-settings-link">Settings</a>.</p>`;
+        document.getElementById('news-settings-link')?.addEventListener('click', e => {
+          e.preventDefault();
+          document.getElementById('settings-dialog')?.showModal();
+        });
+        return;
+      }
+
+      if (appState.loading.news) { el.innerHTML = '<progress></progress>'; return; }
+
+      if (appState.newsError === 'no-parser') {
+        el.innerHTML = '<p class="section-error">RSS parser library failed to load.</p>';
+        return;
+      }
+      if (appState.newsError === 'all-failed') {
+        el.innerHTML = `<p class="section-error">Unable to load news. Will retry in ${settings.get().refreshIntervalMinutes} minutes.</p>`;
+        return;
+      }
+      if (appState.news.length === 0) {
+        el.innerHTML = '<p class="muted">No news available. Check your feed settings.</p>';
+        return;
+      }
+
+      const shown = appState.news.slice(0, appState.newsDisplayCount);
+      const items = shown.map(item => {
+        const img = item.imageUrl
+          ? `<img class="news-thumb" src="${escapeHtml(item.imageUrl)}" alt="" loading="lazy" onerror="this.style.display='none'">`
+          : `<div class="news-thumb-placeholder">${escapeHtml(item.source.slice(0, 1))}</div>`;
+        return `<article>
+          <div class="news-item">
+            ${img}
+            <div>
+              <div class="news-meta"><mark class="source-badge">${escapeHtml(item.source)}</mark> &middot; ${escapeHtml(formatRelativeTime(item.publishedAt))}</div>
+              <p class="news-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a></p>
+              <p class="news-summary">${escapeHtml(item.summary)}</p>
+            </div>
+          </div>
+        </article>`;
+      }).join('');
+
+      const showMore = appState.news.length > appState.newsDisplayCount && appState.newsDisplayCount < 50
+        ? `<div style="text-align:center;margin-top:1rem"><button class="secondary" id="news-show-more">Show more</button></div>`
+        : '';
+
+      el.innerHTML = items + showMore;
+
+      document.getElementById('news-show-more')?.addEventListener('click', () => {
+        const next = Math.min(appState.newsDisplayCount + 20, 50);
+        appState.newsDisplayCount = next;
+        const params = new URLSearchParams(location.search);
+        params.set('newsPage', String(Math.ceil(next / 20)));
+        history.replaceState(null, '', '?' + params.toString());
+        renderNews();
+      });
+    }
+
+    // ── UI: calendar ──────────────────────────────────────────────────────────
+
+    let calendarScrolled = false;
+
+    function renderCalendar() {
+      const el = document.getElementById('calendar-content');
+      if (!el) return;
+
+      if (appState.loading.schedule) { el.innerHTML = '<progress></progress>'; return; }
+      if (appState.races.length === 0) {
+        el.innerHTML = '<p class="muted">No races scheduled.</p>';
+        return;
+      }
+
+      const today = Date.now();
+      let nextRound = appState.nextRace?.round ?? null;
+
+      const rows = appState.races.map(race => {
+        const raceTs = new Date(`${race.date}T${race.time}`).getTime();
+        const isPast = raceTs < today;
+        const isNext = race.round === nextRound;
+        const rowClass = isPast ? 'past' : isNext ? 'next' : '';
+        const dateFmt = new Date(`${race.date}T${race.time}`).toLocaleDateString(undefined, {
+          month: 'short', day: 'numeric', timeZone: 'UTC',
+        });
+        const sessionRows = race.sessions.map(s => {
+          const bc = BADGE_CLASS[s.type] || 'badge-fp';
+          return `<span class="session-item"><span class="badge ${bc}">${escapeHtml(s.type)}</span> <small>${escapeHtml(formatSessionDate(s.date, s.time))}</small></span>`;
+        }).join('');
+
+        return `<tr class="${escapeHtml(rowClass)}" data-round="${escapeHtml(race.round)}">
+          <td>${escapeHtml(race.round)}</td>
+          <td>${escapeHtml(race.raceName)}</td>
+          <td>${escapeHtml(race.circuit.circuitName)}</td>
+          <td>${escapeHtml(race.circuit.country)}</td>
+          <td>${escapeHtml(dateFmt)}</td>
+          <td><button class="secondary outline expand-btn" style="font-size:0.75em;padding:0.15em 0.5em" data-round="${escapeHtml(race.round)}">Sessions</button></td>
+        </tr>
+        <tr class="sessions-detail" id="sessions-${escapeHtml(race.round)}" style="display:none">
+          <td colspan="6"><div class="session-list">${sessionRows}</div></td>
+        </tr>`;
+      }).join('');
+
+      // CSV download
+      const csvData = [
+        ['Round','Race','Circuit','Country','Date (UTC)','Time (UTC)'],
+        ...appState.races.map(r => [r.round, r.raceName, r.circuit.circuitName, r.circuit.country, r.date, r.time]),
+      ].map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+      el.innerHTML = `
+        <div style="margin-bottom:0.5rem">
+          <button class="secondary outline" id="cal-download" style="font-size:0.85em">&#8595; Download CSV</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="calendar-table">
+            <thead><tr><th>Rd</th><th>Race</th><th>Circuit</th><th>Country</th><th>Date</th><th></th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+
+      document.getElementById('cal-download')?.addEventListener('click', () => {
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `f1-schedule-${appState.races[0]?.season ?? '2025'}.csv`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+
+      el.querySelectorAll('.expand-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const round = btn.dataset.round;
+          const detail = document.getElementById(`sessions-${round}`);
+          if (detail) {
+            const open = detail.style.display !== 'none';
+            detail.style.display = open ? 'none' : '';
+            btn.textContent = open ? 'Sessions' : 'Hide';
+          }
+        });
+      });
+
+      if (!calendarScrolled) {
+        calendarScrolled = true;
+        requestAnimationFrame(() => {
+          document.querySelector('.calendar-table tr.next')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+    }
+
+    // ── UI: standings ─────────────────────────────────────────────────────────
+
+    function renderStandings() {
+      const el = document.getElementById('standings-content');
+      if (!el) return;
+      const { activeTab } = appState;
+
+      // Tab button state
+      document.getElementById('tab-drivers')?.setAttribute('aria-selected', activeTab === 'drivers' ? 'true' : 'false');
+      document.getElementById('tab-constructors')?.setAttribute('aria-selected', activeTab === 'constructors' ? 'true' : 'false');
+
+      if (appState.loading.standings) { el.innerHTML = '<progress></progress>'; return; }
+
+      let tableHtml = '';
+      let csvRows = [];
+      let filename = '';
+
+      if (activeTab === 'drivers') {
+        if (!appState.driverStandings.length) {
+          el.innerHTML = '<p class="muted">Standings not yet available.</p>';
+          return;
+        }
+        const rows = appState.driverStandings.map(s => {
+          const pts = Number.isInteger(s.points) ? s.points : s.points.toFixed(1);
+          return `<tr>
+            <td>${escapeHtml(String(s.position))}</td>
+            <td><strong>${escapeHtml(s.code)}</strong> ${escapeHtml(s.givenName)} ${escapeHtml(s.familyName)}</td>
+            <td>${escapeHtml(s.constructorName)}</td>
+            <td style="text-align:right">${escapeHtml(String(pts))}</td>
+            <td style="text-align:right">${escapeHtml(String(s.wins))}</td>
+          </tr>`;
+        }).join('');
+        tableHtml = `<table><thead><tr><th>Pos</th><th>Driver</th><th>Team</th><th style="text-align:right">Pts</th><th style="text-align:right">Wins</th></tr></thead><tbody>${rows}</tbody></table>`;
+        csvRows = [
+          ['Pos','Driver','Team','Points','Wins'],
+          ...appState.driverStandings.map(s => [s.position, `${s.givenName} ${s.familyName}`, s.constructorName, s.points, s.wins]),
+        ];
+        filename = `f1-drivers-${new Date().getFullYear()}.csv`;
+      } else {
+        if (!appState.constructorStandings.length) {
+          el.innerHTML = '<p class="muted">Standings not yet available.</p>';
+          return;
+        }
+        const rows = appState.constructorStandings.map(s => {
+          const pts = Number.isInteger(s.points) ? s.points : s.points.toFixed(1);
+          return `<tr>
+            <td>${escapeHtml(String(s.position))}</td>
+            <td>${escapeHtml(s.name)}</td>
+            <td>${escapeHtml(s.nationality)}</td>
+            <td style="text-align:right">${escapeHtml(String(pts))}</td>
+            <td style="text-align:right">${escapeHtml(String(s.wins))}</td>
+          </tr>`;
+        }).join('');
+        tableHtml = `<table><thead><tr><th>Pos</th><th>Constructor</th><th>Nationality</th><th style="text-align:right">Pts</th><th style="text-align:right">Wins</th></tr></thead><tbody>${rows}</tbody></table>`;
+        csvRows = [
+          ['Pos','Constructor','Nationality','Points','Wins'],
+          ...appState.constructorStandings.map(s => [s.position, s.name, s.nationality, s.points, s.wins]),
+        ];
+        filename = `f1-constructors-${new Date().getFullYear()}.csv`;
+      }
+
+      const csvData = csvRows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+      el.innerHTML = `
+        <div style="margin-bottom:0.5rem">
+          <button class="secondary outline" id="standings-download" style="font-size:0.85em">&#8595; Download CSV</button>
+        </div>
+        <div style="overflow-x:auto">${tableHtml}</div>`;
+
+      document.getElementById('standings-download')?.addEventListener('click', () => {
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+    }
+
+    // ── UI: renderAll ─────────────────────────────────────────────────────────
+
+    function renderAll() {
+      renderCountdown();
+      renderWeather();
+      renderNews();
+      renderCalendar();
+      renderStandings();
+    }
+
+    // ── Data fetching ─────────────────────────────────────────────────────────
+
+    async function fetchNextRace() {
+      try {
+        const race = await jolpicaClient.fetchNextRace();
+        appState.nextRace = race;
+        delete appState.errors.nextRace;
+      } catch (err) {
+        appState.errors.nextRace = err.message;
+        console.error('fetchNextRace:', err);
+      }
+    }
+
+    async function fetchSchedule() {
+      appState.loading.schedule = true;
+      try {
+        const races = await jolpicaClient.fetchSeasonSchedule('current');
+        appState.races = races;
+        appState.lastUpdated.schedule = Date.now();
+        delete appState.errors.schedule;
+      } catch (err) {
+        appState.errors.schedule = err.message;
+        console.error('fetchSchedule:', err);
+      } finally {
+        appState.loading.schedule = false;
+      }
+    }
+
+    async function fetchStandings() {
+      appState.loading.standings = true;
+      try {
+        const [drivers, constructors] = await Promise.all([
+          jolpicaClient.fetchDriverStandings(),
+          jolpicaClient.fetchConstructorStandings(),
+        ]);
+        appState.driverStandings = drivers;
+        appState.constructorStandings = constructors;
+        appState.lastUpdated.standings = Date.now();
+        delete appState.errors.standings;
+      } catch (err) {
+        appState.errors.standings = err.message;
+        console.error('fetchStandings:', err);
+      } finally {
+        appState.loading.standings = false;
+      }
+    }
+
+    async function fetchWeather() {
+      if (!appState.nextRace) return;
+      appState.loading.weather = true;
+      appState.weatherSentinel = null;
+      try {
+        const unit = settings.get().temperatureUnit;
+        const result = await weatherClient.fetchRaceWeekendForecast(
+          appState.nextRace.circuit, appState.nextRace.date, unit
+        );
+        if (result?.outOfRange) {
+          appState.weatherSentinel = result;
+          appState.weather = null;
+        } else {
+          appState.weather = result;
+          appState.weatherSentinel = null;
+        }
+        delete appState.errors.weather;
+      } catch (err) {
+        appState.errors.weather = err.message;
+        console.error('fetchWeather:', err);
+      } finally {
+        appState.loading.weather = false;
+      }
+    }
+
+    async function fetchNews() {
+      const s = settings.get();
+      if (!s.corsProxyUrl) { renderNews(); return; }
+      appState.loading.news = true;
+      renderNews();
+      try {
+        const { items, error } = await rssClient.fetchAllFeeds(s.enabledFeeds, s.corsProxyUrl);
+        appState.news = items;
+        appState.newsError = error;
+        appState.newsDisplayCount = Math.max(20, appState.newsDisplayCount);
+        appState.lastUpdated.news = Date.now();
+      } catch (err) {
+        appState.newsError = 'all-failed';
+        console.error('fetchNews:', err);
+      } finally {
+        appState.loading.news = false;
+        renderNews();
+      }
+    }
+
+    async function fetchAll() {
+      if (appState.fetching) return;
+      appState.fetching = true;
+      await fetchNextRace();
+      renderAll();
+      await Promise.allSettled([fetchSchedule(), fetchStandings(), fetchWeather(), fetchNews()]);
+      appState.fetching = false;
+      renderAll();
+    }
+
+    // ── Settings dialog ───────────────────────────────────────────────────────
+
+    function syncSettingsForm() {
+      const s = settings.get();
+      document.querySelectorAll('input[name="theme"]').forEach(r => { r.checked = r.value === s.theme; });
+      document.querySelectorAll('input[name="tempUnit"]').forEach(r => { r.checked = r.value === s.temperatureUnit; });
+      const ri = document.getElementById('refresh-interval');
+      if (ri) ri.value = String(s.refreshIntervalMinutes);
+      document.querySelectorAll('input[name="feed"]').forEach(cb => {
+        cb.checked = s.enabledFeeds.includes(cb.value);
+      });
+      const cp = document.getElementById('cors-proxy-url');
+      if (cp) cp.value = s.corsProxyUrl;
+    }
+
+    // ── init ──────────────────────────────────────────────────────────────────
+
+    let pollingInterval = null;
+    let countdownInterval = null;
+
+    function startPolling() {
+      clearInterval(pollingInterval);
+      pollingInterval = setInterval(fetchAll, settings.get().refreshIntervalMinutes * 60_000);
+    }
+
+    function init() {
+      // 1. Load settings
+      settings.load();
+
+      // 2. Read URL params
+      const params = new URLSearchParams(location.search);
+      if (params.get('tab') === 'constructors') appState.activeTab = 'constructors';
+      const newsPage = parseInt(params.get('newsPage') || '1', 10);
+      if (!isNaN(newsPage)) appState.newsDisplayCount = Math.min(newsPage * 20, 50);
+
+      // 3. Apply theme
+      const theme = settings.get().theme;
+      if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      else delete document.documentElement.dataset.theme;
+
+      // 4. System theme listener
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener('change', () => {
+        if (settings.get().theme === 'system') delete document.documentElement.dataset.theme;
+      });
+
+      // 5. Settings dialog open/close
+      const dialog = document.getElementById('settings-dialog');
+      document.getElementById('settings-btn')?.addEventListener('click', e => {
+        e.preventDefault();
+        syncSettingsForm();
+        dialog?.showModal();
+      });
+      document.getElementById('settings-close')?.addEventListener('click', () => dialog?.close());
+      dialog?.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
+
+      // 6. Settings form listeners
+      document.querySelectorAll('input[name="theme"]').forEach(r => {
+        r.addEventListener('change', () => {
+          const val = r.value;
+          settings.update('theme', val);
+          if (val === 'light' || val === 'dark') document.documentElement.dataset.theme = val;
+          else delete document.documentElement.dataset.theme;
+        });
+      });
+      document.querySelectorAll('input[name="tempUnit"]').forEach(r => {
+        r.addEventListener('change', () => {
+          settings.update('temperatureUnit', r.value);
+          cacheManager.clear(); // Clear weather cache so it re-fetches with new unit
+          fetchWeather().then(renderWeather);
+        });
+      });
+      document.getElementById('refresh-interval')?.addEventListener('change', e => {
+        settings.update('refreshIntervalMinutes', parseInt(e.target.value, 10));
+        startPolling();
+      });
+      document.querySelectorAll('input[name="feed"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const enabled = [...document.querySelectorAll('input[name="feed"]:checked')].map(c => c.value);
+          settings.update('enabledFeeds', enabled);
+          fetchNews();
+        });
+      });
+      document.getElementById('cors-proxy-url')?.addEventListener('change', e => {
+        settings.update('corsProxyUrl', e.target.value.trim());
+        fetchNews();
+      });
+
+      // 7. Standings tab buttons
+      document.getElementById('tab-drivers')?.addEventListener('click', () => {
+        appState.activeTab = 'drivers';
+        const p = new URLSearchParams(location.search);
+        p.set('tab', 'drivers');
+        history.replaceState(null, '', '?' + p.toString());
+        renderStandings();
+      });
+      document.getElementById('tab-constructors')?.addEventListener('click', () => {
+        appState.activeTab = 'constructors';
+        const p = new URLSearchParams(location.search);
+        p.set('tab', 'constructors');
+        history.replaceState(null, '', '?' + p.toString());
+        renderStandings();
+      });
+
+      // 8. Cross-tab settings sync
+      settings.onExternalChange(next => {
+        syncSettingsForm();
+        const t = next.theme;
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+        else delete document.documentElement.dataset.theme;
+        renderAll();
+      });
+
+      // 9. Initial render (loading state)
+      renderAll();
+
+      // 10. Fetch data
+      fetchAll();
+
+      // 11. Countdown ticker (1s)
+      countdownInterval = setInterval(renderCountdown, 1000);
+
+      // 12. Polling
+      startPolling();
+
+      // 13. Visibility change — pause/resume polling
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          clearInterval(pollingInterval);
+        } else {
+          fetchAll();
+          startPolling();
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
