@@ -2,6 +2,8 @@
 
 This file describes how to create new tools in this repository. All tools are single-file HTML single-page applications hosted via GitHub Pages.
 
+Design ethos: [Useful patterns for building HTML tools](https://web.archive.org/web/20251210215112/https://simonwillison.net/2025/Dec/10/html-tools/) — Simon Willison, Dec 2025
+
 ---
 
 ## Core constraints

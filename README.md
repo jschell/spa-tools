@@ -6,7 +6,7 @@ Live site: https://jschell.github.io/spa-tools/
 
 ## Philosophy
 
-These tools follow the design ethos described by [Simon Willison](https://simonwillison.net/2025/Dec/10/html-tools/):
+These tools follow the design ethos described by [Simon Willison](https://web.archive.org/web/20251210215112/https://simonwillison.net/2025/Dec/10/html-tools/):
 
 - **Single file.** Each tool is a self-contained `.html` file with all CSS and JavaScript inlined. No build step, no bundler, no framework. A tool can be shared as a single file or copy-pasted out of an LLM response.
 - **No React.** Vanilla JavaScript only. JSX requires a build step, which adds friction. These tools stay simple.
