@@ -115,7 +115,7 @@
     </section>
 
     <section id="calendar">
-      <h2>2025 Season Calendar</h2>
+      <h2 id="calendar-heading">Season Calendar</h2>
       <div id="calendar-content"><progress></progress></div>
     </section>
 
@@ -887,6 +887,11 @@
         return;
       }
 
+      // Update heading with actual season year from API data
+      const season = appState.races[0]?.season;
+      const heading = document.getElementById('calendar-heading');
+      if (heading && season) heading.textContent = `${season} Season Calendar`;
+
       const today = Date.now();
       let nextRound = appState.nextRace?.round ?? null;
 
@@ -937,7 +942,7 @@
         const blob = new Blob([csvData], { type: 'text/csv' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `f1-schedule-${appState.races[0]?.season ?? '2025'}.csv`;
+        a.download = `f1-schedule-${appState.races[0]?.season ?? new Date().getFullYear()}.csv`;
         a.click();
         URL.revokeObjectURL(a.href);
       });
