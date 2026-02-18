@@ -21,6 +21,6 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add news-cache.json
+          git add f1-tracker-news-cache.json
           git diff --cached --quiet || git commit -m "chore: update F1 news cache [skip ci]"
           git push
