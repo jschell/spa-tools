@@ -49,6 +49,7 @@ Start every new tool from this template:
   </style>
 </head>
 <body>
+  <p><a href="index.html">&larr; All tools</a></p>
   <h1>Tool Name</h1>
   <p>One sentence describing what this tool does.</p>
 
