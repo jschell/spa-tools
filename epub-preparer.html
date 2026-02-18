@@ -65,6 +65,16 @@
       margin: 0.5rem 0 1rem;
     }
     #strip-status { font-size: 0.875rem; margin-left: 0.5rem; }
+    #original-meta {
+      font-size: 0.875rem;
+      color: var(--pico-muted-color, #555);
+      background: var(--pico-card-background-color, #f5f5f5);
+      border-left: 3px solid var(--pico-muted-border-color, #bbb);
+      border-radius: 4px;
+      padding: 0.6rem 0.85rem;
+      margin-bottom: 1rem;
+    }
+    #original-meta strong { color: var(--pico-color, #333); }
     #verify-result {
       margin-top: 1rem;
       padding: 0.75rem;
@@ -80,6 +90,27 @@
       border-left: 3px solid var(--pico-del-color, #c0392b);
       background: var(--pico-del-background, #fef5f5);
     }
+    .diff-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 0.5rem;
+      font-size: 0.8125rem;
+    }
+    .diff-table th {
+      text-align: left;
+      padding: 0.3rem 0.5rem;
+      font-weight: 600;
+      color: var(--pico-muted-color, #555);
+      white-space: nowrap;
+    }
+    .diff-table td {
+      padding: 0.3rem 0.5rem;
+      word-break: break-word;
+    }
+    .diff-table tr:first-child th,
+    .diff-table tr:first-child td { padding-top: 0.5rem; }
+    .diff-changed { font-style: italic; }
+    .diff-mismatch { color: var(--pico-del-color, #c0392b); font-weight: 600; }
   </style>
 </head>
 <body>
@@ -103,6 +134,9 @@
 
     <!-- Editor section (hidden until EPUB loaded) -->
     <section id="editor" aria-label="Edit metadata">
+      <!-- Read-only panel showing what was in the file before any edits -->
+      <div id="original-meta" aria-label="Original metadata from file"></div>
+
       <label for="title-input">Title
         <input type="text" id="title-input" autocomplete="off">
       </label>
@@ -145,9 +179,10 @@
     /**
      * @typedef {Object} AppState
      * @property {LoadState} loadState
-     * @property {object|null} zip        - JSZip instance
+     * @property {object|null} zip           - JSZip instance
      * @property {string} opfPath
-     * @property {EpubMetadata} metadata
+     * @property {EpubMetadata} metadata     - current (editable) values
+     * @property {EpubMetadata} originalMetadata - values read from file, never mutated
      * @property {string} errorMessage
      */
 
@@ -159,6 +194,7 @@
       zip: null,
       opfPath: '',
       metadata: { title: '', creator: '' },
+      originalMetadata: { title: '', creator: '' },
       errorMessage: '',
     };
 
@@ -405,6 +441,7 @@
         const authorInput = document.getElementById('author-input');
         const filenamePre = document.getElementById('filename-preview');
         const fetchBtn    = document.getElementById('url-fetch-btn');
+        const origMeta    = document.getElementById('original-meta');
 
         const showDrop = s.loadState === 'idle' || s.loadState === 'error';
         dropZone.style.display = showDrop ? '' : 'none';
@@ -419,6 +456,16 @@
         filenamePre.textContent = s.loadState === 'ready'
           ? 'Will save as: ' + epubPacker.suggestFilename(s.metadata.title, s.metadata.creator)
           : '';
+
+        // Original metadata panel — shows what was in the file before any edits
+        if (s.loadState === 'ready') {
+          origMeta.innerHTML =
+            `<strong>From file &mdash;</strong> ` +
+            `<strong>Title:</strong> ${escapeHtml(s.originalMetadata.title || '(none)')} &ensp;` +
+            `<strong>Author:</strong> ${escapeHtml(s.originalMetadata.creator || '(none)')}`;
+        } else {
+          origMeta.innerHTML = '';
+        }
 
         fetchBtn.disabled = s.loadState === 'loading';
         if (s.loadState === 'loading') {
@@ -506,9 +553,10 @@
       try {
         state.zip = await epubLoader.readFile(file);
         const { opfPath, metadata } = await epubParser.parse(state.zip);
-        state.opfPath   = opfPath;
-        state.metadata  = metadata;
-        state.loadState = 'ready';
+        state.opfPath          = opfPath;
+        state.metadata         = { ...metadata };
+        state.originalMetadata = { ...metadata };
+        state.loadState        = 'ready';
       } catch (err) {
         state.errorMessage = err.message;
         state.loadState    = 'error';
@@ -587,9 +635,10 @@
       try {
         state.zip = await epubLoader.readUrl(trimmed, FETCH_TIMEOUT_MS);
         const { opfPath, metadata } = await epubParser.parse(state.zip);
-        state.opfPath   = opfPath;
-        state.metadata  = metadata;
-        state.loadState = 'ready';
+        state.opfPath          = opfPath;
+        state.metadata         = { ...metadata };
+        state.originalMetadata = { ...metadata };
+        state.loadState        = 'ready';
       } catch (err) {
         state.errorMessage = err.message;
         state.loadState    = 'error';
@@ -668,22 +717,57 @@
         const { metadata: verified } = await epubParser.parse(verifyZip);
         const titleOk   = verified.title   === state.metadata.title;
         const creatorOk = verified.creator === state.metadata.creator || state.metadata.creator === '';
+        const allOk = titleOk && creatorOk;
 
-        if (titleOk && creatorOk) {
-          verifyEl.className = 'verify-ok';
-          verifyEl.innerHTML =
-            `&#10003; Metadata verified in downloaded file:<br>` +
-            `<strong>Title:</strong> ${escapeHtml(verified.title || '(empty)')}<br>` +
-            `<strong>Author:</strong> ${escapeHtml(verified.creator || '(empty)')}`;
-        } else {
-          verifyEl.className = 'verify-warn';
-          verifyEl.innerHTML =
-            `&#9888; Metadata mismatch — check the downloaded file:<br>` +
-            `<strong>Expected title:</strong> ${escapeHtml(state.metadata.title)}<br>` +
-            `<strong>Found title:</strong> ${escapeHtml(verified.title)}<br>` +
-            `<strong>Expected author:</strong> ${escapeHtml(state.metadata.creator)}<br>` +
-            `<strong>Found author:</strong> ${escapeHtml(verified.creator)}`;
+        // Build diff table rows for title and author
+        const orig = state.originalMetadata;
+        const edited = state.metadata;
+
+        /**
+         * Render one diff table row.
+         * @param {string} label
+         * @param {string} origVal
+         * @param {string} editedVal
+         * @param {string} verifiedVal
+         * @param {boolean} verifyOk
+         */
+        function diffRow(label, origVal, editedVal, verifiedVal, verifyOk) {
+          const changed  = editedVal !== origVal;
+          const mismatch = !verifyOk;
+          const editedClass  = changed  ? ' class="diff-changed"' : '';
+          const verifyClass  = mismatch ? ' class="diff-mismatch"' : '';
+          const origDisp     = escapeHtml(origVal     || '(none)');
+          const editedDisp   = escapeHtml(editedVal   || '(none)');
+          const verifiedDisp = escapeHtml(verifiedVal || '(none)');
+          const arrow = changed ? ' &#8594;' : '';
+          return `<tr>
+            <th>${label}</th>
+            <td>${origDisp}</td>
+            <td${editedClass}>${editedDisp}${arrow}</td>
+            <td${verifyClass}>${verifiedDisp}${mismatch ? ' &#9888;' : ' &#10003;'}</td>
+          </tr>`;
         }
+
+        const tableHtml = `
+          <table class="diff-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Original (file)</th>
+                <th>Edited</th>
+                <th>Verified (written)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${diffRow('Title',  orig.title,   edited.title,   verified.title,   titleOk)}
+              ${diffRow('Author', orig.creator, edited.creator, verified.creator, creatorOk)}
+            </tbody>
+          </table>`;
+
+        verifyEl.className = allOk ? 'verify-ok' : 'verify-warn';
+        verifyEl.innerHTML = allOk
+          ? `&#10003; <strong>Metadata verified</strong> in downloaded file.${tableHtml}`
+          : `&#9888; <strong>Metadata mismatch</strong> &mdash; check the downloaded file.${tableHtml}`;
         verifyEl.style.display = 'block';
 
       } catch (err) {
