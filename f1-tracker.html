@@ -552,13 +552,24 @@
         'racer':        { name: 'RACER',          url: 'https://racer.com/f1/feed/' },
       };
 
+      // rss2json returns pubDate as "YYYY-MM-DD HH:MM:SS" with no timezone.
+      // Append 'Z' to force UTC parsing; without it browsers may parse as local time,
+      // making past articles appear to be in the future.
+      function parsePubDate(str) {
+        if (!str) return new Date(0);
+        // Already has timezone info (contains Z, +, or -after time)
+        if (/[Z+\-]\d*$/.test(str.trim())) return new Date(str);
+        // "YYYY-MM-DD HH:MM:SS" → treat as UTC
+        return new Date(str.replace(' ', 'T') + 'Z');
+      }
+
       function mapItem(rawItem, feedName) {
         return {
           id: '',
           title: rawItem.title ?? '',
           link: rawItem.link ?? '',
           source: feedName,
-          publishedAt: rawItem.pubDate ? new Date(rawItem.pubDate) : new Date(0),
+          publishedAt: parsePubDate(rawItem.pubDate),
           summary: rawItem.description ?? '',
           imageUrl: rawItem.thumbnail || rawItem.enclosure?.thumbnail || null,
         };
@@ -586,7 +597,7 @@
           if (!res.ok) return [];
           const json = await res.json();
           if (!Array.isArray(json)) return [];
-          return json.map(item => ({ ...item, publishedAt: new Date(item.pubDate ?? item.publishedAt) }));
+          return json.map(item => ({ ...item, publishedAt: parsePubDate(item.pubDate ?? item.publishedAt) }));
         } catch {
           return [];
         }
