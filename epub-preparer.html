@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EPUB Preparer</title>
+  <meta name="description" content="Edit EPUB metadata, strip Project Gutenberg boilerplate, and download the corrected file.">
+  <!-- Pico.css v2 — classless semantic CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <!-- JSZip v3 — ZIP read/write in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3/dist/jszip.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 720px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    #drop-zone {
+      border: 2px dashed var(--pico-muted-border-color, #ccc);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    #drop-zone.drag-over {
+      border-color: var(--pico-primary, #1095c1);
+      background: var(--pico-primary-background, #e8f4fb);
+    }
+    #drop-zone p { margin: 0 0 0.75rem; }
+    .url-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      align-items: center;
+    }
+    .url-row input { flex: 1; margin: 0; }
+    .url-row button { white-space: nowrap; margin: 0; }
+    #url-hint { display: block; margin-top: 0.25rem; color: var(--pico-muted-color, #666); }
+    #editor { display: none; }
+    #error-banner {
+      display: none;
+      color: var(--pico-del-color, #c0392b);
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-left: 3px solid currentColor;
+    }
+    .button-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0 0.5rem;
+    }
+    .button-row button { margin: 0; }
+    #filename-preview {
+      font-size: 0.875rem;
+      color: var(--pico-muted-color, #666);
+      margin: 0.5rem 0 1rem;
+    }
+    #strip-status { font-size: 0.875rem; margin-left: 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>EPUB Preparer</h1>
+    <p>Edit EPUB metadata, strip Project Gutenberg boilerplate, and download the corrected file.</p>
+
+    <!-- Drop zone / load section -->
+    <section id="drop-zone" aria-label="Load EPUB">
+      <p>Drag &amp; drop an EPUB here, or</p>
+      <input type="file" id="file-input" accept=".epub" style="display:none" aria-hidden="true">
+      <button type="button" id="file-picker-btn">Choose file</button>
+      <hr>
+      <label for="url-input" style="display:block; margin-bottom:0.25rem;">Or fetch from URL</label>
+      <div class="url-row">
+        <input type="url" id="url-input" placeholder="https://www.gutenberg.org/ebooks/1342" autocomplete="off">
+        <button type="button" id="url-fetch-btn">Fetch</button>
+      </div>
+      <small id="url-hint"></small>
+    </section>
+
+    <!-- Editor section (hidden until EPUB loaded) -->
+    <section id="editor" aria-label="Edit metadata">
+      <label for="title-input">Title
+        <input type="text" id="title-input" autocomplete="off">
+      </label>
+      <label for="author-input">Author
+        <input type="text" id="author-input" autocomplete="off">
+      </label>
+
+      <div class="button-row">
+        <button type="button" id="clean-btn" class="secondary">Clean Gutenberg Title</button>
+        <button type="button" id="strip-btn" class="secondary">Strip Boilerplate</button>
+        <span id="strip-status" role="status" aria-live="polite"></span>
+      </div>
+
+      <p id="filename-preview"></p>
+      <button type="button" id="download-btn">Download EPUB</button>
+    </section>
+
+    <p id="error-banner" role="alert"></p>
+  </main>
+
+  <footer>
+    <p><a href="https://github.com/jschell/spa-tools/blob/main/epub-preparer.html">View source</a></p>
+  </footer>
+
+  <script>
+    'use strict';
+
+    /**
+     * @typedef {'idle'|'loading'|'ready'|'error'} LoadState
+     */
+
+    /**
+     * @typedef {Object} EpubMetadata
+     * @property {string} title
+     * @property {string} creator
+     */
+
+    /**
+     * @typedef {Object} AppState
+     * @property {LoadState} loadState
+     * @property {object|null} zip        - JSZip instance
+     * @property {string} opfPath
+     * @property {EpubMetadata} metadata
+     * @property {string} errorMessage
+     */
+
+    const FETCH_TIMEOUT_MS = 15000;
+
+    /** @type {AppState} */
+    const state = {
+      loadState: 'idle',
+      zip: null,
+      opfPath: '',
+      metadata: { title: '', creator: '' },
+      errorMessage: '',
+    };
+
+    // ── epubLoader ───────────────────────────────────────────────────────────
+
+    const epubLoader = {
+      /** @param {File} file @returns {Promise<object>} JSZip instance */
+      async readFile(file) {
+        const buf = await file.arrayBuffer();
+        return JSZip.loadAsync(buf);
+      },
+
+      /**
+       * @param {string} url
+       * @param {number} timeoutMs
+       * @returns {Promise<object>} JSZip instance
+       */
+      async readUrl(url, timeoutMs) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          let resp;
+          try {
+            resp = await fetch(url, { signal: controller.signal });
+          } catch (e) {
+            if (e.name === 'AbortError') {
+              throw new Error(`Fetch timed out after ${timeoutMs / 1000} seconds.`);
+            }
+            if (e instanceof TypeError) {
+              throw new Error(
+                'Could not fetch the file. The server may not allow cross-origin requests (CORS). ' +
+                'Try downloading the EPUB manually and dropping it here.'
+              );
+            }
+            throw e;
+          }
+          if (!resp.ok) {
+            throw new Error(`Server returned ${resp.status}: ${resp.statusText}`);
+          }
+          const buf = await resp.arrayBuffer();
+          return JSZip.loadAsync(buf);
+        } finally {
+          clearTimeout(timer);
+        }
+      },
+    };
+
+    // ── epubParser ───────────────────────────────────────────────────────────
+
+    const epubParser = {
+      /**
+       * @param {object} zip - JSZip instance
+       * @returns {Promise<{ opfPath: string, metadata: EpubMetadata }>}
+       */
+      async parse(zip) {
+        const containerEntry = zip.file('META-INF/container.xml');
+        if (!containerEntry) {
+          throw new Error('Could not find META-INF/container.xml in this EPUB.');
+        }
+        const containerXml = await containerEntry.async('string');
+        const containerDoc = new DOMParser().parseFromString(containerXml, 'application/xml');
+        const rootfileEl = containerDoc.querySelector('rootfile[full-path]');
+        if (!rootfileEl) {
+          throw new Error('Could not locate the OPF metadata file.');
+        }
+        const opfPath = rootfileEl.getAttribute('full-path');
+
+        const opfEntry = zip.file(opfPath);
+        if (!opfEntry) {
+          throw new Error(`OPF file not found in EPUB: ${opfPath}`);
+        }
+        const opfXml = await opfEntry.async('string');
+        const opfDoc = new DOMParser().parseFromString(opfXml, 'application/xml');
+
+        const DC = 'http://purl.org/dc/elements/1.1/';
+        const titleEl   = opfDoc.getElementsByTagNameNS(DC, 'title')[0];
+        const creatorEl = opfDoc.getElementsByTagNameNS(DC, 'creator')[0];
+
+        return {
+          opfPath,
+          metadata: {
+            title:   titleEl?.textContent?.trim()   ?? '',
+            creator: creatorEl?.textContent?.trim() ?? '',
+          },
+        };
+      },
+    };
+
+    // ── gutenbergCleaner ─────────────────────────────────────────────────────
+
+    const gutenbergCleaner = {
+      /**
+       * Splits a Gutenberg-style title string into title and creator.
+       * Tries ", by " first, then " by ", then newline + "by ".
+       * @param {string} rawTitle
+       * @returns {{ title: string, creator: string }}
+       */
+      extractTitleAndCreator(rawTitle) {
+        // Pattern 1: "Title, by Author"
+        const commaBy = rawTitle.match(/^(.+),\s+by\s+(.+)$/i);
+        if (commaBy) return { title: commaBy[1].trim(), creator: commaBy[2].trim() };
+        // Pattern 2: "Title\nby Author"
+        const newlineBy = rawTitle.match(/^(.+)\nby\s+(.+)$/im);
+        if (newlineBy) return { title: newlineBy[1].trim(), creator: newlineBy[2].trim() };
+        // Pattern 3: "Title by Author"
+        const spaceBy = rawTitle.match(/^(.+?)\s+by\s+(.+)$/i);
+        if (spaceBy) return { title: spaceBy[1].trim(), creator: spaceBy[2].trim() };
+        return { title: rawTitle.trim(), creator: '' };
+      },
+
+      /**
+       * Removes "Produced by ..." boilerplate from the first spine item.
+       * Only searches the first 5000 characters to avoid false positives.
+       * Mutates zip in place.
+       * @param {object} zip - JSZip instance
+       * @param {string} firstItemPath
+       * @returns {Promise<boolean>} true if boilerplate was found and removed
+       */
+      async stripBoilerplate(zip, firstItemPath) {
+        const entry = zip.file(firstItemPath);
+        if (!entry) throw new Error('Boilerplate file not found in EPUB.');
+        const raw = await entry.async('string');
+        const scanArea = raw.slice(0, 5000);
+        const BOILERPLATE_RE = /Produced by .{0,200}/i;
+        const m = BOILERPLATE_RE.exec(scanArea);
+        if (!m) return false;
+        const stripped = raw.slice(0, m.index) + raw.slice(m.index + m[0].length);
+        zip.file(firstItemPath, stripped);
+        return true;
+      },
+    };
+
+    // ── escapeXml ────────────────────────────────────────────────────────────
+
+    /** @param {string} s @returns {string} */
+    function escapeXml(s) {
+      return s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
+
+    // ── epubPacker ───────────────────────────────────────────────────────────
+
+    const epubPacker = {
+      /**
+       * Writes updated dc:title and dc:creator back into the OPF and generates a new EPUB Blob.
+       * @param {object} zip - JSZip instance
+       * @param {string} opfPath
+       * @param {string} title
+       * @param {string} creator
+       * @returns {Promise<Blob>}
+       */
+      async pack(zip, opfPath, title, creator) {
+        let opfXml = await zip.file(opfPath).async('string');
+
+        // Replace dc:title content — handles any namespace prefix (dc:, ns0:, etc.)
+        opfXml = opfXml.replace(
+          /(<[^>]*:title[^>]*>)[^<]*(<\/[^>]*:title>)/,
+          `$1${escapeXml(title)}$2`
+        );
+        // Replace or remove dc:creator content
+        if (creator) {
+          opfXml = opfXml.replace(
+            /(<[^>]*:creator[^>]*>)[^<]*(<\/[^>]*:creator>)/,
+            `$1${escapeXml(creator)}$2`
+          );
+        } else {
+          opfXml = opfXml.replace(/<[^>]*:creator[^>]*>[^<]*<\/[^>]*:creator>/g, '');
+        }
+
+        zip.file(opfPath, opfXml);
+
+        return zip.generateAsync({
+          type: 'blob',
+          mimeType: 'application/epub+zip',
+          compression: 'DEFLATE',
+          compressionOptions: { level: 6 },
+        });
+      },
+
+      /**
+       * Builds a safe download filename from title and creator.
+       * @param {string} title
+       * @param {string} creator
+       * @returns {string}
+       */
+      suggestFilename(title, creator) {
+        const safe = s => s
+          .replace(/[/\\:*?"<>|]/g, '-')
+          .replace(/[\s-]{2,}/g, ' ')
+          .trim()
+          .replace(/^-+|-+$/g, '')
+          .trim();
+        const t = safe(title);
+        const c = safe(creator);
+        if (!t && !c) return 'untitled.epub';
+        if (!c) return `${t}.epub`;
+        if (!t) return `${c}.epub`;
+        return `${t} - ${c}.epub`;
+      },
+    };
+
+    // ── resolveGutenbergUrl ──────────────────────────────────────────────────
+
+    /**
+     * Transforms a Gutenberg book-page URL to its direct EPUB download URL.
+     * Returns null if the URL is not a Gutenberg /ebooks/{id} URL.
+     * @param {string} raw
+     * @returns {string|null}
+     */
+    function resolveGutenbergUrl(raw) {
+      try {
+        const u = new URL(raw.trim());
+        if (!u.hostname.includes('gutenberg.org')) return null;
+        const m = u.pathname.match(/^\/ebooks\/(\d+)\/?$/);
+        if (!m) return null;
+        const id = m[1];
+        return `https://www.gutenberg.org/cache/epub/${id}/pg${id}-images.epub`;
+      } catch {
+        return null;
+      }
+    }
+
+    // ── ui ───────────────────────────────────────────────────────────────────
+
+    const ui = {
+      /** @param {AppState} s */
+      render(s) {
+        const dropZone    = document.getElementById('drop-zone');
+        const editor      = document.getElementById('editor');
+        const errBanner   = document.getElementById('error-banner');
+        const titleInput  = document.getElementById('title-input');
+        const authorInput = document.getElementById('author-input');
+        const filenamePre = document.getElementById('filename-preview');
+        const fetchBtn    = document.getElementById('url-fetch-btn');
+
+        const showDrop = s.loadState === 'idle' || s.loadState === 'error';
+        dropZone.style.display = showDrop ? '' : 'none';
+        editor.style.display   = s.loadState === 'ready' ? '' : 'none';
+
+        errBanner.style.display = s.loadState === 'error' ? '' : 'none';
+        errBanner.textContent   = s.errorMessage;
+
+        // Don't clobber fields the user is actively editing
+        if (document.activeElement !== titleInput)  titleInput.value  = s.metadata.title;
+        if (document.activeElement !== authorInput) authorInput.value = s.metadata.creator;
+
+        filenamePre.textContent = s.loadState === 'ready'
+          ? 'Will save as: ' + epubPacker.suggestFilename(s.metadata.title, s.metadata.creator)
+          : '';
+
+        // Disable fetch button while loading
+        fetchBtn.disabled = s.loadState === 'loading';
+        if (s.loadState === 'loading') {
+          dropZone.setAttribute('aria-busy', 'true');
+        } else {
+          dropZone.removeAttribute('aria-busy');
+        }
+      },
+
+      bindEvents() {
+        const zone       = document.getElementById('drop-zone');
+        const fileInput  = document.getElementById('file-input');
+        const pickerBtn  = document.getElementById('file-picker-btn');
+        const urlInput   = document.getElementById('url-input');
+        const fetchBtn   = document.getElementById('url-fetch-btn');
+        const urlHint    = document.getElementById('url-hint');
+        const titleInput = document.getElementById('title-input');
+        const authorInput= document.getElementById('author-input');
+        const cleanBtn   = document.getElementById('clean-btn');
+        const stripBtn   = document.getElementById('strip-btn');
+        const dlBtn      = document.getElementById('download-btn');
+
+        // Drag and drop
+        zone.addEventListener('dragover', e => {
+          e.preventDefault();
+          zone.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', e => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          const file = e.dataTransfer.files[0];
+          if (file) handleFileInput(file);
+        });
+
+        // File picker
+        pickerBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files[0]) handleFileInput(fileInput.files[0]);
+        });
+
+        // URL input
+        urlInput.addEventListener('input', () => handleUrlHint(urlInput.value, urlHint));
+        urlInput.addEventListener('keydown', e => {
+          if (e.key === 'Enter') handleUrlFetch(urlInput.value);
+        });
+        fetchBtn.addEventListener('click', () => handleUrlFetch(urlInput.value));
+
+        // Live editor updates
+        titleInput.addEventListener('input', () => {
+          state.metadata.title = titleInput.value;
+          ui.render(state);
+        });
+        authorInput.addEventListener('input', () => {
+          state.metadata.creator = authorInput.value;
+          ui.render(state);
+        });
+
+        // Action buttons
+        cleanBtn.addEventListener('click', handleClean);
+        stripBtn.addEventListener('click', handleStrip);
+        dlBtn.addEventListener('click', handleDownload);
+      },
+    };
+
+    // ── Handlers ─────────────────────────────────────────────────────────────
+
+    /** @param {File} file */
+    async function handleFileInput(file) {
+      if (!file) return;
+      if (file.type !== 'application/epub+zip' && !file.name.endsWith('.epub')) {
+        state.errorMessage = 'Please provide a valid .epub file.';
+        state.loadState = 'error';
+        ui.render(state);
+        return;
+      }
+      if (typeof JSZip === 'undefined') {
+        state.errorMessage = 'JSZip library failed to load. Check your internet connection.';
+        state.loadState = 'error';
+        ui.render(state);
+        return;
+      }
+      state.loadState = 'loading';
+      ui.render(state);
+      try {
+        state.zip = await epubLoader.readFile(file);
+        const { opfPath, metadata } = await epubParser.parse(state.zip);
+        state.opfPath   = opfPath;
+        state.metadata  = metadata;
+        state.loadState = 'ready';
+      } catch (err) {
+        state.errorMessage = err.message;
+        state.loadState    = 'error';
+      }
+      ui.render(state);
+    }
+
+    /**
+     * @param {string} raw
+     * @param {HTMLElement} hintEl
+     */
+    function handleUrlHint(raw, hintEl) {
+      const resolved = resolveGutenbergUrl(raw);
+      hintEl.textContent = resolved
+        ? 'Detected Project Gutenberg book page — will fetch images EPUB.'
+        : '';
+    }
+
+    /** @param {string} rawUrl */
+    async function handleUrlFetch(rawUrl) {
+      const trimmed = rawUrl.trim();
+      if (!trimmed) return;
+
+      if (window.location.protocol === 'file:') {
+        state.errorMessage =
+          'URL fetch does not work when the tool is opened as a local file. ' +
+          'Host the tool on a web server, or download the EPUB manually and drop it here.';
+        state.loadState = 'error';
+        ui.render(state);
+        return;
+      }
+
+      let parsedUrl;
+      try {
+        parsedUrl = new URL(trimmed);
+      } catch {
+        state.errorMessage = 'Please enter a valid URL.';
+        state.loadState    = 'error';
+        ui.render(state);
+        return;
+      }
+
+      if (parsedUrl.protocol !== 'https:') {
+        state.errorMessage = 'Only HTTPS URLs are supported.';
+        state.loadState    = 'error';
+        ui.render(state);
+        return;
+      }
+
+      const url = resolveGutenbergUrl(trimmed) || trimmed;
+
+      state.loadState = 'loading';
+      ui.render(state);
+      try {
+        state.zip = await epubLoader.readUrl(url, FETCH_TIMEOUT_MS);
+        const { opfPath, metadata } = await epubParser.parse(state.zip);
+        state.opfPath   = opfPath;
+        state.metadata  = metadata;
+        state.loadState = 'ready';
+      } catch (err) {
+        state.errorMessage = err.message;
+        state.loadState    = 'error';
+      }
+      ui.render(state);
+    }
+
+    function handleClean() {
+      const { title, creator } = gutenbergCleaner.extractTitleAndCreator(state.metadata.title);
+      state.metadata.title = title;
+      if (!state.metadata.creator) state.metadata.creator = creator;
+      ui.render(state);
+    }
+
+    async function handleStrip() {
+      if (!state.zip || !state.opfPath) return;
+
+      const stripBtn   = document.getElementById('strip-btn');
+      const stripStatus = document.getElementById('strip-status');
+      stripBtn.disabled = true;
+      stripBtn.setAttribute('aria-busy', 'true');
+      stripStatus.textContent = '';
+
+      try {
+        // Resolve first spine item path from OPF
+        const opfXml = await state.zip.file(state.opfPath).async('string');
+        const opfDoc = new DOMParser().parseFromString(opfXml, 'application/xml');
+        const firstItemId = opfDoc.querySelector('spine itemref')?.getAttribute('idref');
+        if (!firstItemId) {
+          stripStatus.textContent = 'No spine items found.';
+          return;
+        }
+        const manifestItem = opfDoc.querySelector(`manifest item[id="${firstItemId}"]`);
+        if (!manifestItem) {
+          stripStatus.textContent = 'Spine item not found in manifest.';
+          return;
+        }
+        const opfDir = state.opfPath.includes('/')
+          ? state.opfPath.slice(0, state.opfPath.lastIndexOf('/') + 1)
+          : '';
+        const firstItemPath = opfDir + manifestItem.getAttribute('href');
+
+        const found = await gutenbergCleaner.stripBoilerplate(state.zip, firstItemPath);
+        stripStatus.textContent = found ? 'Boilerplate removed.' : 'No boilerplate found.';
+      } catch (err) {
+        stripStatus.textContent = 'Could not strip boilerplate: ' + err.message;
+      } finally {
+        stripBtn.disabled = false;
+        stripBtn.removeAttribute('aria-busy');
+      }
+
+      setTimeout(() => { stripStatus.textContent = ''; }, 4000);
+    }
+
+    async function handleDownload() {
+      if (!state.zip) return;
+      const dlBtn = document.getElementById('download-btn');
+      dlBtn.disabled = true;
+      dlBtn.setAttribute('aria-busy', 'true');
+      try {
+        const blob     = await epubPacker.pack(state.zip, state.opfPath, state.metadata.title, state.metadata.creator);
+        const filename = epubPacker.suggestFilename(state.metadata.title, state.metadata.creator);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href     = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        state.errorMessage = 'Download failed: ' + err.message;
+        state.loadState    = 'error';
+        ui.render(state);
+      } finally {
+        dlBtn.disabled = false;
+        dlBtn.removeAttribute('aria-busy');
+      }
+    }
+
+    // ── init ─────────────────────────────────────────────────────────────────
+
+    function init() {
+      ui.bindEvents();
+      ui.render(state);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
