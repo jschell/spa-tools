@@ -43,7 +43,7 @@
 
     /* Weather */
     .weather-cards { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-    .weather-day { flex: 0 0 auto; min-width: 110px; text-align: center; padding: 0.75rem; }
+    .weather-day { flex: 1 1 110px; max-width: 140px; text-align: center; padding: 0.75rem; }
     .weather-day .wday { font-weight: 600; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.05em; }
     .weather-day .wicon { font-size: 1.8rem; line-height: 1.2; }
     .weather-day .wtemp { font-size: 0.9em; }
@@ -75,6 +75,9 @@
     .tab-buttons { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
     .tab-buttons button { flex: 0 0 auto; }
 
+    /* Small inline action buttons */
+    .copy-btn { font-size: 0.8em; padding: 0.2em 0.6em; }
+
     /* Misc */
     .stale-notice { font-size: 0.78em; color: var(--pico-muted-color); font-style: italic; margin-left: 0.5rem; }
     .section-error { color: var(--pico-del-color); font-size: 0.9em; padding: 0.5rem 0; }
@@ -82,9 +85,37 @@
     dialog article { max-width: 520px; max-height: 85vh; overflow-y: auto; }
     dialog::backdrop { background: rgba(0,0,0,0.5); }
     @media (max-width: 600px) {
+      /* Countdown */
       #countdown-display { font-size: 1.4rem; }
+
+      /* News: hide thumbnail */
       .news-item { grid-template-columns: 1fr; }
       .news-thumb, .news-thumb-placeholder { display: none; }
+
+      /* Calendar: hide Circuit (col 3) and Country (col 4) — keep Rd, Race, Date, Sessions */
+      .calendar-table th:nth-child(3),
+      .calendar-table td:nth-child(3),
+      .calendar-table th:nth-child(4),
+      .calendar-table td:nth-child(4) { display: none; }
+
+      /* Standings: hide Team/Nationality (col 3) — keep Pos, Driver/Constructor, Pts, Wins */
+      .standings-table th:nth-child(3),
+      .standings-table td:nth-child(3) { display: none; }
+
+      /* Weather: smaller min-width so 3 cards fit cleanly */
+      .weather-day { min-width: 90px; max-width: none; }
+
+      /* Touch targets: session expand button */
+      .expand-btn { padding: 0.4em 0.8em !important; min-height: 36px; }
+
+      /* Touch targets: copy button */
+      .copy-btn { padding: 0.4em 0.8em; min-height: 36px; }
+
+      /* Settings dialog: constrain to viewport width */
+      dialog article { max-width: calc(100vw - 2rem); }
+
+      /* Muted/meta text: floor at 0.82em (~13px) for readability */
+      .news-meta, .wmeta, .stale-notice { font-size: 0.82em; }
     }
   </style>
 </head>
@@ -770,7 +801,7 @@
         <div id="countdown-race">${escapeHtml(nextRace.raceName)} &mdash; ${escapeHtml(nextRace.circuit.circuitName)}, ${escapeHtml(nextRace.circuit.country)}</div>
         <div style="margin-top:0.5rem">
           <small class="muted">${escapeHtml(formatSessionDate(nextSession.date, nextSession.time))}</small>
-          &nbsp;<button class="secondary outline" id="copy-countdown" style="font-size:0.8em;padding:0.2em 0.6em">📋 Copy</button>
+          &nbsp;<button class="secondary outline copy-btn" id="copy-countdown">📋 Copy</button>
         </div>`;
 
       document.getElementById('copy-countdown')?.addEventListener('click', () => {
@@ -1010,7 +1041,7 @@
             <td style="text-align:right">${escapeHtml(String(s.wins))}</td>
           </tr>`;
         }).join('');
-        tableHtml = `<table><thead><tr><th>Pos</th><th>Driver</th><th>Team</th><th style="text-align:right">Pts</th><th style="text-align:right">Wins</th></tr></thead><tbody>${rows}</tbody></table>`;
+        tableHtml = `<table class="standings-table"><thead><tr><th>Pos</th><th>Driver</th><th>Team</th><th style="text-align:right">Pts</th><th style="text-align:right">Wins</th></tr></thead><tbody>${rows}</tbody></table>`;
         csvRows = [
           ['Pos','Driver','Team','Points','Wins'],
           ...appState.driverStandings.map(s => [s.position, `${s.givenName} ${s.familyName}`, s.constructorName, s.points, s.wins]),
@@ -1031,7 +1062,7 @@
             <td style="text-align:right">${escapeHtml(String(s.wins))}</td>
           </tr>`;
         }).join('');
-        tableHtml = `<table><thead><tr><th>Pos</th><th>Constructor</th><th>Nationality</th><th style="text-align:right">Pts</th><th style="text-align:right">Wins</th></tr></thead><tbody>${rows}</tbody></table>`;
+        tableHtml = `<table class="standings-table"><thead><tr><th>Pos</th><th>Constructor</th><th>Nationality</th><th style="text-align:right">Pts</th><th style="text-align:right">Wins</th></tr></thead><tbody>${rows}</tbody></table>`;
         csvRows = [
           ['Pos','Constructor','Nationality','Points','Wins'],
           ...appState.constructorStandings.map(s => [s.position, s.name, s.nationality, s.points, s.wins]),
