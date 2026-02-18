@@ -59,6 +59,28 @@
       margin: 0.5rem 0 1rem;
     }
     #strip-status { font-size: 0.875rem; margin-left: 0.5rem; }
+    .bookmarklet-row {
+      margin-top: 0.75rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+    #bookmarklet-btn {
+      display: inline-block;
+      padding: 0.4rem 0.9rem;
+      border: 2px solid var(--pico-primary, #1095c1);
+      border-radius: 4px;
+      color: var(--pico-primary, #1095c1);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: grab;
+      white-space: nowrap;
+    }
+    #bookmarklet-btn:hover { background: var(--pico-primary-background, #e8f4fb); }
+    #copy-bookmarklet-btn { font-size: 0.875rem; margin: 0; }
+    .bookmarklet-note { display: block; font-size: 0.8rem; color: var(--pico-muted-color, #666); margin-top: 0.35rem; }
   </style>
 </head>
 <body>
@@ -78,6 +100,13 @@
         <button type="button" id="url-fetch-btn">Fetch</button>
       </div>
       <small id="url-hint"></small>
+      <hr>
+      <div class="bookmarklet-row">
+        <a id="bookmarklet-btn" href="javascript:void(0)" title="Drag to bookmarks bar">&#9776; Prepare in Tool</a>
+        <button type="button" id="copy-bookmarklet-btn" class="secondary">Copy Bookmarklet</button>
+      </div>
+      <small class="bookmarklet-note">Drag the button to your bookmarks bar. On any Gutenberg book page, click it to send the EPUB here.</small>
+      <small class="bookmarklet-note" id="copy-bookmarklet-note">For browsers without a visible bookmarks bar.</small>
     </section>
 
     <!-- Editor section (hidden until EPUB loaded) -->
@@ -341,6 +370,103 @@
       },
     };
 
+    // ── bookmarkletManager ───────────────────────────────────────────────────
+
+    const BOOKMARKLET_FETCH_TIMEOUT_MS = 15000;
+    const BOOKMARKLET_READY_TIMEOUT_MS = 3000;
+
+    const bookmarkletManager = {
+      /**
+       * Returns a complete javascript: URI for the bookmarklet.
+       * The bookmarklet runs in Gutenberg's origin, fetches the EPUB,
+       * opens the tool, and postMessages the ArrayBuffer across.
+       * @param {string} toolUrl - window.location.href of this tool
+       * @returns {string}
+       */
+      getScript(toolUrl) {
+        const ft = BOOKMARKLET_FETCH_TIMEOUT_MS;
+        const rt = BOOKMARKLET_READY_TIMEOUT_MS;
+        // Inline the tool URL and timeout constants; keep variable names short
+        // so the resulting URI stays well under 2000 chars.
+        const body = `
+(async function(){
+  if(!/^\\/ebooks\\/\\d+\\/?$/.test(location.pathname)){
+    alert("This bookmarklet only works on Project Gutenberg book pages (gutenberg.org/ebooks/{id}).");
+    return;
+  }
+  var id=location.pathname.match(/\\/ebooks\\/(\\d+)/)[1];
+  var eu="https://www.gutenberg.org/cache/epub/"+id+"/pg"+id+"-images.epub";
+  var tu=${JSON.stringify(toolUrl)};
+  var to;
+  try{to=new URL(tu).origin;}catch(e){to=null;}
+  if(!to||to==="null"){alert("The tool must be hosted on a web server for the bookmarklet to work.");return;}
+  var ot=document.title;
+  document.title="Fetching EPUB\u2026";
+  var ctrl=new AbortController();
+  var ft_=setTimeout(function(){ctrl.abort();},${ft});
+  var buf;
+  try{
+    var r=await fetch(eu,{signal:ctrl.signal});
+    if(!r.ok){alert("Could not fetch EPUB: "+r.status);return;}
+    buf=await r.arrayBuffer();
+  }catch(e){
+    if(e.name==="AbortError"){alert("Fetch timed out. Try again or download the EPUB manually.");}
+    else{alert("Fetch failed: "+e.message);}
+    return;
+  }finally{
+    clearTimeout(ft_);
+    document.title=ot;
+  }
+  var fn="pg"+id+"-images.epub";
+  var tw=null;
+  var sent=false;
+  function send(){
+    if(sent)return;
+    sent=true;
+    try{tw.postMessage({type:"epub-transfer",buffer:buf,name:fn},to,[buf]);}catch(e){}
+  }
+  var rt_=setTimeout(send,${rt});
+  window.addEventListener("message",function h(e){
+    if(e.source!==tw)return;
+    if(e.data!=="ready")return;
+    clearTimeout(rt_);
+    window.removeEventListener("message",h);
+    send();
+  });
+  tw=window.open(tu);
+  if(!tw){clearTimeout(rt_);alert("Pop-up blocked. Allow pop-ups for this site and try again.");}
+}())`.replace(/\n\s*/g, '');
+        return 'javascript:void ' + body;
+      },
+
+      /** @param {string} text */
+      copyToClipboard(text) {
+        const btn = document.getElementById('copy-bookmarklet-btn');
+        const orig = btn.textContent;
+        const ok  = () => { btn.textContent = 'Copied!';      setTimeout(() => { btn.textContent = orig; }, 2000); };
+        const err = () => { btn.textContent = 'Copy failed';  setTimeout(() => { btn.textContent = orig; }, 2000); };
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(text).then(ok).catch(() => {
+            // fallback
+            try { fallbackCopy(text); ok(); } catch { err(); }
+          });
+        } else {
+          try { fallbackCopy(text); ok(); } catch { err(); }
+        }
+        function fallbackCopy(t) {
+          const ta = document.createElement('textarea');
+          ta.value = t;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+      },
+    };
+
     // ── resolveGutenbergUrl ──────────────────────────────────────────────────
 
     /**
@@ -397,6 +523,12 @@
         } else {
           dropZone.removeAttribute('aria-busy');
         }
+
+        // Keep bookmarklet href current (reflects tool's actual URL at render time)
+        if (showDrop) {
+          const bmBtn = document.getElementById('bookmarklet-btn');
+          if (bmBtn) bmBtn.href = bookmarkletManager.getScript(window.location.href);
+        }
       },
 
       bindEvents() {
@@ -446,6 +578,17 @@
         authorInput.addEventListener('input', () => {
           state.metadata.creator = authorInput.value;
           ui.render(state);
+        });
+
+        // Bookmarklet copy button
+        const copyBmBtn = document.getElementById('copy-bookmarklet-btn');
+        copyBmBtn.addEventListener('click', () => {
+          bookmarkletManager.copyToClipboard(bookmarkletManager.getScript(window.location.href));
+        });
+
+        // Prevent drop-zone click from firing when clicking bookmarklet controls
+        [document.getElementById('bookmarklet-btn'), copyBmBtn].forEach(el => {
+          el.addEventListener('click', e => e.stopPropagation());
         });
 
         // Action buttons
@@ -619,9 +762,33 @@
       }
     }
 
+    // ── handleInbound ────────────────────────────────────────────────────────
+
+    function handleInbound(event) {
+      if (state.loadState === 'loading') return;
+      if (event.origin !== 'https://www.gutenberg.org') return;
+      if (event.data?.type !== 'epub-transfer') return;
+      const { buffer, name } = event.data;
+      if (!(buffer instanceof ArrayBuffer)) {
+        state.errorMessage = 'Received invalid data from bookmarklet.';
+        state.loadState = 'error';
+        ui.render(state);
+        return;
+      }
+      const file = new File([buffer], name || 'book.epub', { type: 'application/epub+zip' });
+      handleFileInput(file);
+    }
+
     // ── init ─────────────────────────────────────────────────────────────────
 
     function init() {
+      window.addEventListener('message', handleInbound);
+      // Signal to a waiting bookmarklet that this tab is ready to receive.
+      // window.opener is null in current Chrome/Firefox (noopener coercion) —
+      // the bookmarklet's fallback timer handles that case automatically.
+      if (window.opener) {
+        try { window.opener.postMessage('ready', '*'); } catch {}
+      }
       ui.bindEvents();
       ui.render(state);
     }
