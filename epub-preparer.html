@@ -444,10 +444,10 @@
         const origMeta    = document.getElementById('original-meta');
 
         const showDrop = s.loadState === 'idle' || s.loadState === 'error';
-        dropZone.style.display = showDrop ? '' : 'none';
-        editor.style.display   = s.loadState === 'ready' ? '' : 'none';
+        dropZone.style.display = showDrop ? 'block' : 'none';
+        editor.style.display   = s.loadState === 'ready' ? 'block' : 'none';
 
-        errBanner.style.display = s.loadState === 'error' ? '' : 'none';
+        errBanner.style.display = s.loadState === 'error' ? 'block' : 'none';
         errBanner.textContent   = s.errorMessage;
 
         if (document.activeElement !== titleInput)  titleInput.value  = s.metadata.title;
