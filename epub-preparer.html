@@ -643,7 +643,7 @@
       dlBtn.disabled    = true;
       dlBtn.setAttribute('aria-busy', 'true');
       verifyEl.style.display = 'none';
-      verifyEl.className = 'verify-result';
+      verifyEl.className = '';
 
       try {
         const blob     = await epubPacker.pack(state.zip, state.opfPath, state.metadata.title, state.metadata.creator);
@@ -656,32 +656,35 @@
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        // Verify: re-parse the blob we just wrote to confirm metadata round-tripped correctly
-        try {
-          const verifyZip      = await JSZip.loadAsync(await blob.arrayBuffer());
-          const { metadata: verified } = await epubParser.parse(verifyZip);
-          const titleOk   = verified.title   === state.metadata.title;
-          const creatorOk = verified.creator === state.metadata.creator || state.metadata.creator === '';
+        // Verify: re-parse the blob to confirm metadata round-tripped correctly.
+        // Use FileReader instead of blob.arrayBuffer() for broader browser compatibility.
+        const verifyBuf = await new Promise((resolve, reject) => {
+          const fr = new FileReader();
+          fr.onload  = () => resolve(fr.result);
+          fr.onerror = () => reject(fr.error);
+          fr.readAsArrayBuffer(blob);
+        });
+        const verifyZip = await JSZip.loadAsync(verifyBuf);
+        const { metadata: verified } = await epubParser.parse(verifyZip);
+        const titleOk   = verified.title   === state.metadata.title;
+        const creatorOk = verified.creator === state.metadata.creator || state.metadata.creator === '';
 
-          if (titleOk && creatorOk) {
-            verifyEl.className = 'verify-ok';
-            verifyEl.innerHTML =
-              `&#10003; Metadata verified in downloaded file:<br>` +
-              `<strong>Title:</strong> ${escapeHtml(verified.title || '(empty)')}<br>` +
-              `<strong>Author:</strong> ${escapeHtml(verified.creator || '(empty)')}`;
-          } else {
-            verifyEl.className = 'verify-warn';
-            verifyEl.innerHTML =
-              `&#9888; Metadata mismatch — check the downloaded file:<br>` +
-              `<strong>Expected title:</strong> ${escapeHtml(state.metadata.title)}<br>` +
-              `<strong>Found title:</strong> ${escapeHtml(verified.title)}<br>` +
-              `<strong>Expected author:</strong> ${escapeHtml(state.metadata.creator)}<br>` +
-              `<strong>Found author:</strong> ${escapeHtml(verified.creator)}`;
-          }
-          verifyEl.style.display = 'block';
-        } catch {
-          // Verification is best-effort; don't surface parse errors here
+        if (titleOk && creatorOk) {
+          verifyEl.className = 'verify-ok';
+          verifyEl.innerHTML =
+            `&#10003; Metadata verified in downloaded file:<br>` +
+            `<strong>Title:</strong> ${escapeHtml(verified.title || '(empty)')}<br>` +
+            `<strong>Author:</strong> ${escapeHtml(verified.creator || '(empty)')}`;
+        } else {
+          verifyEl.className = 'verify-warn';
+          verifyEl.innerHTML =
+            `&#9888; Metadata mismatch — check the downloaded file:<br>` +
+            `<strong>Expected title:</strong> ${escapeHtml(state.metadata.title)}<br>` +
+            `<strong>Found title:</strong> ${escapeHtml(verified.title)}<br>` +
+            `<strong>Expected author:</strong> ${escapeHtml(state.metadata.creator)}<br>` +
+            `<strong>Found author:</strong> ${escapeHtml(verified.creator)}`;
         }
+        verifyEl.style.display = 'block';
 
       } catch (err) {
         state.errorMessage = 'Download failed: ' + err.message;
