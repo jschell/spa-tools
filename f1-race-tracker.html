@@ -237,7 +237,7 @@ async function apiFetch(path, params = {}) {
   if (!res.ok) {
     let detail;
     try { detail = (await res.json()).detail; } catch (_) {}
-    throw new Error(detail || `${res.status} on ${path}`);
+    throw new Error(`${res.status}: ${detail || 'unknown error'}`);
   }
   return res.json();
 }
@@ -620,7 +620,8 @@ async function detectSession() {
   } catch (err) {
     rs.errors.session = err.message;
     transitionTo('ERROR');
-    document.getElementById('session-label').textContent = 'API error: ' + err.message;
+    // err.message is "NNN: detail" — show just the detail part
+    document.getElementById('session-label').textContent = 'API error: ' + (err.message.replace(/^\d{3}: /, '') || err.message);
   }
 }
 
