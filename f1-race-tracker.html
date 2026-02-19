@@ -760,20 +760,20 @@ async function startReplay(sessionKey, speed) {
     apiFetch('weather',      { session_key: sessionKey }),
   ]);
 
-  // Only abort on critical endpoint failures (drivers or position);
-  // non-critical endpoints (weather, pit, etc.) fall back to [] below.
-  const criticalError = [drv, pos].find(r => r.status === 'rejected');
-  if (criticalError) {
-    const msg = criticalError.reason?.message || 'unknown error';
-    // If apiFetch already extracted a detail string it won't start with digits
+  // Only hard-abort when every endpoint failed — that signals a network or auth
+  // problem, not just a session that lacks certain data types.  Individual
+  // failures (position missing for qualifying, weather not available, etc.)
+  // fall back to [] below and the allDates guard later catches truly empty sessions.
+  const allEndpoints = [drv, ivl, pos, lps, stts, pit, rc, wx];
+  if (allEndpoints.every(r => r.status === 'rejected')) {
+    const first = allEndpoints[0];
+    const msg = first.reason?.message || 'unknown error';
     const code = msg.match(/^(\d{3})/)?.[1];
     const hint = code === '401' ? 'Unauthorized — the API rejected the request.'
                : code === '404' ? 'Session not found — check the session key.'
                : code === '429' ? 'Rate limited — wait a moment and try again.'
                : msg;
-    // detail messages from the API are already full sentences; don't double-prefix
-    const label = code ? `API error: ${hint}` : hint;
-    document.getElementById('session-label').textContent = label;
+    document.getElementById('session-label').textContent = code ? `API error: ${hint}` : hint;
     rs.session.status = 'ERROR';
     renderStatusIndicator();
     return;
