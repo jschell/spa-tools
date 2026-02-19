@@ -527,6 +527,7 @@ function copyStandings() {
 function showMain()  { document.getElementById('main-content').style.display = ''; document.getElementById('idle-panel').style.display = 'none'; }
 function showIdle()  { document.getElementById('idle-panel').style.display = '';   document.getElementById('main-content').style.display = 'none'; }
 function showReplayBar() { document.getElementById('replay-bar').style.display = ''; }
+function hideReplayBar() { document.getElementById('replay-bar').style.display = 'none'; }
 
 // ── Batch load a full session ─────────────────────────────────
 async function loadAllForSession(sessionKey) {
@@ -770,11 +771,13 @@ async function startReplay(sessionKey, speed) {
     const msg = first.reason?.message || 'unknown error';
     const code = msg.match(/^(\d{3})/)?.[1];
     const hint = code === '401' ? 'Unauthorized — the API rejected the request.'
+               : code === '403' ? 'Session in progress — replay is only available for completed sessions.'
                : code === '404' ? 'Session not found — check the session key.'
                : code === '429' ? 'Rate limited — wait a moment and try again.'
                : msg;
     document.getElementById('session-label').textContent = code ? `API error: ${hint}` : hint;
     rs.session.status = 'ERROR';
+    hideReplayBar();
     renderStatusIndicator();
     return;
   }
@@ -798,6 +801,7 @@ async function startReplay(sessionKey, speed) {
   if (!allDates.length) {
     document.getElementById('session-label').textContent = `No timing data for session ${sessionKey} — try a Race or Sprint session key.`;
     rs.session.status = 'ERROR';
+    hideReplayBar();
     renderStatusIndicator();
     return;
   }
