@@ -624,6 +624,19 @@
         return new Date(str.replace(' ', 'T') + 'Z');
       }
 
+      // Strip HTML tags from feed summary text. Some feeds (e.g. Motorsport.com)
+      // include raw <br>, <a>, and other tags in their description field.
+      function stripHtml(str) {
+        if (!str) return '';
+        // Use DOMParser when available for accurate stripping; fall back to regex.
+        try {
+          const doc = new DOMParser().parseFromString(str, 'text/html');
+          return (doc.body.textContent ?? '').trim();
+        } catch {
+          return str.replace(/<[^>]*>/g, '').trim();
+        }
+      }
+
       function mapItem(rawItem, feedName) {
         return {
           id: '',
@@ -631,7 +644,7 @@
           link: rawItem.link ?? '',
           source: feedName,
           publishedAt: parsePubDate(rawItem.pubDate),
-          summary: rawItem.description ?? '',
+          summary: stripHtml(rawItem.description ?? ''),
           imageUrl: rawItem.thumbnail || rawItem.enclosure?.thumbnail || null,
         };
       }
@@ -658,7 +671,7 @@
           if (!res.ok) return [];
           const json = await res.json();
           if (!Array.isArray(json)) return [];
-          return json.map(item => ({ ...item, publishedAt: parsePubDate(item.pubDate ?? item.publishedAt) }));
+          return json.map(item => ({ ...item, publishedAt: parsePubDate(item.pubDate ?? item.publishedAt), summary: stripHtml(item.summary ?? '') }));
         } catch {
           return [];
         }
