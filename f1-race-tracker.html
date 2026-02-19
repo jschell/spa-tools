@@ -760,11 +760,11 @@ async function startReplay(sessionKey, speed) {
     apiFetch('weather',      { session_key: sessionKey }),
   ]);
 
-  // Surface API errors before processing — allSettled hides them otherwise
-  const allSettled = [drv, ivl, pos, lps, stts, pit, rc, wx];
-  const firstError = allSettled.find(r => r.status === 'rejected');
-  if (firstError) {
-    const msg = firstError.reason?.message || 'unknown error';
+  // Only abort on critical endpoint failures (drivers or position);
+  // non-critical endpoints (weather, pit, etc.) fall back to [] below.
+  const criticalError = [drv, pos].find(r => r.status === 'rejected');
+  if (criticalError) {
+    const msg = criticalError.reason?.message || 'unknown error';
     // If apiFetch already extracted a detail string it won't start with digits
     const code = msg.match(/^(\d{3})/)?.[1];
     const hint = code === '401' ? 'Unauthorized — the API rejected the request.'
