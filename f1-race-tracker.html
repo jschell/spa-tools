@@ -756,6 +756,22 @@ async function startReplay(sessionKey, speed) {
     apiFetch('weather',      { session_key: sessionKey }),
   ]);
 
+  // Surface API errors before processing — allSettled hides them otherwise
+  const allSettled = [drv, ivl, pos, lps, stts, pit, rc, wx];
+  const firstError = allSettled.find(r => r.status === 'rejected');
+  if (firstError) {
+    const msg = firstError.reason?.message || 'unknown error';
+    const code = msg.match(/^(\d{3})/)?.[1];
+    const hint = code === '401' ? 'Unauthorized — the API rejected the request.'
+               : code === '404' ? 'Session not found — check the session key.'
+               : code === '429' ? 'Rate limited — wait a moment and try again.'
+               : msg;
+    document.getElementById('session-label').textContent = `API error: ${hint}`;
+    rs.session.status = 'ERROR';
+    renderStatusIndicator();
+    return;
+  }
+
   replay.driversRaw = drv.status === 'fulfilled' ? drv.value : [];
   mergeDrivers(replay.driversRaw);
 
@@ -773,7 +789,9 @@ async function startReplay(sessionKey, speed) {
 
   const allDates = Object.values(replay.raw).flat().map(x => x.date).filter(Boolean).sort();
   if (!allDates.length) {
-    document.getElementById('session-label').textContent = 'No data for session ' + sessionKey;
+    document.getElementById('session-label').textContent = `No timing data for session ${sessionKey} — try a Race or Sprint session key.`;
+    rs.session.status = 'ERROR';
+    renderStatusIndicator();
     return;
   }
   replay.t0         = new Date(allDates[0]).getTime();
