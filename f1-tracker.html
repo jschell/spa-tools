@@ -497,10 +497,10 @@
           return result;
         },
 
-        async fetchDriverStandings() {
-          const cached = cacheManager.get('standings:drivers');
+        async fetchDriverStandings(season = 'current') {
+          const cached = cacheManager.get(`standings:drivers:${season}`);
           if (cached) return cached;
-          const data = await enqueue('/current/driverStandings.json');
+          const data = await enqueue(`/${season}/driverStandings.json`);
           const list = data?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings ?? [];
           const result = list.map(s => ({
             position: parseInt(s.position, 10),
@@ -513,14 +513,14 @@
             nationality: s.Driver.nationality,
             constructorName: s.Constructors?.[0]?.name ?? '',
           }));
-          cacheManager.set('standings:drivers', result, 3_600_000);
+          cacheManager.set(`standings:drivers:${season}`, result, 3_600_000);
           return result;
         },
 
-        async fetchConstructorStandings() {
-          const cached = cacheManager.get('standings:constructors');
+        async fetchConstructorStandings(season = 'current') {
+          const cached = cacheManager.get(`standings:constructors:${season}`);
           if (cached) return cached;
-          const data = await enqueue('/current/constructorStandings.json');
+          const data = await enqueue(`/${season}/constructorStandings.json`);
           const list = data?.MRData?.StandingsTable?.StandingsLists?.[0]?.ConstructorStandings ?? [];
           const result = list.map(s => ({
             position: parseInt(s.position, 10),
@@ -530,7 +530,7 @@
             name: s.Constructor.name,
             nationality: s.Constructor.nationality,
           }));
-          cacheManager.set('standings:constructors', result, 3_600_000);
+          cacheManager.set(`standings:constructors:${season}`, result, 3_600_000);
           return result;
         },
       };
@@ -856,6 +856,7 @@
       lastUpdated: {},
       fetching: false,
       activeTab: 'drivers',
+      standingsSeason: null,   // 'current' or a year string like '2025' — set by fetchStandings
     };
 
     function updateState(patch) {
@@ -1155,6 +1156,14 @@
       let csvRows = [];
       let filename = '';
 
+      const csvYear = appState.standingsSeason && appState.standingsSeason !== 'current'
+        ? appState.standingsSeason
+        : new Date().getFullYear();
+
+      const priorSeasonBanner = appState.standingsSeason && appState.standingsSeason !== 'current'
+        ? `<p class="muted" style="margin-bottom:0.5rem">&#128203; Showing <strong>${escapeHtml(appState.standingsSeason)}</strong> final standings &mdash; ${escapeHtml(appState.standingsSeason)} season complete, ${escapeHtml(String(parseInt(appState.standingsSeason, 10) + 1))} season not yet started.</p>`
+        : '';
+
       if (activeTab === 'drivers') {
         if (!appState.driverStandings.length) {
           el.innerHTML = '<p class="muted">Standings not yet available.</p>';
@@ -1175,7 +1184,7 @@
           ['Pos','Driver','Team','Points','Wins'],
           ...appState.driverStandings.map(s => [s.position, `${s.givenName} ${s.familyName}`, s.constructorName, s.points, s.wins]),
         ];
-        filename = `f1-drivers-${new Date().getFullYear()}.csv`;
+        filename = `f1-drivers-${csvYear}.csv`;
       } else {
         if (!appState.constructorStandings.length) {
           el.innerHTML = '<p class="muted">Standings not yet available.</p>';
@@ -1196,12 +1205,12 @@
           ['Pos','Constructor','Nationality','Points','Wins'],
           ...appState.constructorStandings.map(s => [s.position, s.name, s.nationality, s.points, s.wins]),
         ];
-        filename = `f1-constructors-${new Date().getFullYear()}.csv`;
+        filename = `f1-constructors-${csvYear}.csv`;
       }
 
       const csvData = csvRows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
 
-      el.innerHTML = `
+      el.innerHTML = priorSeasonBanner + `
         <div style="margin-bottom:0.5rem">
           <button class="secondary outline" id="standings-download" style="font-size:0.85em">&#8595; Download CSV</button>
         </div>
@@ -1262,8 +1271,25 @@
           jolpicaClient.fetchDriverStandings(),
           jolpicaClient.fetchConstructorStandings(),
         ]);
-        appState.driverStandings = drivers;
-        appState.constructorStandings = constructors;
+        if (drivers.length > 0) {
+          // Current season has data — normal path
+          appState.driverStandings = drivers;
+          appState.constructorStandings = constructors;
+          appState.standingsSeason = 'current';
+        } else {
+          // No current-season data — fall back to prior season.
+          // Use new Date().getFullYear() as a safe fallback; appState.races may still
+          // be loading since schedule and standings fetch in parallel via Promise.allSettled.
+          const currentYear = parseInt(appState.races[0]?.season ?? new Date().getFullYear(), 10);
+          const priorYear = String(currentYear - 1);
+          const [pd, pc] = await Promise.all([
+            jolpicaClient.fetchDriverStandings(priorYear),
+            jolpicaClient.fetchConstructorStandings(priorYear),
+          ]);
+          appState.driverStandings = pd;
+          appState.constructorStandings = pc;
+          appState.standingsSeason = priorYear;
+        }
         appState.lastUpdated.standings = Date.now();
         delete appState.errors.standings;
       } catch (err) {
