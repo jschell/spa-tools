@@ -7,11 +7,8 @@
   <meta name="description" content="Formula 1 race timing tower with live gaps, intervals, tyre data, and race control feed powered by OpenF1.">
   <!-- Tailwind CSS v3 Play CDN — pinned via cdn.tailwindcss.com (v3.x) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: 'class' };
-  </script>
+  <script>tailwind.config = { darkMode: 'class' };</script>
   <style>
-    /* ── Design tokens ── */
     :root {
       --bg-primary:  #0F0F0F;
       --bg-surface:  #1A1A1A;
@@ -26,54 +23,101 @@
     html { background: var(--bg-primary); color: var(--text-primary); }
     body { font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; }
 
-    /* Tyre compound badges */
     .ty { display:inline-flex; align-items:center; justify-content:center;
           width:1.5rem; height:1.5rem; border-radius:9999px;
           font-size:.65rem; font-weight:700; flex-shrink:0; }
-    .ty-SOFT       { background:#E8002D; color:#fff; }
-    .ty-MEDIUM     { background:#FFD700; color:#000; }
-    .ty-HARD       { background:#E8E8E8; color:#000; }
-    .ty-INTERMEDIATE { background:#39B54A; color:#fff; }
-    .ty-WET        { background:#0067FF; color:#fff; }
-    .ty-UNKNOWN, .ty- { background:#444; color:#aaa; }
+    .ty-SOFT        { background:#E8002D; color:#fff; }
+    .ty-MEDIUM      { background:#FFD700; color:#000; }
+    .ty-HARD        { background:#E8E8E8; color:#000; }
+    .ty-INTERMEDIATE{ background:#39B54A; color:#fff; }
+    .ty-WET         { background:#0067FF; color:#fff; }
+    .ty-UNKNOWN,.ty-{ background:#444;    color:#aaa; }
 
-    /* Position medal colours */
     .pos-1 { color:#FFD700; font-weight:800; }
     .pos-2 { color:#C0C0C0; font-weight:700; }
     .pos-3 { color:#CD7F32; font-weight:700; }
 
-    /* Pulsing live dot */
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
     .live-dot { animation: blink 1.8s ease-in-out infinite; }
 
-    /* Race-control flag border colours */
-    .rc-red    { border-left: 3px solid #E8002D; }
-    .rc-yellow { border-left: 3px solid #FFD700; }
-    .rc-blue   { border-left: 3px solid #0067FF; }
-    .rc-green  { border-left: 3px solid #00D964; }
-    .rc-white  { border-left: 3px solid #F0F0F0; }
-    .rc-none   { border-left: 3px solid #333; }
+    .rc-red    { border-left:3px solid #E8002D; }
+    .rc-yellow { border-left:3px solid #FFD700; }
+    .rc-blue   { border-left:3px solid #0067FF; }
+    .rc-green  { border-left:3px solid #00D964; }
+    .rc-white  { border-left:3px solid #F0F0F0; }
+    .rc-none   { border-left:3px solid #333; }
+
+    input[type=range] { accent-color: var(--green); width:100%; }
+    .speed-btn { font-size:.7rem; padding:.15rem .5rem; border-radius:.25rem;
+                 border:1px solid #333; background:transparent; color:var(--text-muted); cursor:pointer; }
+    .speed-btn.active { background:#333; color:var(--text-primary); border-color:#555; }
   </style>
 </head>
 <body class="min-h-screen p-3">
 
-<p class="text-sm mb-3" style="color:var(--text-muted)"><a href="index.html" style="color:var(--text-muted)">&larr; All tools</a></p>
+<p class="text-sm mb-3" style="color:var(--text-muted)">
+  <a href="index.html" style="color:var(--text-muted)">&larr; All tools</a>
+</p>
 
 <!-- ── HEADER ── -->
-<header id="header" class="rounded-lg p-3 mb-3 flex flex-wrap items-center gap-3"
+<header class="rounded-lg p-3 mb-3 flex flex-wrap items-center gap-3"
         style="background:var(--bg-surface)">
   <div class="flex items-center gap-2">
     <span id="live-dot" class="inline-block w-2.5 h-2.5 rounded-full"
           style="background:var(--text-muted)"></span>
     <span id="session-label" class="font-bold text-sm tracking-wide">Loading…</span>
+    <span id="status-badge" class="text-xs font-bold tracking-widest"></span>
   </div>
   <span id="lap-label" class="text-sm" style="color:var(--text-muted)"></span>
   <span class="flex-1"></span>
   <span id="updated-label" class="text-xs" style="color:var(--text-muted)"></span>
 </header>
 
-<!-- ── MAIN GRID ── -->
-<div class="flex flex-col lg:flex-row gap-3">
+<!-- ── REPLAY CONTROLS (hidden unless replay mode) ── -->
+<div id="replay-bar" style="display:none" class="rounded-lg p-3 mb-3"
+     style="background:var(--bg-surface)">
+  <div class="flex items-center gap-3 mb-2">
+    <span id="replay-elapsed" class="text-xs tabular-nums"
+          style="color:var(--text-muted);min-width:4rem;text-align:right">00:00:00</span>
+    <input type="range" id="replay-scrubber" min="0" max="1000" value="0">
+    <span id="replay-duration" class="text-xs tabular-nums"
+          style="color:var(--text-muted);min-width:4rem">00:00:00</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="text-xs" style="color:var(--text-muted)">Speed:</span>
+    <button class="speed-btn" data-speed="1"  onclick="setReplaySpeed(1)">1×</button>
+    <button class="speed-btn" data-speed="4"  onclick="setReplaySpeed(4)">4×</button>
+    <button class="speed-btn" data-speed="16" onclick="setReplaySpeed(16)">16×</button>
+    <button class="speed-btn" data-speed="64" onclick="setReplaySpeed(64)">64×</button>
+    <span id="replay-status" class="text-xs ml-2" style="color:var(--text-muted)"></span>
+  </div>
+</div>
+
+<!-- ── IDLE PANEL (shown when no active session) ── -->
+<div id="idle-panel" style="display:none" class="rounded-lg p-6 mb-3 text-center"
+     style="background:var(--bg-surface)">
+  <p class="text-xs uppercase tracking-widest mb-3" style="color:var(--text-muted)">Next Race</p>
+  <h2 id="next-race-name" class="text-xl font-bold mb-1">—</h2>
+  <p id="next-race-circuit" class="text-sm mb-1" style="color:var(--text-muted)">—</p>
+  <p id="next-race-date"    class="text-sm mb-4" style="color:var(--text-muted)">—</p>
+  <p id="countdown" class="text-4xl font-bold tabular-nums mb-6"
+     style="color:var(--green); letter-spacing:.05em">—</p>
+
+  <div id="last-race-block" style="display:none">
+    <p class="text-xs uppercase tracking-widest mb-2" style="color:var(--text-muted)">
+      Last Race Result
+    </p>
+    <div id="last-race-podium" class="flex justify-center gap-6 text-sm"></div>
+  </div>
+
+  <p class="text-xs mt-6" style="color:var(--text-muted)">
+    Load a past session: append <code>?session=&lt;key&gt;</code> or
+    replay it: <code>?replay=&lt;key&gt;&amp;speed=16</code>
+  </p>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<div id="main-content" style="display:none" class="flex flex-col lg:flex-row gap-3">
 
   <!-- Timing Tower -->
   <section class="flex-1 rounded-lg overflow-hidden" style="background:var(--bg-surface)">
@@ -81,17 +125,11 @@
          style="border-bottom:1px solid #2a2a2a">
       <span class="text-xs font-bold tracking-widest uppercase"
             style="color:var(--text-muted)">Timing Tower</span>
-      <button id="copy-btn" onclick="copyStandings()"
-              class="text-xs px-2 py-0.5 rounded border transition-colors"
-              style="border-color:#333; color:var(--text-muted); background:transparent"
-              onmouseover="this.style.borderColor='#555'"
-              onmouseout="this.style.borderColor='#333'">Copy</button>
+      <button id="copy-btn" onclick="copyStandings()" class="speed-btn">Copy</button>
     </div>
-    <!-- column headers -->
     <div class="grid text-xs px-2 py-1" style="color:var(--text-muted);
-         grid-template-columns:2rem 1.5rem 3.5rem 2rem 2.2rem 5.5rem 5.5rem 6rem 2rem">
+         grid-template-columns:2rem 3.5rem 2rem 2.2rem 5.5rem 5.5rem 6rem 2rem">
       <span class="text-center">P</span>
-      <span></span><!-- team bar -->
       <span>Driver</span>
       <span class="text-center">Tyre</span>
       <span class="text-right">Age</span>
@@ -103,7 +141,7 @@
     <div id="timing-rows"></div>
   </section>
 
-  <!-- Race Control Feed -->
+  <!-- Race Control -->
   <aside class="w-full lg:w-72 rounded-lg overflow-hidden" style="background:var(--bg-surface)">
     <div class="px-3 py-2" style="border-bottom:1px solid #2a2a2a">
       <span class="text-xs font-bold tracking-widest uppercase"
@@ -117,11 +155,11 @@
 <!-- ── WEATHER FOOTER ── -->
 <footer class="mt-3 rounded-lg px-3 py-2 flex flex-wrap gap-4 text-xs"
         style="background:var(--bg-surface)">
-  <span id="wx-track" style="color:var(--text-muted)">Track —</span>
-  <span id="wx-air"   style="color:var(--text-muted)">Air —</span>
+  <span id="wx-track"    style="color:var(--text-muted)">Track —</span>
+  <span id="wx-air"      style="color:var(--text-muted)">Air —</span>
   <span id="wx-humidity" style="color:var(--text-muted)">Humidity —</span>
-  <span id="wx-wind"  style="color:var(--text-muted)">Wind —</span>
-  <span id="wx-rain"  style="color:var(--text-muted)">Rain —</span>
+  <span id="wx-wind"     style="color:var(--text-muted)">Wind —</span>
+  <span id="wx-rain"     style="color:var(--text-muted)">Rain —</span>
   <span class="flex-1 text-right">
     <a href="https://github.com/jschell/spa-tools/blob/main/f1-race-tracker.html"
        style="color:var(--text-muted)">View source</a>
@@ -129,73 +167,66 @@
 </footer>
 
 <script>
-// ──────────────────────────────────────────────────────────────
-// CONSTANTS
-// To display a specific race, change SESSION_KEY to that session's integer key.
-// Find keys at: https://api.openf1.org/v1/sessions?session_type=Race&year=2024
-// The default below is the 2024 Abu Dhabi GP.
-// ──────────────────────────────────────────────────────────────
-const BASE_URL    = 'https://api.openf1.org/v1';
-const SESSION_KEY = (() => {
-  const p = new URLSearchParams(location.search);
-  return p.has('session') ? parseInt(p.get('session')) : 9635;
-})();
+// ── Constants ─────────────────────────────────────────────────
+const BASE_URL = 'https://api.openf1.org/v1';
+const POLL_CFG = {
+  intervals:    { ms: 10000 },
+  position:     { ms: 10000 },
+  race_control: { ms: 10000 },
+  pit:          { ms: 20000 },
+  stints:       { ms: 30000, noIncremental: true },
+  laps:         { ms: 30000 },
+  weather:      { ms: 60000 },
+};
 
-// ── In-memory state ──────────────────────────────────────────
-const state = {
-  session: { key: SESSION_KEY, name: '', circuit: '' },
-  drivers: {},   // driver_number → driver record
-  stints: {},    // driver_number → latest stint
+// ── localStorage TTL cache ────────────────────────────────────
+function lsSet(key, data, ttlMs) {
+  try { localStorage.setItem(key, JSON.stringify({ data, expiresAt: Date.now() + ttlMs })); }
+  catch (_) {}
+}
+function lsGet(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const { data, expiresAt } = JSON.parse(raw);
+    if (Date.now() > expiresAt) { localStorage.removeItem(key); return null; }
+    return data;
+  } catch (_) { return null; }
+}
+
+// ── Race state ────────────────────────────────────────────────
+const rs = {
+  session: { key: null, name: '', circuit: '', status: 'IDLE', totalLaps: null },
+  drivers: {},
+  stints:  {},
   raceControl: [],
   weather: {},
   lapMax: 0,
+  lastUpdated: {},
+  errors: {},
+  broadcastOffset: 0,
 };
 
-// ── Helpers ──────────────────────────────────────────────────
-function escapeHtml(s) {
-  return String(s ?? '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ── URL params ────────────────────────────────────────────────
+let _replayKey = null, _replaySpeed = 1;
+
+function readUrlParams() {
+  const p = new URLSearchParams(location.search);
+  if (p.has('replay')) {
+    _replayKey   = parseInt(p.get('replay'));
+    _replaySpeed = parseInt(p.get('speed') || 1);
+    rs.session.status = 'REPLAY';
+  } else if (p.has('session')) {
+    rs.session.key = parseInt(p.get('session'));
+  }
+  if (p.has('offset')) rs.broadcastOffset = parseInt(p.get('offset'));
 }
 
-function fmtLapTime(secs) {
-  if (!secs) return '—';
-  const m = Math.floor(secs / 60);
-  const s = (secs % 60).toFixed(3).padStart(6, '0');
-  return `${m}:${s}`;
-}
-
-function fmtGap(val) {
-  if (val === null || val === undefined) return 'LEADER';
-  if (typeof val === 'string') return val;
-  if (val >= 60) return `+${Math.floor(val / 60)} LAP`;
-  return `+${parseFloat(val).toFixed(3)}`;
-}
-
-function tyreClass(compound) {
-  const c = (compound || '').toUpperCase();
-  return `ty ty-${c}`;
-}
-
-function tyreLabel(compound) {
-  const map = { SOFT:'S', MEDIUM:'M', HARD:'H', INTERMEDIATE:'I', WET:'W' };
-  return map[(compound||'').toUpperCase()] || '?';
-}
-
-function posClass(p) {
-  if (p === 1) return 'pos-1';
-  if (p === 2) return 'pos-2';
-  if (p === 3) return 'pos-3';
-  return '';
-}
-
-function rcBorderClass(msg) {
-  const flag = (msg.flag || msg.message || '').toUpperCase();
-  if (flag.includes('RED FLAG') || flag.includes('RED_FLAG')) return 'rc-red';
-  if (flag.includes('YELLOW') || flag.includes('SC DEPLOYED') || flag.includes('VSC')) return 'rc-yellow';
-  if (flag.includes('SAFETY CAR') || flag.includes('VIRTUAL')) return 'rc-blue';
-  if (flag.includes('GREEN') || flag.includes('CLEAR')) return 'rc-green';
-  if (flag.includes('BLACK AND WHITE') || flag.includes('PENALTY')) return 'rc-white';
-  return 'rc-none';
+function persistUrl() {
+  const p = new URLSearchParams();
+  if (rs.session.key) p.set('session', rs.session.key);
+  if (rs.broadcastOffset) p.set('offset', rs.broadcastOffset);
+  history.replaceState(null, '', '?' + p.toString());
 }
 
 // ── Fetch helpers ─────────────────────────────────────────────
@@ -203,43 +234,64 @@ async function apiFetch(path, params = {}) {
   const url = new URL(`${BASE_URL}/${path}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
   const res = await fetch(url.toString());
-  if (!res.ok) throw new Error(`${res.status} ${path}`);
+  if (!res.ok) throw new Error(`${res.status} on ${path}`);
   return res.json();
 }
 
+async function fetchIncremental(endpoint, extraParams = {}) {
+  const cfg  = POLL_CFG[endpoint] || {};
+  const params = { session_key: rs.session.key, ...extraParams };
+  const lastTs = rs.lastUpdated[endpoint];
+  if (lastTs && !cfg.noIncremental) params['date>='] = lastTs;
+
+  const url = new URL(`${BASE_URL}/${endpoint}`);
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+  const cacheKey = 'f1_' + url.toString();
+  const cached = lsGet(cacheKey);
+  if (cached) return cached;
+
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`${res.status} on ${endpoint}`);
+  const data = await res.json();
+  if (data.length > 0 && data[data.length - 1].date) {
+    rs.lastUpdated[endpoint] = data[data.length - 1].date;
+  }
+  lsSet(cacheKey, data, 8000);
+  return data;
+}
+
 // ── Merge functions ───────────────────────────────────────────
+function escapeHtml(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function mergeDrivers(data) {
   for (const d of data) {
     const n = d.driver_number;
-    state.drivers[n] = {
+    rs.drivers[n] = {
       number: n,
       acronym: d.name_acronym || '???',
       fullName: d.full_name || '',
       teamName: d.team_name || '',
       teamColour: d.team_colour ? '#' + d.team_colour : '#555',
-      position: null,
-      gapToLeader: null,
-      interval: null,
-      lastLapTime: null,
-      currentLap: null,
+      position: null, gapToLeader: null, interval: null,
+      lastLapTime: null, currentLap: null,
       tyre: { compound: '', age: 0, stintNumber: 0 },
-      lastPitLap: null,
-      pitCount: 0,
+      lastPitLap: null, pitCount: 0, _pitLaps: new Set(),
       status: 'RACING',
     };
   }
 }
 
 function mergeIntervals(data) {
-  // Keep only the latest record per driver
   const latest = {};
   for (const r of data) {
-    if (!latest[r.driver_number] || r.date > latest[r.driver_number].date) {
+    if (!latest[r.driver_number] || r.date > latest[r.driver_number].date)
       latest[r.driver_number] = r;
-    }
   }
-  for (const [num, r] of Object.entries(latest)) {
-    const d = state.drivers[num];
+  for (const [n, r] of Object.entries(latest)) {
+    const d = rs.drivers[n];
     if (!d) continue;
     d.gapToLeader = r.gap_to_leader;
     d.interval    = r.interval;
@@ -250,12 +302,11 @@ function mergeIntervals(data) {
 function mergePositions(data) {
   const latest = {};
   for (const r of data) {
-    if (!latest[r.driver_number] || r.date > latest[r.driver_number].date) {
+    if (!latest[r.driver_number] || r.date > latest[r.driver_number].date)
       latest[r.driver_number] = r;
-    }
   }
-  for (const [num, r] of Object.entries(latest)) {
-    const d = state.drivers[num];
+  for (const [n, r] of Object.entries(latest)) {
+    const d = rs.drivers[n];
     if (d) d.position = r.position;
   }
 }
@@ -263,131 +314,153 @@ function mergePositions(data) {
 function mergeLaps(data) {
   const latest = {};
   for (const r of data) {
-    if (!latest[r.driver_number] || r.lap_number > latest[r.driver_number].lap_number) {
+    if (!latest[r.driver_number] || r.lap_number > latest[r.driver_number].lap_number)
       latest[r.driver_number] = r;
-    }
-    if (r.lap_number > state.lapMax) state.lapMax = r.lap_number;
+    if (r.lap_number > rs.lapMax) rs.lapMax = r.lap_number;
   }
-  for (const [num, r] of Object.entries(latest)) {
-    const d = state.drivers[num];
-    if (d) {
-      d.currentLap  = r.lap_number;
-      d.lastLapTime = r.lap_duration;
-    }
+  for (const [n, r] of Object.entries(latest)) {
+    const d = rs.drivers[n];
+    if (d) { d.currentLap = r.lap_number; d.lastLapTime = r.lap_duration; }
   }
 }
 
 function mergeStints(data) {
-  // Keep the most recent (highest stint_number) per driver
   for (const r of data) {
     const n = r.driver_number;
-    const prev = state.stints[n];
-    if (!prev || r.stint_number >= prev.stint_number) {
-      state.stints[n] = r;
-    }
+    const prev = rs.stints[n];
+    if (!prev || r.stint_number >= prev.stint_number) rs.stints[n] = r;
   }
-  for (const [num, s] of Object.entries(state.stints)) {
-    const d = state.drivers[num];
+  for (const [n, s] of Object.entries(rs.stints)) {
+    const d = rs.drivers[n];
     if (!d) continue;
     d.tyre.compound    = s.compound || '';
     d.tyre.stintNumber = s.stint_number || 0;
-    // Age = laps completed on this stint
     const startLap = s.lap_start || 1;
-    const currentLap = d.currentLap || state.lapMax || startLap;
-    d.tyre.age = Math.max(0, currentLap - startLap);
+    d.tyre.age = Math.max(0, (d.currentLap || rs.lapMax || startLap) - startLap);
   }
 }
 
 function mergePits(data) {
-  const counts = {};
-  const lastLap = {};
   for (const r of data) {
-    counts[r.driver_number] = (counts[r.driver_number] || 0) + 1;
-    if (!lastLap[r.driver_number] || r.lap_number > lastLap[r.driver_number]) {
-      lastLap[r.driver_number] = r.lap_number;
+    const d = rs.drivers[r.driver_number];
+    if (!d) continue;
+    if (!d._pitLaps) d._pitLaps = new Set();
+    if (!d._pitLaps.has(r.lap_number)) {
+      d._pitLaps.add(r.lap_number);
+      d.pitCount = d._pitLaps.size;
     }
-  }
-  for (const [num, count] of Object.entries(counts)) {
-    const d = state.drivers[num];
-    if (d) {
-      d.pitCount   = count;
-      d.lastPitLap = lastLap[num];
-    }
+    if (!d.lastPitLap || r.lap_number > d.lastPitLap) d.lastPitLap = r.lap_number;
   }
 }
 
 function mergeRaceControl(data) {
   for (const r of data) {
-    state.raceControl.push({
-      date: r.date,
-      category: r.category || '',
-      flag: r.flag || '',
-      message: r.message || '',
-      driverNumber: r.driver_number,
-      lapNumber: r.lap_number,
+    rs.raceControl.push({
+      date: r.date, category: r.category || '', flag: r.flag || '',
+      message: r.message || '', driverNumber: r.driver_number, lapNumber: r.lap_number,
     });
   }
-  state.raceControl.sort((a, b) => b.date.localeCompare(a.date));
-  state.raceControl = state.raceControl.slice(0, 20);
+  rs.raceControl.sort((a, b) => b.date.localeCompare(a.date));
+  rs.raceControl = rs.raceControl.slice(0, 20);
+  // Extract total laps from CHEQUERED message
+  for (const m of rs.raceControl) {
+    if (m.message && m.message.toUpperCase().includes('CHEQUERED') && m.lapNumber) {
+      rs.session.totalLaps = m.lapNumber;
+    }
+  }
 }
 
 function mergeWeather(data) {
   if (!data.length) return;
-  const latest = data[data.length - 1];
-  state.weather = {
-    trackTemp: latest.track_temperature,
-    airTemp:   latest.air_temperature,
-    humidity:  latest.humidity,
-    windSpeed: latest.wind_speed,
-    rainfall:  latest.rainfall,
-  };
+  const r = data[data.length - 1];
+  rs.weather = { trackTemp: r.track_temperature, airTemp: r.air_temperature,
+                 humidity: r.humidity, windSpeed: r.wind_speed, rainfall: r.rainfall };
 }
 
-// ── Render functions ──────────────────────────────────────────
-function renderHeader() {
-  const el = document.getElementById('session-label');
-  el.textContent = [state.session.name, state.session.circuit]
-    .filter(Boolean).join(' · ') || `Session ${SESSION_KEY}`;
+// ── Render helpers ────────────────────────────────────────────
+function fmtLapTime(secs) {
+  if (!secs) return '—';
+  return `${Math.floor(secs / 60)}:${(secs % 60).toFixed(3).padStart(6, '0')}`;
+}
+function fmtGap(val) {
+  if (val === null || val === undefined) return 'LEADER';
+  if (typeof val === 'string') return val;
+  if (val >= 60) return `+${Math.floor(val / 60)} LAP`;
+  return `+${parseFloat(val).toFixed(3)}`;
+}
+function tyreClass(c) { return `ty ty-${(c || '').toUpperCase()}`; }
+function tyreLabel(c) {
+  return { SOFT:'S', MEDIUM:'M', HARD:'H', INTERMEDIATE:'I', WET:'W' }[(c||'').toUpperCase()] || '?';
+}
+function posClass(p) { return p===1?'pos-1':p===2?'pos-2':p===3?'pos-3':''; }
+function rcBorderClass(msg) {
+  const t = (msg.flag + ' ' + msg.message).toUpperCase();
+  if (t.includes('RED FLAG')||t.includes('RED_FLAG')) return 'rc-red';
+  if (t.includes('YELLOW')||t.includes('SC DEPLOYED')||t.includes('VSC')) return 'rc-yellow';
+  if (t.includes('SAFETY CAR')||t.includes('VIRTUAL')) return 'rc-blue';
+  if (t.includes('GREEN')||t.includes('CLEAR')) return 'rc-green';
+  if (t.includes('BLACK AND WHITE')||t.includes('PENALTY')) return 'rc-white';
+  return 'rc-none';
+}
+function fmtDuration(ms) {
+  const s = Math.floor(ms / 1000);
+  return `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+}
 
-  const lap = document.getElementById('lap-label');
-  lap.textContent = state.lapMax ? `Lap ${state.lapMax}` : '';
-
+// ── Render components ─────────────────────────────────────────
+function renderStatusIndicator() {
+  const cfgs = {
+    LIVE:     ['#00D964', true,  'LIVE'],
+    FINISHED: ['#FFD700', false, 'FINISHED'],
+    IDLE:     ['#6B6B6B', false, 'IDLE'],
+    ERROR:    ['#E8002D', false, 'ERROR'],
+    REPLAY:   ['#0067FF', true,  'REPLAY'],
+  };
+  const [color, pulse, label] = cfgs[rs.session.status] || cfgs.IDLE;
   const dot = document.getElementById('live-dot');
-  dot.style.background = '#00D964';
-  dot.classList.add('live-dot');
+  dot.style.background = color;
+  dot.classList.toggle('live-dot', pulse);
+  const badge = document.getElementById('status-badge');
+  badge.textContent = label;
+  badge.style.color = color;
+}
 
+function renderHeader() {
+  const parts = [rs.session.name, rs.session.circuit].filter(Boolean);
+  document.getElementById('session-label').textContent =
+    parts.join(' · ') || (rs.session.key ? `Session ${rs.session.key}` : 'F1 Race Tracker');
+  const totalLaps = rs.session.totalLaps;
+  const lapText = rs.lapMax
+    ? (totalLaps ? `Lap ${rs.lapMax} / ${totalLaps}` : `Lap ${rs.lapMax}`)
+    : '';
+  document.getElementById('lap-label').textContent = lapText;
   document.getElementById('updated-label').textContent =
-    'Updated ' + new Date().toLocaleTimeString();
+    rs.session.status === 'REPLAY'
+      ? `${fmtDuration(replay.elapsedMs)} elapsed`
+      : 'Updated ' + new Date().toLocaleTimeString();
 }
 
 function renderTimingTower() {
-  const drivers = Object.values(state.drivers)
+  const drivers = Object.values(rs.drivers)
     .filter(d => d.position !== null)
     .sort((a, b) => (a.position ?? 99) - (b.position ?? 99));
-
-  const rows = document.getElementById('timing-rows');
-  rows.innerHTML = drivers.map((d, i) => {
-    const bg = i % 2 === 0 ? 'var(--bg-surface)' : 'var(--bg-surface2)';
-    const dim = d.status === 'OUT' || d.status === 'DNF' ? 'opacity:0.45;' : '';
-    const gap = fmtGap(d.gapToLeader);
-    const intv = d.interval !== null ? fmtGap(d.interval) : '—';
-    const ll = fmtLapTime(d.lastLapTime);
-    const tc = d.tyre.compound;
-    const statusLabel = d.status === 'OUT' || d.status === 'DNF'
-      ? `<span class="text-xs px-1 rounded" style="background:#333;color:#E8002D">${d.status}</span>`
-      : '';
+  document.getElementById('timing-rows').innerHTML = drivers.map((d, i) => {
+    const bg  = i % 2 ? 'var(--bg-surface2)' : 'var(--bg-surface)';
+    const dim = (d.status === 'OUT' || d.status === 'DNF') ? 'opacity:.45;' : '';
+    const statusLbl = (d.status === 'OUT' || d.status === 'DNF')
+      ? `<span class="text-xs px-1 rounded" style="background:#333;color:var(--red)">${d.status}</span>` : '';
     return `
-      <div class="grid items-center px-2 py-1.5 text-sm transition-colors"
-           style="background:${bg};${dim}grid-template-columns:2rem 1.5rem 3.5rem 2rem 2.2rem 5.5rem 5.5rem 6rem 2rem;border-left:3px solid ${d.teamColour}">
+      <div class="grid items-center px-2 py-1.5 text-sm"
+           style="background:${bg};${dim}border-left:3px solid ${d.teamColour};
+                  grid-template-columns:2rem 3.5rem 2rem 2.2rem 5.5rem 5.5rem 6rem 2rem">
         <span class="text-center text-xs font-bold ${posClass(d.position)}">${d.position}</span>
-        <span></span>
-        <span class="font-bold truncate">${escapeHtml(d.acronym)}${statusLabel}</span>
-        <span class="text-center"><span class="${tyreClass(tc)}">${tyreLabel(tc)}</span></span>
+        <span class="font-bold truncate">${escapeHtml(d.acronym)}${statusLbl}</span>
+        <span class="text-center"><span class="${tyreClass(d.tyre.compound)}">${tyreLabel(d.tyre.compound)}</span></span>
         <span class="text-right text-xs" style="color:var(--text-muted)">${d.tyre.age}</span>
         <span class="text-right text-xs tabular-nums"
-              style="color:${d.position===1?'var(--green)':'var(--text-primary)'}">${escapeHtml(gap)}</span>
-        <span class="text-right text-xs tabular-nums" style="color:var(--text-muted)">${escapeHtml(intv)}</span>
-        <span class="text-right text-xs tabular-nums">${escapeHtml(ll)}</span>
+              style="color:${d.position===1?'var(--green)':'var(--text-primary)'}">${escapeHtml(fmtGap(d.gapToLeader))}</span>
+        <span class="text-right text-xs tabular-nums" style="color:var(--text-muted)">${escapeHtml(d.interval!=null?fmtGap(d.interval):'—')}</span>
+        <span class="text-right text-xs tabular-nums">${escapeHtml(fmtLapTime(d.lastLapTime))}</span>
         <span class="text-center text-xs" style="color:var(--text-muted)">${d.pitCount || ''}</span>
       </div>`;
   }).join('');
@@ -395,35 +468,32 @@ function renderTimingTower() {
 
 function renderRaceControl() {
   const feed = document.getElementById('rc-feed');
-  if (!state.raceControl.length) {
-    feed.innerHTML = '<p style="color:var(--text-muted)" class="p-1">No race control messages.</p>';
+  if (!rs.raceControl.length) {
+    feed.innerHTML = '<p class="p-1" style="color:var(--text-muted)">No messages yet.</p>';
     return;
   }
-  feed.innerHTML = state.raceControl.map(msg => {
-    const time = msg.date ? new Date(msg.date).toLocaleTimeString() : '';
-    const cls  = rcBorderClass(msg);
-    const badge = msg.category
-      ? `<span class="rounded px-1" style="background:#333;color:#aaa">${escapeHtml(msg.category)}</span> `
-      : '';
+  feed.innerHTML = rs.raceControl.map(m => {
+    const badge = m.category
+      ? `<span class="rounded px-1" style="background:#333;color:#aaa">${escapeHtml(m.category)}</span> ` : '';
     return `
-      <div class="rounded px-2 py-1.5 ${cls}" style="background:var(--bg-surface2)">
-        <div style="color:var(--text-muted)" class="mb-0.5">${escapeHtml(time)}</div>
-        <div>${badge}${escapeHtml(msg.message)}</div>
+      <div class="rounded px-2 py-1.5 ${rcBorderClass(m)}" style="background:var(--bg-surface2)">
+        <div class="mb-0.5" style="color:var(--text-muted)">${escapeHtml(m.date ? new Date(m.date).toLocaleTimeString() : '')}</div>
+        <div>${badge}${escapeHtml(m.message)}</div>
       </div>`;
   }).join('');
 }
 
 function renderWeather() {
-  const w = state.weather;
-  const def = '—';
-  document.getElementById('wx-track').textContent    = `Track ${w.trackTemp != null ? w.trackTemp + '°C' : def}`;
-  document.getElementById('wx-air').textContent      = `Air ${w.airTemp != null ? w.airTemp + '°C' : def}`;
-  document.getElementById('wx-humidity').textContent = `Humidity ${w.humidity != null ? w.humidity + '%' : def}`;
-  document.getElementById('wx-wind').textContent     = `Wind ${w.windSpeed != null ? w.windSpeed + ' m/s' : def}`;
-  document.getElementById('wx-rain').textContent     = `Rain ${w.rainfall ? '🌧 YES' : (w.rainfall === 0 ? 'No' : def)}`;
+  const w = rs.weather, D = '—';
+  document.getElementById('wx-track').textContent    = `Track ${w.trackTemp   != null ? w.trackTemp+'°C'  : D}`;
+  document.getElementById('wx-air').textContent      = `Air ${w.airTemp      != null ? w.airTemp+'°C'    : D}`;
+  document.getElementById('wx-humidity').textContent = `Humidity ${w.humidity  != null ? w.humidity+'%'    : D}`;
+  document.getElementById('wx-wind').textContent     = `Wind ${w.windSpeed   != null ? w.windSpeed+' m/s' : D}`;
+  document.getElementById('wx-rain').textContent     = `Rain ${w.rainfall ? 'YES' : (w.rainfall === 0 ? 'No' : D)}`;
 }
 
 function renderAll() {
+  renderStatusIndicator();
   renderHeader();
   renderTimingTower();
   renderRaceControl();
@@ -432,79 +502,406 @@ function renderAll() {
 
 // ── Copy standings ────────────────────────────────────────────
 function copyStandings() {
-  const drivers = Object.values(state.drivers)
+  const drivers = Object.values(rs.drivers)
     .filter(d => d.position !== null)
     .sort((a, b) => (a.position ?? 99) - (b.position ?? 99));
-
   if (!drivers.length) return;
-
-  const rows = drivers.map(d =>
-    `| ${String(d.position).padEnd(2)} | ${d.acronym.padEnd(6)} | ${fmtGap(d.gapToLeader).padEnd(8)} | ${tyreLabel(d.tyre.compound).padEnd(4)} | ${String(d.tyre.age).padEnd(3)} |`
-  );
   const text = [
     '| P  | Driver | Gap      | Tyre | Age |',
     '|----|--------|----------|------|-----|',
-    ...rows,
+    ...drivers.map(d =>
+      `| ${String(d.position).padEnd(2)} | ${d.acronym.padEnd(6)} | ${fmtGap(d.gapToLeader).padEnd(8)} | ${tyreLabel(d.tyre.compound).padEnd(4)} | ${String(d.tyre.age).padEnd(3)} |`
+    ),
   ].join('\n');
-
   const btn = document.getElementById('copy-btn');
-  navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = 'Copy', 2000);
-  }).catch(() => {
-    btn.textContent = 'Failed';
-    setTimeout(() => btn.textContent = 'Copy', 2000);
-  });
+  navigator.clipboard.writeText(text)
+    .then(() => { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000); })
+    .catch(() => { btn.textContent = 'Failed';  setTimeout(() => btn.textContent = 'Copy', 2000); });
 }
 
-// ── Main load ─────────────────────────────────────────────────
-async function loadSession() {
-  document.getElementById('session-label').textContent = 'Fetching session…';
+// ── Panel helpers ─────────────────────────────────────────────
+function showMain()  { document.getElementById('main-content').style.display = ''; document.getElementById('idle-panel').style.display = 'none'; }
+function showIdle()  { document.getElementById('idle-panel').style.display = '';   document.getElementById('main-content').style.display = 'none'; }
+function showReplayBar() { document.getElementById('replay-bar').style.display = ''; }
 
+// ── Batch load a full session ─────────────────────────────────
+async function loadAllForSession(sessionKey) {
+  document.getElementById('session-label').textContent = 'Loading session…';
+  const sessions = await apiFetch('sessions', { session_key: sessionKey }).catch(() => []);
+  if (sessions.length) {
+    const s = sessions[0];
+    rs.session.name    = s.session_name || s.session_type || 'Race';
+    rs.session.circuit = s.circuit_short_name || s.location || '';
+    rs.session.key     = sessionKey;
+  }
+  const [drv, ivl, pos, lps, stts, pit, rc, wx] = await Promise.allSettled([
+    apiFetch('drivers',      { session_key: sessionKey }),
+    apiFetch('intervals',    { session_key: sessionKey }),
+    apiFetch('position',     { session_key: sessionKey }),
+    apiFetch('laps',         { session_key: sessionKey }),
+    apiFetch('stints',       { session_key: sessionKey }),
+    apiFetch('pit',          { session_key: sessionKey }),
+    apiFetch('race_control', { session_key: sessionKey }),
+    apiFetch('weather',      { session_key: sessionKey }),
+  ]);
+  if (drv.status  === 'fulfilled') mergeDrivers(drv.value);
+  if (lps.status  === 'fulfilled') mergeLaps(lps.value);
+  if (ivl.status  === 'fulfilled') mergeIntervals(ivl.value);
+  if (pos.status  === 'fulfilled') mergePositions(pos.value);
+  if (stts.status === 'fulfilled') mergeStints(stts.value);
+  if (pit.status  === 'fulfilled') mergePits(pit.value);
+  if (rc.status   === 'fulfilled') mergeRaceControl(rc.value);
+  if (wx.status   === 'fulfilled') mergeWeather(wx.value);
+}
+
+// ── Session state machine ─────────────────────────────────────
+let _masterTicker   = null;
+let _idleInterval   = null;
+let _countdownTimer = null;
+let _nextRaceDate   = null;
+const _pollerNextAt = {};
+
+function transitionTo(status) {
+  rs.session.status = status;
+  if (status === 'LIVE') {
+    clearInterval(_idleInterval); clearInterval(_countdownTimer);
+    startPolling();
+    showMain();
+  } else if (status === 'FINISHED') {
+    stopPolling();
+    showMain();
+  } else if (status === 'IDLE') {
+    stopPolling();
+    showIdle();
+    _loadIdleData();
+    _idleInterval = setInterval(detectSession, 5 * 60 * 1000);
+  } else if (status === 'ERROR') {
+    stopPolling();
+  } else if (status === 'REPLAY') {
+    showMain(); showReplayBar();
+  }
+  renderStatusIndicator();
+}
+
+// ── Session detection ─────────────────────────────────────────
+async function detectSession() {
   try {
-    // Fetch session metadata first
-    const sessions = await apiFetch('sessions', { session_key: SESSION_KEY });
-    if (sessions.length) {
-      const s = sessions[0];
-      state.session.name    = s.session_name || s.session_type || 'Race';
-      state.session.circuit = s.circuit_short_name || s.location || '';
+    const sessions = await apiFetch('sessions', { session_key: 'latest' });
+    if (!sessions.length) { transitionTo('IDLE'); return; }
+    const s = sessions[0];
+    const now = Date.now(), dateEnd = new Date(s.date_end).getTime();
+    const minsAgo = (now - dateEnd) / 60000;
+    if (s.session_type === 'Race' || s.session_type === 'Sprint') {
+      if (dateEnd > now) {
+        rs.session.key = s.session_key;
+        rs.session.name = s.session_name || s.session_type;
+        rs.session.circuit = s.circuit_short_name || s.location || '';
+        await loadAllForSession(s.session_key);
+        persistUrl();
+        transitionTo('LIVE');
+      } else if (minsAgo < 30) {
+        rs.session.key = s.session_key;
+        rs.session.name = s.session_name || s.session_type;
+        rs.session.circuit = s.circuit_short_name || s.location || '';
+        await loadAllForSession(s.session_key);
+        persistUrl();
+        transitionTo('FINISHED');
+      } else {
+        transitionTo('IDLE');
+      }
+    } else {
+      transitionTo('IDLE');
     }
-
-    // Parallel fetch of all data for this session
-    const [drivers, intervals, positions, laps, stints, pits, rcMsgs, weather] =
-      await Promise.allSettled([
-        apiFetch('drivers',      { session_key: SESSION_KEY }),
-        apiFetch('intervals',    { session_key: SESSION_KEY }),
-        apiFetch('position',     { session_key: SESSION_KEY }),
-        apiFetch('laps',         { session_key: SESSION_KEY }),
-        apiFetch('stints',       { session_key: SESSION_KEY }),
-        apiFetch('pit',          { session_key: SESSION_KEY }),
-        apiFetch('race_control', { session_key: SESSION_KEY }),
-        apiFetch('weather',      { session_key: SESSION_KEY }),
-      ]);
-
-    if (drivers.status === 'fulfilled') mergeDrivers(drivers.value);
-    if (laps.status === 'fulfilled')    mergeLaps(laps.value);
-    if (intervals.status === 'fulfilled') mergeIntervals(intervals.value);
-    if (positions.status === 'fulfilled') mergePositions(positions.value);
-    if (stints.status === 'fulfilled')  mergeStints(stints.value);
-    if (pits.status === 'fulfilled')    mergePits(pits.value);
-    if (rcMsgs.status === 'fulfilled')  mergeRaceControl(rcMsgs.value);
-    if (weather.status === 'fulfilled') mergeWeather(weather.value);
-
-    // Write session key to URL for bookmarking
-    const p = new URLSearchParams(location.search);
-    p.set('session', SESSION_KEY);
-    history.replaceState(null, '', '?' + p.toString());
-
-    renderAll();
   } catch (err) {
-    document.getElementById('session-label').textContent = 'Error: ' + err.message;
-    document.getElementById('live-dot').style.background = '#E8002D';
+    rs.errors.session = err.message;
+    transitionTo('ERROR');
+    document.getElementById('session-label').textContent = 'API error: ' + err.message;
   }
 }
 
-loadSession();
+// ── Polling scheduler ─────────────────────────────────────────
+function startPolling() {
+  if (_masterTicker) return;
+  for (const k of Object.keys(POLL_CFG)) _pollerNextAt[k] = 0;
+  _masterTicker = setInterval(_runPollers, 5000);
+}
+function stopPolling() {
+  if (_masterTicker) { clearInterval(_masterTicker); _masterTicker = null; }
+}
+
+const _mergeFns = {
+  intervals: mergeIntervals, position: mergePositions, race_control: mergeRaceControl,
+  pit: mergePits, stints: mergeStints, laps: mergeLaps, weather: mergeWeather,
+};
+
+async function _runPollers() {
+  const now = Date.now();
+  for (const [name, cfg] of Object.entries(POLL_CFG)) {
+    if (now < (_pollerNextAt[name] || 0)) continue;
+    _pollerNextAt[name] = now + cfg.ms;
+    try {
+      const data = await fetchIncremental(name);
+      _mergeFns[name](data);
+      rs.errors[name] = null;
+      renderAll();
+      if (name === 'race_control') _checkChequeredFlag();
+    } catch (err) {
+      rs.errors[name] = err.message;
+      if (err.message.startsWith('429') || err.message.startsWith('503'))
+        _pollerNextAt[name] = now + Math.min(cfg.ms * 2, 300000);
+    }
+  }
+}
+
+function _checkChequeredFlag() {
+  if (rs.session.status !== 'LIVE') return;
+  if (rs.raceControl.some(m => (m.message || '').toUpperCase().includes('CHEQUERED')))
+    transitionTo('FINISHED');
+}
+
+// ── IDLE: next race + last race ───────────────────────────────
+async function _loadIdleData() {
+  const year = new Date().getFullYear();
+  try {
+    const allSessions = await apiFetch('sessions', { session_type: 'Race', year });
+    const now = new Date();
+    const future = allSessions.filter(s => new Date(s.date_start) > now)
+                              .sort((a, b) => a.date_start.localeCompare(b.date_start));
+    const past   = allSessions.filter(s => new Date(s.date_end)   < now)
+                              .sort((a, b) => b.date_end.localeCompare(a.date_end));
+
+    if (future.length) {
+      const n = future[0];
+      _nextRaceDate = new Date(n.date_start);
+      document.getElementById('next-race-name').textContent    = (n.country_name || '') + ' Grand Prix';
+      document.getElementById('next-race-circuit').textContent = n.circuit_short_name || n.location || '';
+      document.getElementById('next-race-date').textContent    = _nextRaceDate.toLocaleString();
+      clearInterval(_countdownTimer);
+      _countdownTimer = setInterval(_updateCountdown, 1000);
+      _updateCountdown();
+    }
+
+    if (past.length) {
+      const lastKey = past[0].session_key;
+      const lastDrv = await apiFetch('drivers', { session_key: lastKey });
+      const lastPos = await apiFetch('position', { session_key: lastKey });
+      const drvMap  = Object.fromEntries(lastDrv.map(d => [d.driver_number, d]));
+      const latest  = {};
+      for (const r of lastPos) {
+        if (!latest[r.driver_number] || r.date > latest[r.driver_number].date)
+          latest[r.driver_number] = r;
+      }
+      const top3 = Object.values(latest).sort((a, b) => a.position - b.position).slice(0, 3);
+      const podiumEl = document.getElementById('last-race-podium');
+      const medals   = ['🥇', '🥈', '🥉'];
+      podiumEl.innerHTML = top3.map((r, i) => {
+        const d = drvMap[r.driver_number] || {};
+        return `<div class="text-center"><div class="text-lg">${medals[i]}</div>
+          <div class="font-bold text-sm">${escapeHtml(d.name_acronym || '?')}</div>
+          <div class="text-xs" style="color:var(--text-muted)">${escapeHtml(d.team_name || '')}</div>
+        </div>`;
+      }).join('');
+      document.getElementById('last-race-block').style.display = '';
+    }
+  } catch (err) {
+    document.getElementById('next-race-name').textContent = 'Could not load schedule';
+  }
+}
+
+function _updateCountdown() {
+  if (!_nextRaceDate) return;
+  const diff = _nextRaceDate - new Date();
+  if (diff <= 0) {
+    document.getElementById('countdown').textContent = 'Starting now!';
+    detectSession();
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('countdown').textContent =
+    d > 0
+      ? `${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+      : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+// ── Replay mode ───────────────────────────────────────────────
+const replay = {
+  raw:         {},   // endpoint → sorted array
+  ptr:         {},   // endpoint → index
+  driversRaw:  [],
+  t0:          0,    // epoch ms of first event
+  durationMs:  0,
+  elapsedMs:   0,
+  speed:       1,
+  ticker:      null,
+};
+const REPLAY_EPS = ['intervals', 'position', 'laps', 'stints', 'pit', 'race_control', 'weather'];
+
+async function startReplay(sessionKey, speed) {
+  replay.speed = speed || 1;
+  document.getElementById('session-label').textContent = 'Loading replay…';
+  rs.session.status = 'REPLAY';
+
+  const [drv, ivl, pos, lps, stts, pit, rc, wx] = await Promise.allSettled([
+    apiFetch('drivers',      { session_key: sessionKey }),
+    apiFetch('intervals',    { session_key: sessionKey }),
+    apiFetch('position',     { session_key: sessionKey }),
+    apiFetch('laps',         { session_key: sessionKey }),
+    apiFetch('stints',       { session_key: sessionKey }),
+    apiFetch('pit',          { session_key: sessionKey }),
+    apiFetch('race_control', { session_key: sessionKey }),
+    apiFetch('weather',      { session_key: sessionKey }),
+  ]);
+
+  replay.driversRaw = drv.status === 'fulfilled' ? drv.value : [];
+  mergeDrivers(replay.driversRaw);
+
+  const raws = [ivl, pos, lps, stts, pit, rc, wx];
+  REPLAY_EPS.forEach((ep, i) => {
+    const r = raws[i];
+    replay.raw[ep] = r.status === 'fulfilled'
+      ? r.value.filter(x => x.date).sort((a, b) => a.date < b.date ? -1 : 1)
+      : [];
+    replay.ptr[ep] = 0;
+  });
+  // Feed dateless stints up front
+  if (stts.status === 'fulfilled')
+    mergeStints(stts.value.filter(s => !s.date));
+
+  const allDates = Object.values(replay.raw).flat().map(x => x.date).filter(Boolean).sort();
+  if (!allDates.length) {
+    document.getElementById('session-label').textContent = 'No data for session ' + sessionKey;
+    return;
+  }
+  replay.t0         = new Date(allDates[0]).getTime();
+  replay.durationMs = new Date(allDates[allDates.length - 1]).getTime() - replay.t0;
+  replay.elapsedMs  = 0;
+
+  const meta = await apiFetch('sessions', { session_key: sessionKey }).catch(() => []);
+  if (meta.length) {
+    rs.session.name    = meta[0].session_name || meta[0].session_type || '';
+    rs.session.circuit = meta[0].circuit_short_name || meta[0].location || '';
+    rs.session.key     = sessionKey;
+  }
+
+  document.getElementById('replay-duration').textContent = fmtDuration(replay.durationMs);
+  showMain(); showReplayBar();
+  updateSpeedButtons(replay.speed);
+  _startReplayTicker();
+  renderAll();
+}
+
+function _startReplayTicker() {
+  if (replay.ticker) clearInterval(replay.ticker);
+  replay.ticker = setInterval(_replayTick, 1000);
+}
+
+function _replayTick() {
+  replay.elapsedMs = Math.min(replay.elapsedMs + 1000 * replay.speed, replay.durationMs);
+  _feedReplayUpTo(new Date(replay.t0 + replay.elapsedMs).toISOString());
+
+  const pct = replay.durationMs ? replay.elapsedMs / replay.durationMs : 0;
+  document.getElementById('replay-scrubber').value = Math.round(pct * 1000);
+  document.getElementById('replay-elapsed').textContent = fmtDuration(replay.elapsedMs);
+  document.getElementById('replay-status').textContent  = '';
+
+  if (replay.elapsedMs >= replay.durationMs) {
+    clearInterval(replay.ticker); replay.ticker = null;
+    document.getElementById('replay-status').textContent = '— Finished';
+  }
+  renderAll();
+}
+
+function _feedReplayUpTo(simDate) {
+  for (const ep of REPLAY_EPS) {
+    const batch = [];
+    while (replay.ptr[ep] < replay.raw[ep].length &&
+           replay.raw[ep][replay.ptr[ep]].date <= simDate)
+      batch.push(replay.raw[ep][replay.ptr[ep]++]);
+    if (batch.length) _mergeFns[ep](batch);
+  }
+}
+
+// Seek: drag scrubber or call seekReplay(0..1) to jump to any race moment
+function seekReplay(pct) {
+  if (!replay.durationMs) return;
+  if (replay.ticker) { clearInterval(replay.ticker); replay.ticker = null; }
+
+  // Reset dynamic driver state
+  for (const d of Object.values(rs.drivers)) {
+    d.position = null; d.gapToLeader = null; d.interval = null;
+    d.lastLapTime = null; d.currentLap = null;
+    d.tyre = { compound: '', age: 0, stintNumber: 0 };
+    d.pitCount = 0; d.lastPitLap = null; d._pitLaps = new Set();
+    d.status = 'RACING';
+  }
+  rs.lapMax = 0; rs.raceControl = []; rs.weather = {}; rs.stints = {};
+
+  mergeDrivers(replay.driversRaw);
+  for (const ep of REPLAY_EPS) replay.ptr[ep] = 0;
+
+  replay.elapsedMs = pct * replay.durationMs;
+  _feedReplayUpTo(new Date(replay.t0 + replay.elapsedMs).toISOString());
+
+  document.getElementById('replay-elapsed').textContent = fmtDuration(replay.elapsedMs);
+  document.getElementById('replay-scrubber').value = Math.round(pct * 1000);
+  renderAll();
+  if (replay.elapsedMs < replay.durationMs) _startReplayTicker();
+}
+
+// Expose to speed buttons
+function setReplaySpeed(s) {
+  replay.speed = s;
+  updateSpeedButtons(s);
+  _startReplayTicker(); // restart so new speed takes effect immediately
+}
+
+function updateSpeedButtons(active) {
+  document.querySelectorAll('.speed-btn[data-speed]').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.speed) === active);
+  });
+}
+
+// Wire up scrubber drag
+document.getElementById('replay-scrubber').addEventListener('input', e => {
+  seekReplay(parseInt(e.target.value) / 1000);
+});
+
+// ── Init ──────────────────────────────────────────────────────
+async function init() {
+  readUrlParams();
+
+  if (rs.session.status === 'REPLAY' && _replayKey) {
+    transitionTo('REPLAY');
+    await startReplay(_replayKey, _replaySpeed);
+    return;
+  }
+  if (rs.session.key) {
+    showMain();
+    await loadAllForSession(rs.session.key);
+    // Determine if this session is live, finished, or historical
+    const sessions = await apiFetch('sessions', { session_key: rs.session.key }).catch(() => []);
+    if (sessions.length) {
+      const s = sessions[0];
+      const dateEnd = new Date(s.date_end).getTime();
+      const minsAgo = (Date.now() - dateEnd) / 60000;
+      if (dateEnd > Date.now()) transitionTo('LIVE');
+      else if (minsAgo < 30)   transitionTo('FINISHED');
+      else                     { rs.session.status = 'FINISHED'; renderAll(); }
+    } else {
+      rs.session.status = 'FINISHED';
+      renderAll();
+    }
+    persistUrl();
+    return;
+  }
+  // No params: detect live/idle
+  await detectSession();
+}
+
+init();
 </script>
 </body>
 </html>
