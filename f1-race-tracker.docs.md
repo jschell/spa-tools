@@ -1,0 +1,5 @@
+F1 Race Tracker displays a live Formula 1 timing tower for any race session, pulling data from the free OpenF1 REST API. It shows each driver's position, team colour bar, tyre compound and age, gap to the race leader, interval to the car ahead, last lap time, and total pit stop count — all in a dark pit-wall style layout.
+
+To view a specific session, append `?session=<session_key>` to the URL. Session keys can be looked up at `https://api.openf1.org/v1/sessions?session_type=Race&year=2024`. The page defaults to session 9635 (the 2024 Abu Dhabi Grand Prix) and writes the resolved session key back into the URL so any view is immediately bookmarkable and shareable.
+
+A Race Control panel alongside the timing tower shows the latest flag messages, safety car deployments, and steward decisions with colour-coded borders. A weather strip in the footer reports track temperature, air temperature, humidity, wind speed, and whether rainfall is active. A "Copy" button in the timing tower header copies the current standings as a plain-text Markdown table, ready to paste into a chat or document.
