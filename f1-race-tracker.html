@@ -293,8 +293,8 @@ function mergeIntervals(data) {
   for (const [n, r] of Object.entries(latest)) {
     const d = rs.drivers[n];
     if (!d) continue;
-    d.gapToLeader = r.gap_to_leader;
-    d.interval    = r.interval;
+    if (r.gap_to_leader !== null && r.gap_to_leader !== undefined) d.gapToLeader = r.gap_to_leader;
+    if (r.interval      !== null && r.interval      !== undefined) d.interval    = r.interval;
     if (r.position) d.position = r.position;
   }
 }
@@ -333,7 +333,7 @@ function mergeStints(data) {
   for (const [n, s] of Object.entries(rs.stints)) {
     const d = rs.drivers[n];
     if (!d) continue;
-    d.tyre.compound    = s.compound || '';
+    if (s.compound) d.tyre.compound = s.compound;
     d.tyre.stintNumber = s.stint_number || 0;
     const startLap = s.lap_start || 1;
     d.tyre.age = Math.max(0, (d.currentLap || rs.lapMax || startLap) - startLap);
@@ -728,14 +728,15 @@ function _updateCountdown() {
 
 // ── Replay mode ───────────────────────────────────────────────
 const replay = {
-  raw:         {},   // endpoint → sorted array
-  ptr:         {},   // endpoint → index
-  driversRaw:  [],
-  t0:          0,    // epoch ms of first event
-  durationMs:  0,
-  elapsedMs:   0,
-  speed:       1,
-  ticker:      null,
+  raw:           {},   // endpoint → sorted array
+  ptr:           {},   // endpoint → index
+  driversRaw:    [],
+  datelessStints:[],   // stints without a date field, re-applied after seeks
+  t0:            0,    // epoch ms of first event
+  durationMs:    0,
+  elapsedMs:     0,
+  speed:         1,
+  ticker:        null,
 };
 const REPLAY_EPS = ['intervals', 'position', 'laps', 'stints', 'pit', 'race_control', 'weather'];
 
@@ -766,9 +767,9 @@ async function startReplay(sessionKey, speed) {
       : [];
     replay.ptr[ep] = 0;
   });
-  // Feed dateless stints up front
-  if (stts.status === 'fulfilled')
-    mergeStints(stts.value.filter(s => !s.date));
+  // Feed dateless stints up front (and cache them for seekReplay)
+  replay.datelessStints = stts.status === 'fulfilled' ? stts.value.filter(s => !s.date) : [];
+  if (replay.datelessStints.length) mergeStints(replay.datelessStints);
 
   const allDates = Object.values(replay.raw).flat().map(x => x.date).filter(Boolean).sort();
   if (!allDates.length) {
@@ -840,6 +841,9 @@ function seekReplay(pct) {
   rs.lapMax = 0; rs.raceControl = []; rs.weather = {}; rs.stints = {};
 
   mergeDrivers(replay.driversRaw);
+  // Re-apply dateless stints so tyres are populated even after a seek
+  if (replay.datelessStints && replay.datelessStints.length)
+    mergeStints(replay.datelessStints);
   for (const ep of REPLAY_EPS) replay.ptr[ep] = 0;
 
   replay.elapsedMs = pct * replay.durationMs;
