@@ -234,7 +234,11 @@ async function apiFetch(path, params = {}) {
   const url = new URL(`${BASE_URL}/${path}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
   const res = await fetch(url.toString());
-  if (!res.ok) throw new Error(`${res.status} on ${path}`);
+  if (!res.ok) {
+    let detail;
+    try { detail = (await res.json()).detail; } catch (_) {}
+    throw new Error(detail || `${res.status} on ${path}`);
+  }
   return res.json();
 }
 
@@ -761,12 +765,15 @@ async function startReplay(sessionKey, speed) {
   const firstError = allSettled.find(r => r.status === 'rejected');
   if (firstError) {
     const msg = firstError.reason?.message || 'unknown error';
+    // If apiFetch already extracted a detail string it won't start with digits
     const code = msg.match(/^(\d{3})/)?.[1];
     const hint = code === '401' ? 'Unauthorized — the API rejected the request.'
                : code === '404' ? 'Session not found — check the session key.'
                : code === '429' ? 'Rate limited — wait a moment and try again.'
                : msg;
-    document.getElementById('session-label').textContent = `API error: ${hint}`;
+    // detail messages from the API are already full sentences; don't double-prefix
+    const label = code ? `API error: ${hint}` : hint;
+    document.getElementById('session-label').textContent = label;
     rs.session.status = 'ERROR';
     renderStatusIndicator();
     return;
