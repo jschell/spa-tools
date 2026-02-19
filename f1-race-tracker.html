@@ -728,14 +728,15 @@ function _updateCountdown() {
 
 // ── Replay mode ───────────────────────────────────────────────
 const replay = {
-  raw:         {},   // endpoint → sorted array
-  ptr:         {},   // endpoint → index
-  driversRaw:  [],
-  t0:          0,    // epoch ms of first event
-  durationMs:  0,
-  elapsedMs:   0,
-  speed:       1,
-  ticker:      null,
+  raw:           {},   // endpoint → sorted array
+  ptr:           {},   // endpoint → index
+  driversRaw:    [],
+  datelessStints:[],   // stints without a date field, re-applied after seeks
+  t0:            0,    // epoch ms of first event
+  durationMs:    0,
+  elapsedMs:     0,
+  speed:         1,
+  ticker:        null,
 };
 const REPLAY_EPS = ['intervals', 'position', 'laps', 'stints', 'pit', 'race_control', 'weather'];
 
