@@ -51,6 +51,8 @@
     .speed-btn { font-size:.7rem; padding:.15rem .5rem; border-radius:.25rem;
                  border:1px solid #333; background:transparent; color:var(--text-muted); cursor:pointer; }
     .speed-btn.active { background:#333; color:var(--text-primary); border-color:#555; }
+    .track-badge { font-size:.65rem; font-weight:800; letter-spacing:.06em;
+                   padding:.15rem .5rem; border-radius:.3rem; line-height:1.4; }
   </style>
 </head>
 <body class="min-h-screen p-3">
@@ -67,6 +69,7 @@
           style="background:var(--text-muted)"></span>
     <span id="session-label" class="font-bold text-sm tracking-wide">Loading…</span>
     <span id="status-badge" class="text-xs font-bold tracking-widest"></span>
+    <span id="track-condition-badge" class="track-badge" style="display:none"></span>
   </div>
   <span id="lap-label" class="text-sm" style="color:var(--text-muted)"></span>
   <span class="flex-1"></span>
@@ -139,14 +142,21 @@
       <span class="text-right">Last Lap</span>
       <span class="text-center">Pit</span>
     </div>
+    <div id="timing-note" class="text-xs px-3 py-1.5" style="display:none;color:var(--text-muted);background:var(--bg-surface2)"></div>
     <div id="timing-rows"></div>
   </section>
 
   <!-- Race Control -->
   <aside class="w-full lg:w-72 rounded-lg overflow-hidden" style="background:var(--bg-surface)">
-    <div class="px-3 py-2" style="border-bottom:1px solid #2a2a2a">
+    <div class="px-3 py-2 flex items-center justify-between" style="border-bottom:1px solid #2a2a2a">
       <span class="text-xs font-bold tracking-widest uppercase"
             style="color:var(--text-muted)">Race Control</span>
+      <div class="flex gap-1">
+        <button class="speed-btn rc-filter active" data-filter="all"   onclick="setRcFilter('all')">All</button>
+        <button class="speed-btn rc-filter"        data-filter="flags" onclick="setRcFilter('flags')">Flags</button>
+        <button class="speed-btn rc-filter"        data-filter="sc"    onclick="setRcFilter('sc')">SC</button>
+        <button class="speed-btn rc-filter"        data-filter="drs"   onclick="setRcFilter('drs')">DRS</button>
+      </div>
     </div>
     <div id="rc-feed" class="text-xs p-2 space-y-1"
          style="max-height:32rem; overflow-y:auto;"></div>
@@ -207,6 +217,9 @@ const rs = {
   errors: {},
   broadcastOffset: 0,
 };
+
+// ── UI state ──────────────────────────────────────────────────
+let rcFilter = 'all';
 
 // ── URL params ────────────────────────────────────────────────
 let _replayKey = null, _replaySpeed = 1;
@@ -365,7 +378,7 @@ function mergeRaceControl(data) {
     });
   }
   rs.raceControl.sort((a, b) => b.date.localeCompare(a.date));
-  rs.raceControl = rs.raceControl.slice(0, 20);
+  rs.raceControl = rs.raceControl.slice(0, 150);
   // Extract total laps from CHEQUERED message
   for (const m of rs.raceControl) {
     if (m.message && m.message.toUpperCase().includes('CHEQUERED') && m.lapNumber) {
@@ -411,6 +424,45 @@ function fmtDuration(ms) {
   return `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 }
 
+// Returns the current track condition derived from the most recent
+// flag/safety-car race control message, or null if unknown/normal.
+function currentTrackStatus() {
+  for (const m of rs.raceControl) {   // newest-first
+    const flag = (m.flag    || '').toUpperCase();
+    const msg  = (m.message || '').toUpperCase();
+    if (flag === 'CHEQUERED' || msg.includes('CHEQUERED'))
+      return { label: 'FINISH', color: '#000', bg: '#FFD700' };
+    if (flag === 'RED' || msg.includes('RED FLAG') || msg.includes('RED_FLAG'))
+      return { label: 'RED FLAG', color: '#fff', bg: '#E8002D' };
+    if (msg.includes('VIRTUAL SAFETY CAR DEPLOYED') || msg.includes('VSC DEPLOYED'))
+      return { label: 'VSC', color: '#000', bg: '#FFA500' };
+    if (msg.includes('VIRTUAL SAFETY CAR ENDING') || msg.includes('VSC ENDING'))
+      return { label: 'VSC ENDING', color: '#000', bg: '#FFD700' };
+    if (msg.includes('SAFETY CAR DEPLOYED') || msg.includes('SC DEPLOYED'))
+      return { label: 'SAFETY CAR', color: '#000', bg: '#FFA500' };
+    if (msg.includes('SAFETY CAR IN THIS LAP') || msg.includes('SAFETY CAR ENDING'))
+      return { label: 'SC ENDING', color: '#000', bg: '#FFD700' };
+    if (flag === 'DOUBLE YELLOW') return { label: 'DBL YELLOW', color: '#000', bg: '#FFD700' };
+    if (flag === 'YELLOW')        return { label: 'YELLOW',     color: '#000', bg: '#FFD700' };
+    if (flag === 'GREEN' && !msg.includes('PIT EXIT') && !msg.includes('PIT LANE'))
+      return { label: 'GREEN', color: '#000', bg: '#00D964' };
+    if (msg.includes('TRACK CLEAR') || msg.includes('ALL CLEAR'))
+      return { label: 'GREEN', color: '#000', bg: '#00D964' };
+    // Skip DRS, penalties, investigations — keep scanning for a status event
+    if (msg.includes('DRS') || msg.includes('PENALTY') || msg.includes('INVESTIGATION') ||
+        msg.includes('INCIDENT') || msg.includes('STEWARDS') || flag === 'BLACK AND WHITE')
+      continue;
+  }
+  return null;
+}
+
+function setRcFilter(f) {
+  rcFilter = f;
+  document.querySelectorAll('.rc-filter').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.filter === f));
+  renderRaceControl();
+}
+
 // ── Render components ─────────────────────────────────────────
 function renderStatusIndicator() {
   const cfgs = {
@@ -433,11 +485,30 @@ function renderHeader() {
   const parts = [rs.session.name, rs.session.circuit].filter(Boolean);
   document.getElementById('session-label').textContent =
     parts.join(' · ') || (rs.session.key ? `Session ${rs.session.key}` : 'F1 Race Tracker');
+
+  // Lap counter: actual > estimated > nothing
   const totalLaps = rs.session.totalLaps;
-  const lapText = rs.lapMax
-    ? (totalLaps ? `Lap ${rs.lapMax} / ${totalLaps}` : `Lap ${rs.lapMax}`)
-    : '';
+  let lapText = '';
+  if (rs.lapMax) {
+    lapText = totalLaps ? `Lap ${rs.lapMax} / ${totalLaps}` : `Lap ${rs.lapMax}`;
+  } else if (totalLaps && rs.session.status === 'REPLAY' && replay.durationMs) {
+    const est = Math.max(1, Math.round(totalLaps * replay.elapsedMs / replay.durationMs));
+    lapText = `~Lap ${est} / ${totalLaps}`;
+  }
   document.getElementById('lap-label').textContent = lapText;
+
+  // Track condition badge
+  const tcb = document.getElementById('track-condition-badge');
+  const tc  = currentTrackStatus();
+  if (tc) {
+    tcb.textContent        = tc.label;
+    tcb.style.background   = tc.bg;
+    tcb.style.color        = tc.color;
+    tcb.style.display      = '';
+  } else {
+    tcb.style.display = 'none';
+  }
+
   document.getElementById('updated-label').textContent =
     rs.session.status === 'REPLAY'
       ? `${fmtDuration(replay.elapsedMs)} elapsed`
@@ -458,7 +529,29 @@ function renderTimingTower() {
   if (!allDrivers.length) {
     document.getElementById('timing-rows').innerHTML =
       '<p class="px-2 py-3 text-sm" style="color:var(--text-muted)">No driver data — the OpenF1 API returned no records for this session.</p>';
+    document.getElementById('timing-note').style.display = 'none';
     return;
+  }
+
+  // Pre/post-race or no-gap-data banner
+  const noteEl = document.getElementById('timing-note');
+  const anyNumericGap = allDrivers.some(d => typeof d.gapToLeader === 'number');
+  if (!anyNumericGap && allDrivers.length >= 10) {
+    const pct = replay.durationMs ? replay.elapsedMs / replay.durationMs : 0;
+    const hasChequered = rs.raceControl.some(m =>
+      (m.flag || '').toUpperCase() === 'CHEQUERED' ||
+      (m.message || '').toUpperCase().includes('CHEQUERED'));
+    let note = '';
+    if (rs.session.status === 'REPLAY' && pct < 0.08)
+      note = 'Pre-race / formation lap — gap data will appear after race start';
+    else if (rs.session.status === 'REPLAY' && pct > 0.88 && hasChequered)
+      note = 'Race finished — showing final order';
+    else
+      note = 'Gap data not available for this session — order shown by driver number';
+    noteEl.textContent = note;
+    noteEl.style.display = '';
+  } else {
+    noteEl.style.display = 'none';
   }
 
   // If the /position endpoint has no data, derive positions from gap_to_leader.
@@ -520,7 +613,29 @@ function renderRaceControl() {
     feed.innerHTML = `<p class="p-1" style="color:var(--text-muted)">${msg}</p>`;
     return;
   }
-  feed.innerHTML = rs.raceControl.map(m => {
+
+  // Apply filter
+  let msgs = rs.raceControl;
+  if (rcFilter === 'flags') {
+    msgs = msgs.filter(m => {
+      const f = (m.flag || '').toUpperCase();
+      return f && f !== '' && !['BLUE', 'DRS'].includes(f);
+    });
+  } else if (rcFilter === 'sc') {
+    msgs = msgs.filter(m => {
+      const t = ((m.flag || '') + ' ' + (m.message || '')).toUpperCase();
+      return t.includes('SAFETY CAR') || t.includes('VSC') || t.includes('VIRTUAL SAFETY');
+    });
+  } else if (rcFilter === 'drs') {
+    msgs = msgs.filter(m => (m.message || '').toUpperCase().includes('DRS'));
+  }
+
+  if (!msgs.length) {
+    feed.innerHTML = '<p class="p-1" style="color:var(--text-muted)">No messages match this filter.</p>';
+    return;
+  }
+
+  feed.innerHTML = msgs.map(m => {
     const badge = m.category
       ? `<span class="rounded px-1" style="background:#333;color:#aaa">${escapeHtml(m.category)}</span> ` : '';
     return `
@@ -616,6 +731,15 @@ async function loadAllForSession(sessionKey) {
   if (pit.status  === 'fulfilled') mergePits(pit.value);
   if (rc.status   === 'fulfilled') mergeRaceControl(rc.value);
   if (wx.status   === 'fulfilled') mergeWeather(wx.value);
+  // Scan full race_control for total_laps (CHEQUERED may be beyond the 150-message display cap)
+  if (!rs.session.totalLaps && rc.status === 'fulfilled') {
+    for (const m of rc.value) {
+      if (m.message && m.message.toUpperCase().includes('CHEQUERED') && m.lap_number) {
+        rs.session.totalLaps = m.lap_number;
+        break;
+      }
+    }
+  }
 }
 
 // ── Session state machine ─────────────────────────────────────
@@ -874,6 +998,17 @@ async function startReplay(sessionKey, speed) {
     rs.session.name    = meta[0].session_name || meta[0].session_type || '';
     rs.session.circuit = meta[0].circuit_short_name || meta[0].location || '';
     rs.session.key     = sessionKey;
+  }
+
+  // Extract total laps from the full race_control array upfront so the
+  // lap estimate in the header works from the start of the replay.
+  if (!rs.session.totalLaps && rc.status === 'fulfilled') {
+    for (const m of rc.value) {
+      if (m.message && m.message.toUpperCase().includes('CHEQUERED') && m.lap_number) {
+        rs.session.totalLaps = m.lap_number;
+        break;
+      }
+    }
   }
 
   document.getElementById('replay-duration').textContent = fmtDuration(replay.durationMs);
