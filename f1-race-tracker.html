@@ -128,11 +128,12 @@
       <button id="copy-btn" onclick="copyStandings()" class="speed-btn">Copy</button>
     </div>
     <div class="grid text-xs px-2 py-1" style="color:var(--text-muted);
-         grid-template-columns:2rem 3.5rem 2rem 2.2rem 5.5rem 5.5rem 6rem 2rem">
+         grid-template-columns:2rem 3.5rem 2rem 2.2rem 3rem 5.5rem 5.5rem 6rem 2rem">
       <span class="text-center">P</span>
       <span>Driver</span>
       <span class="text-center">Tyre</span>
       <span class="text-right">Age</span>
+      <span class="text-right">Lap</span>
       <span class="text-right">Gap</span>
       <span class="text-right">Int</span>
       <span class="text-right">Last Lap</span>
@@ -475,11 +476,12 @@ function renderTimingTower() {
     return `
       <div class="grid items-center px-2 py-1.5 text-sm"
            style="background:${bg};${dim}border-left:3px solid ${d.teamColour};
-                  grid-template-columns:2rem 3.5rem 2rem 2.2rem 5.5rem 5.5rem 6rem 2rem">
+                  grid-template-columns:2rem 3.5rem 2rem 2.2rem 3rem 5.5rem 5.5rem 6rem 2rem">
         <span class="text-center text-xs font-bold ${posClass(d.position)}">${d.position ?? '—'}</span>
         <span class="font-bold truncate">${escapeHtml(d.acronym)}${statusLbl}</span>
-        <span class="text-center"><span class="${tyreClass(d.tyre.compound)}">${tyreLabel(d.tyre.compound)}</span></span>
-        <span class="text-right text-xs" style="color:var(--text-muted)">${d.tyre.age}</span>
+        <span class="text-center"><span class="${tyreClass(d.tyre.compound)}">${d.tyre.compound ? tyreLabel(d.tyre.compound) : '—'}</span></span>
+        <span class="text-right text-xs" style="color:var(--text-muted)">${d.tyre.age || '—'}</span>
+        <span class="text-right text-xs tabular-nums" style="color:var(--text-muted)">${d.currentLap ?? '—'}</span>
         <span class="text-right text-xs tabular-nums"
               style="color:${d.position===1?'var(--green)':'var(--text-primary)'}">${escapeHtml(fmtGap(d.gapToLeader))}</span>
         <span class="text-right text-xs tabular-nums" style="color:var(--text-muted)">${escapeHtml(d.interval!=null?fmtGap(d.interval):'—')}</span>
@@ -492,7 +494,10 @@ function renderTimingTower() {
 function renderRaceControl() {
   const feed = document.getElementById('rc-feed');
   if (!rs.raceControl.length) {
-    feed.innerHTML = '<p class="p-1" style="color:var(--text-muted)">No messages yet.</p>';
+    const msg = replay.raw.race_control && replay.raw.race_control.length === 0
+      ? 'Race control data not available for this session.'
+      : 'No messages yet.';
+    feed.innerHTML = `<p class="p-1" style="color:var(--text-muted)">${msg}</p>`;
     return;
   }
   feed.innerHTML = rs.raceControl.map(m => {
@@ -508,11 +513,12 @@ function renderRaceControl() {
 
 function renderWeather() {
   const w = rs.weather, D = '—';
-  document.getElementById('wx-track').textContent    = `Track ${w.trackTemp   != null ? w.trackTemp+'°C'  : D}`;
-  document.getElementById('wx-air').textContent      = `Air ${w.airTemp      != null ? w.airTemp+'°C'    : D}`;
-  document.getElementById('wx-humidity').textContent = `Humidity ${w.humidity  != null ? w.humidity+'%'    : D}`;
-  document.getElementById('wx-wind').textContent     = `Wind ${w.windSpeed   != null ? w.windSpeed+' m/s' : D}`;
-  document.getElementById('wx-rain').textContent     = `Rain ${w.rainfall ? 'YES' : (w.rainfall === 0 ? 'No' : D)}`;
+  const noData = replay.raw.weather && replay.raw.weather.length === 0;
+  document.getElementById('wx-track').textContent    = noData ? 'Weather: no data' : `Track ${w.trackTemp   != null ? w.trackTemp+'°C'  : D}`;
+  document.getElementById('wx-air').textContent      = noData ? '' : `Air ${w.airTemp      != null ? w.airTemp+'°C'    : D}`;
+  document.getElementById('wx-humidity').textContent = noData ? '' : `Humidity ${w.humidity  != null ? w.humidity+'%'    : D}`;
+  document.getElementById('wx-wind').textContent     = noData ? '' : `Wind ${w.windSpeed   != null ? w.windSpeed+' m/s' : D}`;
+  document.getElementById('wx-rain').textContent     = noData ? '' : `Rain ${w.rainfall ? 'YES' : (w.rainfall === 0 ? 'No' : D)}`;
 }
 
 function renderAll() {
