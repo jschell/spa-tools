@@ -214,7 +214,7 @@ function readUrlParams() {
   const p = new URLSearchParams(location.search);
   if (p.has('replay')) {
     _replayKey   = parseInt(p.get('replay'));
-    _replaySpeed = parseInt(p.get('speed') || 1);
+    _replaySpeed = parseInt(p.get('speed') || 16);
     rs.session.status = 'REPLAY';
   } else if (p.has('session')) {
     rs.session.key = parseInt(p.get('session'));
@@ -281,7 +281,7 @@ function mergeDrivers(data) {
       teamColour: d.team_colour ? '#' + d.team_colour : '#555',
       position: null, gapToLeader: null, interval: null,
       lastLapTime: null, currentLap: null,
-      tyre: { compound: '', age: 0, stintNumber: 0 },
+      tyre: { compound: '', age: 0, stintNumber: 0, lapStart: 1 },
       lastPitLap: null, pitCount: 0, _pitLaps: new Set(),
       status: 'RACING',
     };
@@ -339,8 +339,7 @@ function mergeStints(data) {
     if (!d) continue;
     if (s.compound) d.tyre.compound = s.compound;
     d.tyre.stintNumber = s.stint_number || 0;
-    const startLap = s.lap_start || 1;
-    d.tyre.age = Math.max(0, (d.currentLap || rs.lapMax || startLap) - startLap);
+    d.tyre.lapStart = s.lap_start || 1;
   }
 }
 
@@ -445,6 +444,15 @@ function renderHeader() {
 }
 
 function renderTimingTower() {
+  // Recompute tyre age on every render so it advances with currentLap,
+  // not only when new stint records happen to arrive.
+  for (const [n, s] of Object.entries(rs.stints)) {
+    const d = rs.drivers[n];
+    if (d) {
+      const start = d.tyre.lapStart || s.lap_start || 1;
+      d.tyre.age = Math.max(0, (d.currentLap || rs.lapMax || start) - start);
+    }
+  }
   const drivers = Object.values(rs.drivers)
     .filter(d => d.position !== null)
     .sort((a, b) => (a.position ?? 99) - (b.position ?? 99));
@@ -864,7 +872,7 @@ function seekReplay(pct) {
   for (const d of Object.values(rs.drivers)) {
     d.position = null; d.gapToLeader = null; d.interval = null;
     d.lastLapTime = null; d.currentLap = null;
-    d.tyre = { compound: '', age: 0, stintNumber: 0 };
+    d.tyre = { compound: '', age: 0, stintNumber: 0, lapStart: 1 };
     d.pitCount = 0; d.lastPitLap = null; d._pitLaps = new Set();
     d.status = 'RACING';
   }
