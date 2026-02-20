@@ -1006,8 +1006,10 @@ async function startReplay(sessionKey, speed) {
     rs.session.key     = sessionKey;
   }
 
-  // Extract total laps from the full race_control array upfront so the
-  // lap estimate in the header works from the start of the replay.
+  // Extract total laps — try sources in priority order:
+  // 1. CHEQUERED flag race_control message (most explicit)
+  // 2. Max lap_number in /laps data (reliable for sessions with lap data)
+  // 3. Max lap_end in /stints data (completed stints always carry this)
   if (!rs.session.totalLaps && rc.status === 'fulfilled') {
     for (const m of rc.value) {
       if (m.message && m.message.toUpperCase().includes('CHEQUERED') && m.lap_number) {
@@ -1015,6 +1017,16 @@ async function startReplay(sessionKey, speed) {
         break;
       }
     }
+  }
+  if (!rs.session.totalLaps && lps.status === 'fulfilled') {
+    let max = 0;
+    for (const r of lps.value) { if (r.lap_number > max) max = r.lap_number; }
+    if (max) rs.session.totalLaps = max;
+  }
+  if (!rs.session.totalLaps && stts.status === 'fulfilled') {
+    let max = 0;
+    for (const r of stts.value) { if (r.lap_end > max) max = r.lap_end; }
+    if (max) rs.session.totalLaps = max;
   }
 
   document.getElementById('replay-duration').textContent = fmtDuration(replay.durationMs);
