@@ -247,13 +247,18 @@ function persistUrl() {
 async function apiFetch(path, params = {}) {
   const url = new URL(`${BASE_URL}/${path}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
-  if (!res.ok) {
-    let detail;
-    try { detail = (await res.json()).detail; } catch (_) {}
-    throw new Error(`${res.status}: ${detail || 'unknown error'}`);
+  const maxAttempts = 4;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt)); // 1s, 2s, 3s
+    const res = await fetch(url.toString());
+    if ((res.status === 429 || res.status === 503) && attempt < maxAttempts - 1) continue;
+    if (!res.ok) {
+      let detail;
+      try { detail = (await res.json()).detail; } catch (_) {}
+      throw new Error(`${res.status}: ${detail || 'unknown error'}`);
+    }
+    return res.json();
   }
-  return res.json();
 }
 
 async function fetchIncremental(endpoint, extraParams = {}) {
