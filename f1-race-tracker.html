@@ -492,8 +492,14 @@ function renderHeader() {
   if (rs.lapMax) {
     lapText = totalLaps ? `Lap ${rs.lapMax} / ${totalLaps}` : `Lap ${rs.lapMax}`;
   } else if (totalLaps && rs.session.status === 'REPLAY' && replay.durationMs) {
-    const est = Math.max(1, Math.round(totalLaps * replay.elapsedMs / replay.durationMs));
-    lapText = `~Lap ${est} / ${totalLaps}`;
+    // Only estimate once numeric gaps exist — that's the proxy for race start.
+    // Before that, the session window includes pre-race activities and the
+    // elapsed/duration ratio would produce misleadingly high lap numbers.
+    const raceUnderway = Object.values(rs.drivers).some(d => typeof d.gapToLeader === 'number');
+    if (raceUnderway) {
+      const est = Math.round(totalLaps * replay.elapsedMs / replay.durationMs);
+      lapText = `~Lap ${Math.max(1, est)} / ${totalLaps}`;
+    }
   }
   document.getElementById('lap-label').textContent = lapText;
 
