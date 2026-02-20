@@ -453,9 +453,20 @@ function renderTimingTower() {
       d.tyre.age = Math.max(0, (d.currentLap || rs.lapMax || start) - start);
     }
   }
-  const drivers = Object.values(rs.drivers)
-    .filter(d => d.position !== null)
-    .sort((a, b) => (a.position ?? 99) - (b.position ?? 99));
+  const allDrivers = Object.values(rs.drivers);
+  if (!allDrivers.length) {
+    document.getElementById('timing-rows').innerHTML =
+      '<p class="px-2 py-3 text-sm" style="color:var(--text-muted)">No driver data — the OpenF1 API returned no records for this session.</p>';
+    return;
+  }
+  const drivers = allDrivers
+    .sort((a, b) => {
+      // Known positions first; unpositioned drivers fall to bottom sorted by number
+      if (a.position !== null && b.position !== null) return a.position - b.position;
+      if (a.position !== null) return -1;
+      if (b.position !== null) return 1;
+      return a.number - b.number;
+    });
   document.getElementById('timing-rows').innerHTML = drivers.map((d, i) => {
     const bg  = i % 2 ? 'var(--bg-surface2)' : 'var(--bg-surface)';
     const dim = (d.status === 'OUT' || d.status === 'DNF') ? 'opacity:.45;' : '';
@@ -465,7 +476,7 @@ function renderTimingTower() {
       <div class="grid items-center px-2 py-1.5 text-sm"
            style="background:${bg};${dim}border-left:3px solid ${d.teamColour};
                   grid-template-columns:2rem 3.5rem 2rem 2.2rem 5.5rem 5.5rem 6rem 2rem">
-        <span class="text-center text-xs font-bold ${posClass(d.position)}">${d.position}</span>
+        <span class="text-center text-xs font-bold ${posClass(d.position)}">${d.position ?? '—'}</span>
         <span class="font-bold truncate">${escapeHtml(d.acronym)}${statusLbl}</span>
         <span class="text-center"><span class="${tyreClass(d.tyre.compound)}">${tyreLabel(d.tyre.compound)}</span></span>
         <span class="text-right text-xs" style="color:var(--text-muted)">${d.tyre.age}</span>
@@ -515,14 +526,18 @@ function renderAll() {
 // ── Copy standings ────────────────────────────────────────────
 function copyStandings() {
   const drivers = Object.values(rs.drivers)
-    .filter(d => d.position !== null)
-    .sort((a, b) => (a.position ?? 99) - (b.position ?? 99));
+    .sort((a, b) => {
+      if (a.position !== null && b.position !== null) return a.position - b.position;
+      if (a.position !== null) return -1;
+      if (b.position !== null) return 1;
+      return a.number - b.number;
+    });
   if (!drivers.length) return;
   const text = [
     '| P  | Driver | Gap      | Tyre | Age |',
     '|----|--------|----------|------|-----|',
     ...drivers.map(d =>
-      `| ${String(d.position).padEnd(2)} | ${d.acronym.padEnd(6)} | ${fmtGap(d.gapToLeader).padEnd(8)} | ${tyreLabel(d.tyre.compound).padEnd(4)} | ${String(d.tyre.age).padEnd(3)} |`
+      `| ${String(d.position ?? '—').padEnd(2)} | ${d.acronym.padEnd(6)} | ${fmtGap(d.gapToLeader).padEnd(8)} | ${tyreLabel(d.tyre.compound).padEnd(4)} | ${String(d.tyre.age).padEnd(3)} |`
     ),
   ].join('\n');
   const btn = document.getElementById('copy-btn');
