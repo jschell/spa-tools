@@ -214,7 +214,7 @@ function readUrlParams() {
   const p = new URLSearchParams(location.search);
   if (p.has('replay')) {
     _replayKey   = parseInt(p.get('replay'));
-    _replaySpeed = parseInt(p.get('speed') || 1);
+    _replaySpeed = parseInt(p.get('speed') || 16);
     rs.session.status = 'REPLAY';
   } else if (p.has('session')) {
     rs.session.key = parseInt(p.get('session'));
@@ -237,7 +237,7 @@ async function apiFetch(path, params = {}) {
   if (!res.ok) {
     let detail;
     try { detail = (await res.json()).detail; } catch (_) {}
-    throw new Error(detail || `${res.status} on ${path}`);
+    throw new Error(`${res.status}: ${detail || 'unknown error'}`);
   }
   return res.json();
 }
@@ -281,7 +281,7 @@ function mergeDrivers(data) {
       teamColour: d.team_colour ? '#' + d.team_colour : '#555',
       position: null, gapToLeader: null, interval: null,
       lastLapTime: null, currentLap: null,
-      tyre: { compound: '', age: 0, stintNumber: 0 },
+      tyre: { compound: '', age: 0, stintNumber: 0, lapStart: 1 },
       lastPitLap: null, pitCount: 0, _pitLaps: new Set(),
       status: 'RACING',
     };
@@ -339,8 +339,7 @@ function mergeStints(data) {
     if (!d) continue;
     if (s.compound) d.tyre.compound = s.compound;
     d.tyre.stintNumber = s.stint_number || 0;
-    const startLap = s.lap_start || 1;
-    d.tyre.age = Math.max(0, (d.currentLap || rs.lapMax || startLap) - startLap);
+    d.tyre.lapStart = s.lap_start || 1;
   }
 }
 
@@ -445,6 +444,15 @@ function renderHeader() {
 }
 
 function renderTimingTower() {
+  // Recompute tyre age on every render so it advances with currentLap,
+  // not only when new stint records happen to arrive.
+  for (const [n, s] of Object.entries(rs.stints)) {
+    const d = rs.drivers[n];
+    if (d) {
+      const start = d.tyre.lapStart || s.lap_start || 1;
+      d.tyre.age = Math.max(0, (d.currentLap || rs.lapMax || start) - start);
+    }
+  }
   const drivers = Object.values(rs.drivers)
     .filter(d => d.position !== null)
     .sort((a, b) => (a.position ?? 99) - (b.position ?? 99));
@@ -527,6 +535,7 @@ function copyStandings() {
 function showMain()  { document.getElementById('main-content').style.display = ''; document.getElementById('idle-panel').style.display = 'none'; }
 function showIdle()  { document.getElementById('idle-panel').style.display = '';   document.getElementById('main-content').style.display = 'none'; }
 function showReplayBar() { document.getElementById('replay-bar').style.display = ''; }
+function hideReplayBar() { document.getElementById('replay-bar').style.display = 'none'; }
 
 // ── Batch load a full session ─────────────────────────────────
 async function loadAllForSession(sessionKey) {
@@ -619,7 +628,8 @@ async function detectSession() {
   } catch (err) {
     rs.errors.session = err.message;
     transitionTo('ERROR');
-    document.getElementById('session-label').textContent = 'API error: ' + err.message;
+    // err.message is "NNN: detail" — show just the detail part
+    document.getElementById('session-label').textContent = 'API error: ' + (err.message.replace(/^\d{3}: /, '') || err.message);
   }
 }
 
@@ -770,11 +780,13 @@ async function startReplay(sessionKey, speed) {
     const msg = first.reason?.message || 'unknown error';
     const code = msg.match(/^(\d{3})/)?.[1];
     const hint = code === '401' ? 'Unauthorized — the API rejected the request.'
+               : code === '403' ? 'Session in progress — replay is only available for completed sessions.'
                : code === '404' ? 'Session not found — check the session key.'
                : code === '429' ? 'Rate limited — wait a moment and try again.'
                : msg;
     document.getElementById('session-label').textContent = code ? `API error: ${hint}` : hint;
     rs.session.status = 'ERROR';
+    hideReplayBar();
     renderStatusIndicator();
     return;
   }
@@ -798,6 +810,7 @@ async function startReplay(sessionKey, speed) {
   if (!allDates.length) {
     document.getElementById('session-label').textContent = `No timing data for session ${sessionKey} — try a Race or Sprint session key.`;
     rs.session.status = 'ERROR';
+    hideReplayBar();
     renderStatusIndicator();
     return;
   }
@@ -859,7 +872,7 @@ function seekReplay(pct) {
   for (const d of Object.values(rs.drivers)) {
     d.position = null; d.gapToLeader = null; d.interval = null;
     d.lastLapTime = null; d.currentLap = null;
-    d.tyre = { compound: '', age: 0, stintNumber: 0 };
+    d.tyre = { compound: '', age: 0, stintNumber: 0, lapStart: 1 };
     d.pitCount = 0; d.lastPitLap = null; d._pitLaps = new Set();
     d.status = 'RACING';
   }
