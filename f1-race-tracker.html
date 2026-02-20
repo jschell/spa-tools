@@ -244,20 +244,38 @@ function persistUrl() {
 }
 
 // ── Fetch helpers ─────────────────────────────────────────────
+// Concurrency limiter: cap simultaneous in-flight requests to 4 so the
+// 8-request burst in loadAllForSession / startReplay stays within
+// OpenF1's ~3 req/s rate limit (two waves of 4, ~400–500 ms apart).
+const _sem = { slots: 4, queue: [] };
+function _semAcquire() {
+  if (_sem.slots > 0) { _sem.slots--; return Promise.resolve(); }
+  return new Promise(res => _sem.queue.push(res));
+}
+function _semRelease() {
+  if (_sem.queue.length) _sem.queue.shift()();
+  else _sem.slots++;
+}
+
 async function apiFetch(path, params = {}) {
   const url = new URL(`${BASE_URL}/${path}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const maxAttempts = 4;
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt)); // 1s, 2s, 3s
-    const res = await fetch(url.toString());
-    if ((res.status === 429 || res.status === 503) && attempt < maxAttempts - 1) continue;
-    if (!res.ok) {
-      let detail;
-      try { detail = (await res.json()).detail; } catch (_) {}
-      throw new Error(`${res.status}: ${detail || 'unknown error'}`);
+  await _semAcquire();
+  try {
+    const maxAttempts = 4;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt)); // 1s, 2s, 3s
+      const res = await fetch(url.toString());
+      if ((res.status === 429 || res.status === 503) && attempt < maxAttempts - 1) continue;
+      if (!res.ok) {
+        let detail;
+        try { detail = (await res.json()).detail; } catch (_) {}
+        throw new Error(`${res.status}: ${detail || 'unknown error'}`);
+      }
+      return res.json();
     }
-    return res.json();
+  } finally {
+    _semRelease();
   }
 }
 
