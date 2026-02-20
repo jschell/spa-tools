@@ -785,24 +785,13 @@ async function detectSession() {
     const s = sessions[0];
     const now = Date.now(), dateEnd = new Date(s.date_end).getTime();
     const minsAgo = (now - dateEnd) / 60000;
-    if (s.session_type === 'Race' || s.session_type === 'Sprint') {
-      if (dateEnd > now) {
-        rs.session.key = s.session_key;
-        rs.session.name = s.session_name || s.session_type;
-        rs.session.circuit = s.circuit_short_name || s.location || '';
-        await loadAllForSession(s.session_key);
-        persistUrl();
-        transitionTo('LIVE');
-      } else if (minsAgo < 30) {
-        rs.session.key = s.session_key;
-        rs.session.name = s.session_name || s.session_type;
-        rs.session.circuit = s.circuit_short_name || s.location || '';
-        await loadAllForSession(s.session_key);
-        persistUrl();
-        transitionTo('FINISHED');
-      } else {
-        transitionTo('IDLE');
-      }
+    if (dateEnd > now || minsAgo < 30) {
+      rs.session.key = s.session_key;
+      rs.session.name = s.session_name || s.session_type;
+      rs.session.circuit = s.circuit_short_name || s.location || '';
+      await loadAllForSession(s.session_key);
+      persistUrl();
+      transitionTo(dateEnd > now ? 'LIVE' : 'FINISHED');
     } else {
       transitionTo('IDLE');
     }
@@ -862,8 +851,14 @@ async function _loadIdleData() {
     const now = new Date();
     const future = allSessions.filter(s => new Date(s.date_start) > now)
                               .sort((a, b) => a.date_start.localeCompare(b.date_start));
-    const past   = allSessions.filter(s => new Date(s.date_end)   < now)
-                              .sort((a, b) => b.date_end.localeCompare(a.date_end));
+    let past   = allSessions.filter(s => new Date(s.date_end)   < now)
+                            .sort((a, b) => b.date_end.localeCompare(a.date_end));
+    // If no past races this year yet (e.g. pre-season), look at the previous year
+    if (!past.length) {
+      const prevSessions = await apiFetch('sessions', { session_type: 'Race', year: year - 1 });
+      past = prevSessions.filter(s => new Date(s.date_end) < now)
+                         .sort((a, b) => b.date_end.localeCompare(a.date_end));
+    }
 
     if (future.length) {
       const n = future[0];
