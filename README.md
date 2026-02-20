@@ -17,11 +17,11 @@ These tools follow the design ethos described by [Simon Willison](https://web.ar
 ## Tools
 
 <!-- tools-start -->
-| Tool | Description |
-|------|-------------|
-| [EPUB Preparer](epub-preparer.html) | Edit EPUB metadata, strip Project Gutenberg boilerplate, and download the corrected file. |
-| [F1 Race Tracker](f1-race-tracker.html) | Formula 1 race timing tower with live gaps, intervals, tyre data, and race control feed powered by OpenF1. |
-| [F1 Tracker](f1-tracker.html) | Live Formula 1 countdown, circuit weather, standings, and news — all in one page. |
+| Tool | Description | Updated |
+|------|-------------|--------|
+| [EPUB Preparer](epub-preparer.html) | Edit EPUB metadata, strip Project Gutenberg boilerplate, and download the corrected file. | 2026-02-19 |
+| [F1 Race Tracker](f1-race-tracker.html) | Formula 1 race timing tower with live gaps, intervals, tyre data, and race control feed powered by OpenF1. | 2026-02-20 |
+| [F1 Tracker](f1-tracker.html) | Live Formula 1 countdown, circuit weather, standings, and news — all in one page. | 2026-02-19 |
 <!-- tools-end -->
 
 ## Development
