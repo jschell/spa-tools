@@ -246,7 +246,7 @@ function persistUrl() {
 }
 
 // ── Time formatting ───────────────────────────────────────────
-// Always 24-hour, UTC, locale-independent.
+// fmt24: always UTC, 24-hour (used for live race data where UTC is canonical).
 function fmt24(dateOrStr, includeDate = true) {
   const d = dateOrStr instanceof Date ? dateOrStr : new Date(dateOrStr);
   if (isNaN(d)) return '—';
@@ -263,6 +263,20 @@ function fmt24(dateOrStr, includeDate = true) {
     opts.day     = 'numeric';
   }
   return new Intl.DateTimeFormat([], opts).format(d);
+}
+
+// fmtLocal: browser/system timezone, 24-hour (used for upcoming session schedules).
+// Falls back to UTC if the browser does not expose a timezone.
+function fmtLocal(dateOrStr, includeDate = true) {
+  const d = dateOrStr instanceof Date ? dateOrStr : new Date(dateOrStr);
+  if (isNaN(d)) return '—';
+  const opts = { hour12: false, hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
+  if (includeDate) { opts.weekday = 'short'; opts.month = 'short'; opts.day = 'numeric'; }
+  try {
+    return new Intl.DateTimeFormat([], opts).format(d);
+  } catch (_) {
+    return fmt24(d, includeDate); // fallback to UTC
+  }
 }
 
 // ── Fetch helpers ─────────────────────────────────────────────
@@ -910,7 +924,7 @@ async function _loadIdleData() {
       _nextRaceDate = new Date(n.date_start);
       document.getElementById('next-race-name').textContent    = (n.country_name || '') + ' Grand Prix';
       document.getElementById('next-race-circuit').textContent = n.circuit_short_name || n.location || '';
-      document.getElementById('next-race-date').textContent    = fmt24(n.date_start);
+      document.getElementById('next-race-date').textContent    = fmtLocal(n.date_start);
       clearInterval(_countdownTimer);
       _countdownTimer = setInterval(_updateCountdown, 1000);
       _updateCountdown();
@@ -919,11 +933,8 @@ async function _loadIdleData() {
       if (n.meeting_key) {
         apiFetch('sessions', { meeting_key: n.meeting_key })
           .then(weekend => {
-            const order = ['Practice 1','Practice 2','Practice 3','Sprint Qualifying','Sprint Shootout','Sprint','Qualifying','Race'];
-            const sorted = weekend.slice().sort((a, b) => {
-              const ai = order.indexOf(a.session_type), bi = order.indexOf(b.session_type);
-              return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-            });
+            // Sort chronologically by actual start time
+            const sorted = weekend.slice().sort((a, b) => a.date_start.localeCompare(b.date_start));
             const el = document.getElementById('weekend-schedule');
             el.innerHTML = `<table style="width:100%;border-collapse:collapse;max-width:320px;margin:0 auto">` +
               sorted.map(s => {
@@ -934,7 +945,7 @@ async function _loadIdleData() {
                 const past = new Date(s.date_end) < new Date();
                 return `<tr style="opacity:${past ? '0.45' : '1'}">
                   <td style="padding:2px 8px 2px 0;color:var(--text-muted);white-space:nowrap">${escapeHtml(label)}</td>
-                  <td style="padding:2px 0;white-space:nowrap">${fmt24(s.date_start)}</td>
+                  <td style="padding:2px 0;white-space:nowrap">${fmtLocal(s.date_start)}</td>
                 </tr>`;
               }).join('') + `</table>`;
             el.style.display = '';
@@ -1216,5 +1227,6 @@ async function init() {
 
 init();
 </script>
+<!-- last-modified-start --><p style="text-align:center;font-size:0.75rem;opacity:0.5;margin:0.5rem 0 0">Last updated: 2026-02-20</p><!-- last-modified-end -->
 </body>
 </html>
