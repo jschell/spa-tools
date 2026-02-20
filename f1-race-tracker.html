@@ -454,18 +454,37 @@ function renderTimingTower() {
       d.tyre.age = Math.max(0, (d.currentLap || rs.lapMax || start) - start);
     }
   }
-  const allDrivers = Object.values(rs.drivers);
+  const allDrivers = Object.values(rs.drivers).filter(d => d.acronym);
   if (!allDrivers.length) {
     document.getElementById('timing-rows').innerHTML =
       '<p class="px-2 py-3 text-sm" style="color:var(--text-muted)">No driver data — the OpenF1 API returned no records for this session.</p>';
     return;
   }
+
+  // If the /position endpoint has no data, derive positions from gap_to_leader.
+  const anyPosKnown = allDrivers.some(d => d.position !== null);
+  const anyGapKnown = allDrivers.some(d => typeof d.gapToLeader === 'number');
+  if (!anyPosKnown && anyGapKnown) {
+    [...allDrivers]
+      .sort((a, b) => {
+        const an = typeof a.gapToLeader === 'number';
+        const bn = typeof b.gapToLeader === 'number';
+        if (an && bn) return a.gapToLeader - b.gapToLeader;
+        if (an) return -1; if (bn) return 1;
+        return a.number - b.number;
+      })
+      .forEach((d, i) => { d._derivedPos = i + 1; });
+  } else {
+    allDrivers.forEach(d => { d._derivedPos = null; });
+  }
+  const effPos = d => d._derivedPos ?? d.position;
+
   const drivers = allDrivers
     .sort((a, b) => {
-      // Known positions first; unpositioned drivers fall to bottom sorted by number
-      if (a.position !== null && b.position !== null) return a.position - b.position;
-      if (a.position !== null) return -1;
-      if (b.position !== null) return 1;
+      const ap = effPos(a), bp = effPos(b);
+      if (ap !== null && bp !== null) return ap - bp;
+      if (ap !== null) return -1;
+      if (bp !== null) return 1;
       return a.number - b.number;
     });
   document.getElementById('timing-rows').innerHTML = drivers.map((d, i) => {
@@ -473,17 +492,18 @@ function renderTimingTower() {
     const dim = (d.status === 'OUT' || d.status === 'DNF') ? 'opacity:.45;' : '';
     const statusLbl = (d.status === 'OUT' || d.status === 'DNF')
       ? `<span class="text-xs px-1 rounded" style="background:#333;color:var(--red)">${d.status}</span>` : '';
+    const dp = effPos(d);
     return `
       <div class="grid items-center px-2 py-1.5 text-sm"
            style="background:${bg};${dim}border-left:3px solid ${d.teamColour};
                   grid-template-columns:2rem 3.5rem 2rem 2.2rem 3rem 5.5rem 5.5rem 6rem 2rem">
-        <span class="text-center text-xs font-bold ${posClass(d.position)}">${d.position ?? '—'}</span>
+        <span class="text-center text-xs font-bold ${posClass(dp)}">${dp ?? '—'}</span>
         <span class="font-bold truncate">${escapeHtml(d.acronym)}${statusLbl}</span>
         <span class="text-center"><span class="${tyreClass(d.tyre.compound)}">${d.tyre.compound ? tyreLabel(d.tyre.compound) : '—'}</span></span>
         <span class="text-right text-xs" style="color:var(--text-muted)">${d.tyre.age || '—'}</span>
         <span class="text-right text-xs tabular-nums" style="color:var(--text-muted)">${d.currentLap ?? '—'}</span>
         <span class="text-right text-xs tabular-nums"
-              style="color:${d.position===1?'var(--green)':'var(--text-primary)'}">${escapeHtml(fmtGap(d.gapToLeader))}</span>
+              style="color:${dp===1?'var(--green)':'var(--text-primary)'}">${escapeHtml(fmtGap(d.gapToLeader))}</span>
         <span class="text-right text-xs tabular-nums" style="color:var(--text-muted)">${escapeHtml(d.interval!=null?fmtGap(d.interval):'—')}</span>
         <span class="text-right text-xs tabular-nums">${escapeHtml(fmtLapTime(d.lastLapTime))}</span>
         <span class="text-center text-xs" style="color:var(--text-muted)">${d.pitCount || ''}</span>
@@ -531,19 +551,29 @@ function renderAll() {
 
 // ── Copy standings ────────────────────────────────────────────
 function copyStandings() {
-  const drivers = Object.values(rs.drivers)
-    .sort((a, b) => {
-      if (a.position !== null && b.position !== null) return a.position - b.position;
-      if (a.position !== null) return -1;
-      if (b.position !== null) return 1;
-      return a.number - b.number;
-    });
-  if (!drivers.length) return;
+  const all = Object.values(rs.drivers).filter(d => d.acronym);
+  if (!all.length) return;
+  const anyPosKnown = all.some(d => d.position !== null);
+  const anyGapKnown = all.some(d => typeof d.gapToLeader === 'number');
+  if (!anyPosKnown && anyGapKnown) {
+    [...all].sort((a, b) => {
+      const an = typeof a.gapToLeader === 'number', bn = typeof b.gapToLeader === 'number';
+      if (an && bn) return a.gapToLeader - b.gapToLeader;
+      if (an) return -1; if (bn) return 1; return a.number - b.number;
+    }).forEach((d, i) => { d._derivedPos = i + 1; });
+  }
+  const effPos = d => d._derivedPos ?? d.position;
+  const drivers = all.sort((a, b) => {
+    const ap = effPos(a), bp = effPos(b);
+    if (ap !== null && bp !== null) return ap - bp;
+    if (ap !== null) return -1; if (bp !== null) return 1;
+    return a.number - b.number;
+  });
   const text = [
     '| P  | Driver | Gap      | Tyre | Age |',
     '|----|--------|----------|------|-----|',
     ...drivers.map(d =>
-      `| ${String(d.position ?? '—').padEnd(2)} | ${d.acronym.padEnd(6)} | ${fmtGap(d.gapToLeader).padEnd(8)} | ${tyreLabel(d.tyre.compound).padEnd(4)} | ${String(d.tyre.age).padEnd(3)} |`
+      `| ${String(effPos(d) ?? '—').padEnd(2)} | ${d.acronym.padEnd(6)} | ${fmtGap(d.gapToLeader).padEnd(8)} | ${(d.tyre.compound ? tyreLabel(d.tyre.compound) : '—').padEnd(4)} | ${String(d.tyre.age || '—').padEnd(3)} |`
     ),
   ].join('\n');
   const btn = document.getElementById('copy-btn');
