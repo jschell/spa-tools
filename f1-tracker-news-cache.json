@@ -1,5 +1,29 @@
 [
   {
+    "title": "How Drive to Survive changed fandom and racing culture",
+    "link": "https://www.formula1.com/en/latest/article/how-drive-to-survive-has-changed-f1-fandom-and-racing-culture.2sIawNwTgDiKRGGe9TZ3N9",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Ever since its debut in 2019, Drive to Survive has captivated audiences from across the world – here’s how it has changed F1 fandom and culture.",
+    "imageUrl": null
+  },
+  {
+    "title": "Who is in the mix for best of the rest in 2026?",
+    "link": "https://www.formula1.com/en/latest/article/which-teams-are-in-the-mix-to-be-best-of-the-rest-in-2026.6r5KT4RW3eqQLYwl24MBEO",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "F1.com's Lawrence Barretto runs through the candidates for which team could emerge as the leader of the midfield entering into 2026.",
+    "imageUrl": null
+  },
+  {
+    "title": "Drive to Survive’s producers on how Season 8 came together",
+    "link": "https://www.formula1.com/en/latest/article/exclusive-theres-something-for-everyone-drive-to-survives-producers-share.2vb1OLD5h6sQAlVkNgtcoc",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "A new F1 season means another helping of Drive to Survive, with the popular Netflix series returning to screens and retelling the story of a spectacular 2025 campaign – headlined by the three-way fight for the World Championship between McLaren drivers Lando Norris and Oscar Piastri and Red Bull’s Max Verstappen.",
+    "imageUrl": null
+  },
+  {
     "title": "Our writers share their predictions for the 2026 season",
     "link": "https://www.formula1.com/en/latest/article/from-title-contenders-to-the-biggest-surprises-our-writers-share-their.vNsbt0HdIfRibnLf7UkAG",
     "source": "Formula 1",
@@ -56,30 +80,6 @@
     "imageUrl": null
   },
   {
-    "title": "The key qualities a driver needs in a race engineer",
-    "link": "https://www.formula1.com/en/latest/article/hinchcliffe-what-are-the-key-qualities-a-driver-is-looking-for-in-a-race.2CZXY1g5VnQocieshctaui",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "We asked F1 TV analyst and IndyCar race winner James Hinchcliffe what exactly makes that relationship work, and the key traits a driver looks for in their ideal race engineer.",
-    "imageUrl": null
-  },
-  {
-    "title": "Mario Isola to leave Head of Motorsport role at Pirelli",
-    "link": "https://www.formula1.com/en/latest/article/mario-isola-to-leave-head-of-motorsport-role-at-pirelli-as-dario-marrafuschi.RVHl3VmCtalinpSsLMtKq",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Pirelli have announced that Mario Isola will leave his role as Head of Motorsport at Pirelli, with Dario Marrafuschi confirmed as the Italian’s replacement.",
-    "imageUrl": null
-  },
-  {
-    "title": "Perez and Albon offer Hadjar advice on second Red Bull seat",
-    "link": "https://www.formula1.com/en/latest/article/a-massive-opportunity-perez-and-albon-offer-hadjar-advice-on-second-red-bull.7mgsPWIMkSN8JL1dDlqjJh",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Former Red Bull drivers Sergio Perez and Alex Albon have given advice to Isack Hadjar as he prepares to step into the second Red Bull seat, encouraging him to make the most of the “massive opportunity”.",
-    "imageUrl": null
-  },
-  {
     "title": "Five drivers with a point to prove in F1 2026",
     "link": "https://www.autosport.com/f1/news/five-drivers-with-a-point-to-prove-in-f1-2026/10800755/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
     "source": "Autosport",
@@ -102,6 +102,14 @@
     "pubDate": "2026-02-28 10:55:00",
     "summary": "Max Verstappen has long been part of the Red Bull F1 squad, playing a significant role in the success and development of the team.",
     "imageUrl": null
+  },
+  {
+    "title": "F1 to revise engine rule at centre of row",
+    "link": "https://www.bbc.com/sport/formula1/articles/cq8g3lqqdvgo?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-02-28 10:49:17",
+    "summary": "Mercedes' rivals succeed in securing a rule change following a pre-season technical row over engine performance.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/4e5a/live/301aaf10-148f-11f1-94cd-7564c887587c.jpg"
   },
   {
     "title": "F1 abandons mandatory Monaco GP two-stop after 2025 controversy",
@@ -212,7 +220,7 @@
     "link": "https://www.bbc.com/news/articles/cp8rz13gdx0o?at_medium=RSS&at_campaign=rss",
     "source": "BBC Sport",
     "pubDate": "2026-02-28 00:01:44",
-    "summary": "As the eighth series of Netflix's hugely popular Drive To Survive is released this weekend, has Formula 1 become one big celebrity playground?",
+    "summary": "As the eighth series of Netflix's hugely popular Drive To Survive is released this weekend, has Formula 1 become one big star playground?",
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/0d17/live/f4d82990-11a1-11f1-b048-c9424b2cf5fd.png"
   },
   {
@@ -470,13 +478,5 @@
     "pubDate": "2026-02-20 19:44:29",
     "summary": "As pre-season testing reaches its conclusion, which teams look best - and worst - placed ahead of the Australian Grand Prix?",
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/90a1/live/9b3a1a90-0e8d-11f1-9120-a910fc22c6ac.png"
-  },
-  {
-    "title": "'Keep calm,' says Domenicali on criticism of new F1 rules",
-    "link": "https://www.bbc.com/sport/formula1/articles/cn870nk9eveo?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-02-20 00:00:08",
-    "summary": "Formula 1 boss Stefano Domenicali calls for calm in the face of criticism from drivers of the sport's new rules - but said changes would be made if necessary.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/0d7e/live/8a6603f0-0db1-11f1-956d-fd8ddad492c1.jpg"
   }
 ]
