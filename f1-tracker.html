@@ -1059,8 +1059,6 @@
 
     // ── UI: calendar ──────────────────────────────────────────────────────────
 
-    let calendarScrolled = false;
-
     function renderCalendar() {
       const el = document.getElementById('calendar-content');
       if (!el) return;
@@ -1144,12 +1142,6 @@
         });
       });
 
-      if (!calendarScrolled) {
-        calendarScrolled = true;
-        requestAnimationFrame(() => {
-          document.querySelector('.calendar-table tr.next')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
-      }
     }
 
     // ── UI: standings ─────────────────────────────────────────────────────────
