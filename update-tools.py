@@ -30,8 +30,6 @@ README_START = "<!-- tools-start -->"
 README_END = "<!-- tools-end -->"
 INDEX_START = "<!-- tools-start -->"
 INDEX_END = "<!-- tools-end -->"
-MODIFIED_START = "<!-- last-modified-start -->"
-MODIFIED_END = "<!-- last-modified-end -->"
 
 
 def extract_title(html: str) -> str:
@@ -152,24 +150,6 @@ def update_index(tools: list[dict]) -> None:
     print(f"  index.html updated ({len(tools)} tool(s))")
 
 
-def inject_last_modified(path: Path, date: str) -> None:
-    """Insert or update the last-modified timestamp in a tool's HTML file."""
-    html = path.read_text(encoding="utf-8")
-    block = (
-        f"{MODIFIED_START}"
-        f'<p style="text-align:center;font-size:0.75rem;opacity:0.5;margin:0.5rem 0 0">'
-        f"Last updated: {date}"
-        f"</p>"
-        f"{MODIFIED_END}"
-    )
-    if MODIFIED_START in html:
-        pattern = rf"{re.escape(MODIFIED_START)}.*?{re.escape(MODIFIED_END)}"
-        html = re.sub(pattern, block, html, flags=re.DOTALL)
-    else:
-        html = html.replace("</body>", f"{block}\n</body>", 1)
-    path.write_text(html, encoding="utf-8")
-
-
 def main() -> None:
     print("Scanning for tools...")
     tools = get_tools()
@@ -179,12 +159,6 @@ def main() -> None:
         print(f"  Found: {', '.join(t['file'] for t in tools)}")
     update_readme(tools)
     update_index(tools)
-    for t in tools:
-        if t["last_modified"]:
-            inject_last_modified(t["path"], t["last_modified"])
-            print(f"  {t['file']}: injected last-modified {t['last_modified']}")
-        else:
-            print(f"  {t['file']}: no git date found — skipping last-modified injection")
     print("Done.")
 
 
