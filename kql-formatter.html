@@ -234,14 +234,6 @@
   </footer>
 
   <script>
-    /*
-     * Sample KQL for testing:
-     *
-     * let threshold = 10;
-     * let base = SigninLogs | where TimeGenerated > ago(1d);
-     * base | where ResultType != 0 and UserPrincipalName contains "admin" | summarize FailedAttempts = count(), Locations = make_set(Location) by UserPrincipalName | where FailedAttempts > threshold | project UserPrincipalName, FailedAttempts, Locations
-     */
-
     // ─── DOM refs ───────────────────────────────────────────────────────────────
 
     const inputEl      = document.getElementById('input');
@@ -257,7 +249,7 @@
 
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
-      themeToggle.textContent = theme === 'dark' ? '\u2600' : '\uD83C\uDF19'; // ☀ / 🌙
+      themeToggle.textContent = theme === 'dark' ? '\u2600' : '\uD83C\uDF19';
       themeToggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
     }
 
@@ -310,24 +302,30 @@
     }
 
     // ─── KQL Formatter ──────────────────────────────────────────────────────────
+    //
+    // Rules derived from:
+    //   Microsoft Learn — Best practices for Kusto Query Language queries
+    //   Rogier Dijkman — KQL Coding Style Guide (January 2023)
 
-    /**
-     * Formats a raw KQL string according to the project spec.
-     *
-     * Strategy:
-     *  1. Extract string literals (double-quoted) → placeholders
-     *  2. Extract single-line comments (//) → placeholders
-     *  3. Tokenise the query into "statements" separated by semicolons
-     *     (respecting paren depth so semicolons inside join sub-queries are safe)
-     *  4. Within each statement, split on pipe operators that are at paren-depth 0
-     *  5. Format each segment according to its leading keyword
-     *  6. Reassemble and restore placeholders
-     */
+    // §11 Deprecated aliases — flagged in output, not auto-replaced
+    const DEPRECATED_ALIASES = [
+      { re: /\bpack\s*\(/gi,                  alias: 'pack',                replacement: 'bag_pack' },
+      { re: /\bbase64_decodestring\s*\(/gi,   alias: 'base64_decodestring', replacement: 'base64_decode_tostring' },
+      { re: /\bextractjson\s*\(/gi,           alias: 'extractjson',         replacement: 'parse_json' },
+      { re: /\btodynamic\s*\(/gi,             alias: 'todynamic',           replacement: 'parse_json' },
+    ];
+
+    // §12 Operator keywords to normalise to lowercase
+    const KW_RE = /\b(where|extend|summarize|project(?:-away|-rename)?|join|parse(?:-kv)?|order|sort|top|take|limit|distinct|count|union|lookup|mv-expand|mv-apply|evaluate|print|range|datatable|serialize|sample|getschema|invoke|scan|partition|make-series|render|let|by|on|asc|desc|and|or|not)\b/gi;
+
     function formatKQL(raw) {
       const trimmed = raw.trim();
       if (!trimmed) return '';
 
-      // ── Step 1 & 2: extract literals and comments ──────────────────────────
+      const warnings = [];
+
+      // ── Stash string literals and comments ──────────────────────────────────
+      // This protects pipe characters and keywords inside strings/comments.
       const placeholders = [];
 
       function stash(text) {
@@ -336,341 +334,361 @@
         return key;
       }
 
-      // Replace double-quoted strings (handle escaped quotes)
-      let src = trimmed.replace(/"(?:[^"\\]|\\.)*"/g, match => stash(match));
+      function restore(s) {
+        return s.replace(/\x00PH(\d+)\x00/g, (_, i) => placeholders[+i]);
+      }
 
-      // Replace single-quoted strings (KQL also uses them for some literals)
-      src = src.replace(/'(?:[^'\\]|\\.)*'/g, match => stash(match));
+      let src = trimmed;
+      src = src.replace(/@"(?:[^"]|"")*"/g,  m => stash(m)); // verbatim strings
+      src = src.replace(/"(?:[^"\\]|\\.)*"/g, m => stash(m)); // double-quoted strings
+      src = src.replace(/'(?:[^'\\]|\\.)*'/g, m => stash(m)); // single-quoted strings
+      src = src.replace(/\/\/[^\n]*/g,         m => stash(m.trimEnd())); // line comments
 
-      // Replace single-line comments
-      src = src.replace(/\/\/[^\n]*/g, match => stash(match.trimEnd()));
+      // ── §11 Detect deprecated aliases ────────────────────────────────────────
+      for (const { re, alias, replacement } of DEPRECATED_ALIASES) {
+        re.lastIndex = 0;
+        if (re.test(src)) {
+          warnings.push(`\`${alias}()\` is deprecated — use \`${replacement}()\` instead`);
+        }
+      }
 
-      // ── Step 3: split into semicolon-separated statements ──────────────────
+      // ── §12 Normalise operator keywords to lowercase ────────────────────────
+      src = src.replace(KW_RE, m => m.toLowerCase());
+
+      // ── Split into semicolon-separated statements ────────────────────────────
       const statements = splitOnSemicolons(src);
+      const fmtStmts = [];
 
-      const formattedStatements = [];
-      let prevWasLet = false;
-
-      for (let si = 0; si < statements.length; si++) {
-        const stmt = statements[si].trim();
-        if (!stmt) continue;
-
-        const isLet = /^let\s+/i.test(stmt);
-
-        if (isLet) {
-          // let bindings: format the value side then emit at column 0
-          const formatted = formatLetStatement(stmt);
-          formattedStatements.push({ text: formatted, isLet: true });
-          prevWasLet = true;
-        } else {
-          // Query body: split into pipe segments and format each
-          const formatted = formatQueryBody(stmt);
-          formattedStatements.push({ text: formatted, isLet: false });
-          prevWasLet = false;
-        }
+      for (const stmt of statements) {
+        const s = stmt.trim();
+        if (!s) continue;
+        const isLet = /^let\s+/i.test(s);
+        fmtStmts.push({ text: isLet ? formatLet(s) : formatBody(s), isLet });
       }
 
-      // Assemble: blank line between last let and the query body
-      let lines = [];
-      for (let i = 0; i < formattedStatements.length; i++) {
-        const cur = formattedStatements[i];
-        const prev = formattedStatements[i - 1];
-        if (prev && prev.isLet && !cur.isLet) {
-          lines.push(''); // blank separator
-        }
-        lines.push(cur.text);
+      // ── §4 Assemble: blank line between each let, blank line before query ──
+      const assembled = [];
+      for (let i = 0; i < fmtStmts.length; i++) {
+        if (i > 0 && fmtStmts[i - 1].isLet) assembled.push('');
+        assembled.push(fmtStmts[i].text);
       }
 
-      const result = lines.join('\n');
+      let result = assembled.join('\n');
 
-      // ── Restore placeholders ────────────────────────────────────────────────
-      return result.replace(/\x00PH(\d+)\x00/g, (_, i) => placeholders[parseInt(i, 10)]);
+      // ── Restore placeholders ─────────────────────────────────────────────────
+      result = restore(result);
+
+      // ── §13 Strip trailing whitespace per line ───────────────────────────────
+      result = result.split('\n').map(l => l.trimEnd()).join('\n').trimEnd();
+
+      // ── §11 Prepend deprecation warnings ─────────────────────────────────────
+      if (warnings.length) {
+        result = warnings.map(w => `// ⚠ ${w}`).join('\n') + '\n\n' + result;
+      }
+
+      return result;
     }
 
-    /** Split src on `;` characters that are at paren/bracket depth 0 */
-    function splitOnSemicolons(src) {
-      const parts = [];
-      let depth = 0;
-      let start = 0;
+    // ── Depth-aware splitters ─────────────────────────────────────────────────
 
+    function splitAt(src, pred) {
+      const parts = [];
+      let depth = 0, start = 0;
       for (let i = 0; i < src.length; i++) {
         const ch = src[i];
-        if (ch === '(' || ch === '[') depth++;
-        else if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
-        else if (ch === ';' && depth === 0) {
+        if (ch === '(' || ch === '[' || ch === '{') depth++;
+        else if (ch === ')' || ch === ']' || ch === '}') depth = Math.max(0, depth - 1);
+        else if (depth === 0 && pred(src, i)) {
           parts.push(src.slice(start, i));
           start = i + 1;
         }
       }
-
-      const tail = src.slice(start).trim();
-      if (tail) parts.push(tail);
-
-      return parts;
-    }
-
-    /** Format a `let x = ...` statement */
-    function formatLetStatement(stmt) {
-      // Preserve the let statement as-is except normalise whitespace
-      // The value part might itself be a sub-query with pipes
-      const match = stmt.match(/^(let\s+\w+\s*=\s*)([\s\S]*)$/i);
-      if (!match) return stmt.trim();
-
-      const prefix = match[1].replace(/\s+/g, ' ');
-      const value = match[2].trim();
-
-      // If value looks like a tabular query, format it with pipes
-      if (isPipeQuery(value)) {
-        const subFormatted = formatQueryBody(value, prefix.length);
-        return prefix + subFormatted;
-      }
-
-      return prefix + value;
-    }
-
-    /** Heuristic: does the text look like a tabular expression? */
-    function isPipeQuery(value) {
-      return /\|/.test(value) || /^\w[\w.]*\s*$/.test(value.trim());
-    }
-
-    /** Format a query body (not a let statement) by splitting on pipes */
-    function formatQueryBody(stmt, baseIndent) {
-      const segments = splitOnPipes(stmt);
-
-      if (segments.length === 0) return stmt.trim();
-      if (segments.length === 1) return formatSegment(segments[0].trim(), 0);
-
-      const tableSegment = formatSegment(segments[0].trim(), 0);
-      const pipeIndent = '    '; // 4 spaces
-
-      const pipeLines = segments.slice(1).map(seg => {
-        return pipeIndent + '| ' + formatSegment(seg.trim(), pipeIndent.length + 2);
-      });
-
-      return [tableSegment, ...pipeLines].join('\n');
-    }
-
-    /** Split on `|` characters at paren/bracket depth 0 */
-    function splitOnPipes(src) {
-      const parts = [];
-      let depth = 0;
-      let start = 0;
-
-      for (let i = 0; i < src.length; i++) {
-        const ch = src[i];
-        if (ch === '(' || ch === '[') depth++;
-        else if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
-        else if (ch === '|' && depth === 0) {
-          parts.push(src.slice(start, i));
-          start = i + 1;
-        }
-      }
-
       parts.push(src.slice(start));
       return parts;
     }
 
-    /**
-     * Format a single pipe segment (already stripped of the leading `|`).
-     * `col` is the column position after the leading `| ` prefix so we can
-     * calculate wrap widths correctly.
-     */
-    function formatSegment(seg, col) {
-      const s = seg.trim();
-      if (!s) return '';
-
-      // Identify leading keyword
-      const kwMatch = s.match(/^(\w[\w-]*)\s*/i);
-      if (!kwMatch) return s;
-
-      const kw = kwMatch[1].toLowerCase();
-
-      switch (kw) {
-        case 'where':    return formatWhere(s, col);
-        case 'summarize':
-        case 'extend':
-        case 'project':
-        case 'project-away':
-          return formatColumnList(s, col);
-        case 'join':     return formatJoin(s, col);
-        default:         return normaliseWhitespace(s);
-      }
+    function splitOnSemicolons(src) {
+      const raw = splitAt(src, (s, i) => s[i] === ';');
+      // Trim and drop empty tail entries
+      const parts = raw.map(p => p.trim()).filter(Boolean);
+      // splitAt keeps everything after last ';', including empty string — already handled
+      return parts;
     }
 
-    /** Normalise interior whitespace without reformatting */
-    function normaliseWhitespace(s) {
-      // Collapse runs of whitespace (but not newlines inside sub-expressions)
-      return s.replace(/[ \t]+/g, ' ').trim();
+    function splitOnPipes(src) {
+      return splitAt(src, (s, i) => s[i] === '|');
     }
 
-    // ── where formatter ────────────────────────────────────────────────────────
-
-    /**
-     * Format a where clause. Predicates joined by top-level `and`/`or` are
-     * wrapped onto new lines, indented to align under the first predicate term.
-     *
-     * `col` = column where the first character of this segment appears in output.
-     */
-    function formatWhere(seg, col) {
-      // Strip leading "where" keyword
-      const rest = seg.replace(/^where\s+/i, '').trim();
-
-      // Split on top-level `and` / `or`
-      const parts = splitOnLogicalOps(rest);
-
-      if (parts.length === 1) {
-        return 'where ' + normaliseWhitespace(parts[0].text);
-      }
-
-      // Indentation: "where " is 6 chars; continuation aligns there
-      const indent = ' '.repeat(6); // "where ".length === 6
-
-      const lines = parts.map((part, idx) => {
-        const op = idx === 0 ? '' : part.op.toLowerCase() + ' ';
-        const text = normaliseWhitespace(part.text);
-        return idx === 0 ? 'where ' + text : indent + op + text;
-      });
-
-      return lines.join('\n');
+    function splitOnCommas(src) {
+      const parts = splitAt(src, (s, i) => s[i] === ',');
+      return parts.map(p => p.trim()).filter(Boolean);
     }
 
-    /**
-     * Split an expression on top-level `and` / `or` tokens.
-     * Returns array of { op: 'and'|'or'|'', text: string }
-     */
+    // Split an expression on top-level `and` / `or`
+    // Returns [{ op: ''|'and'|'or', text: string }, ...]
+    // op on each entry is the keyword that *introduces* that predicate ('' for first).
     function splitOnLogicalOps(expr) {
       const parts = [];
-      let depth = 0;
-      let start = 0;
-      let i = 0;
+      let depth = 0, i = 0, start = 0, pendingOp = '';
 
       while (i < expr.length) {
         const ch = expr[i];
-
         if (ch === '(' || ch === '[') { depth++; i++; continue; }
         if (ch === ')' || ch === ']') { depth = Math.max(0, depth - 1); i++; continue; }
 
         if (depth === 0) {
-          const remaining = expr.slice(i);
-          const andMatch = remaining.match(/^(and)\b/i);
-          const orMatch  = remaining.match(/^(or)\b/i);
-
-          const opMatch = andMatch || orMatch;
-          if (opMatch) {
+          const rem = expr.slice(i);
+          const m = rem.match(/^(and|or)\b/i);
+          if (m) {
             const text = expr.slice(start, i).trim();
-            if (text) parts.push({ op: parts.length === 0 ? '' : (andMatch ? 'and' : 'or'), text });
-            start = i + opMatch[1].length;
+            if (text) parts.push({ op: pendingOp, text });
+            pendingOp = m[1].toLowerCase();
+            start = i + m[1].length;
+            while (start < expr.length && expr[start] === ' ') start++;
             i = start;
             continue;
           }
         }
-
         i++;
       }
 
       const tail = expr.slice(start).trim();
-      if (tail) {
-        parts.push({ op: parts.length === 0 ? '' : '', text: tail });
-      }
-
-      // Patch: the op for all but the first is set during splitting above,
-      // but the first part always has op:''. Fix the op for non-first items
-      // by re-scanning (they were pushed with the correct op already).
+      if (tail) parts.push({ op: pendingOp, text: tail });
 
       return parts;
     }
 
-    // ── column-list formatter (summarize / extend / project / project-away) ───
+    // ── Operator spacing helpers ──────────────────────────────────────────────
 
-    const WRAP_WIDTH = 120;
-    const CONT_INDENT = '        '; // 8 spaces
-
-    function formatColumnList(seg, col) {
-      // Split keyword from the rest (handles "project-away")
-      const match = seg.match(/^([\w-]+)\s+([\s\S]*)$/i);
-      if (!match) return seg;
-
-      const kw   = match[1];
-      const rest = match[2].trim();
-
-      // Split rest on top-level commas
-      const items = splitOnCommas(rest).map(s => normaliseWhitespace(s));
-
-      if (items.length <= 1) {
-        return kw + ' ' + items.join('');
-      }
-
-      // Try to fit on one line first (col is where the segment starts in output)
-      const oneLiner = kw + ' ' + items.join(', ');
-      if (col + oneLiner.length <= WRAP_WIDTH) {
-        return oneLiner;
-      }
-
-      // Wrap: first item on same line as keyword, continuations indented 8
-      const firstLine = kw + ' ' + items[0] + ',';
-      const contLines = items.slice(1).map((item, idx) => {
-        const isLast = idx === items.length - 2;
-        return CONT_INDENT + item + (isLast ? '' : ',');
-      });
-
-      return [firstLine, ...contLines].join('\n');
+    // §2 Spaces around comparison operators: ==, !=, >=, <=, =~, !~, >, <
+    function addComparisonSpaces(s) {
+      // Multi-char first to avoid double-processing
+      s = s.replace(/[ \t]*(==|!=|>=|<=|=~|!~)[ \t]*/g, ' $1 ');
+      // Single > not part of >= or >>
+      s = s.replace(/[ \t]*(?<![<>!])>(?![>=])[ \t]*/g, ' > ');
+      // Single < not part of <= or <<
+      s = s.replace(/[ \t]*(?<![<>=!])<(?![<=])[ \t]*/g, ' < ');
+      return s;
     }
 
-    /** Split `expr` on `,` at depth 0 */
-    function splitOnCommas(expr) {
-      const parts = [];
-      let depth = 0;
-      let start = 0;
+    // §2 Spaces around = in column/parameter assignments (not ==, !=, >=, <=, =~)
+    function addAssignmentSpaces(s) {
+      return s.replace(/[ \t]*(?<![=!<>~])=(?![=~>])[ \t]*/g, ' = ');
+    }
 
-      for (let i = 0; i < expr.length; i++) {
-        const ch = expr[i];
-        if (ch === '(' || ch === '[') depth++;
-        else if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
-        else if (ch === ',' && depth === 0) {
-          parts.push(expr.slice(start, i).trim());
-          start = i + 1;
+    function norm(s) {
+      return s.replace(/[ \t]+/g, ' ').trim();
+    }
+
+    // ── §4 let formatter ──────────────────────────────────────────────────────
+
+    function formatLet(stmt) {
+      // let name = value
+      const m = stmt.match(/^let\s+(\w+)\s*=([\s\S]*)$/i);
+      if (!m) return stmt.trim() + ';';
+
+      const name = m[1];
+      const value = m[2].trim();
+
+      // Function form: let name = (params) { body }
+      // Match balanced parens then balanced braces
+      const funcM = value.match(/^\(([\s\S]*)\)\s*\{([\s\S]*)\}$/);
+      if (funcM) {
+        return formatLetFunction(name, funcM[1], funcM[2]);
+      }
+
+      // Tabular expression (contains top-level pipe)
+      if (hasPipes(value)) {
+        const bodyFmt = formatBody(value);
+        const lines = bodyFmt.split('\n');
+        if (lines.length > 1) {
+          const indented = [lines[0], ...lines.slice(1).map(l => '    ' + l)].join('\n');
+          return `let ${name} = ${indented};`;
         }
+        return `let ${name} = ${bodyFmt};`;
       }
 
-      const tail = expr.slice(start).trim();
-      if (tail) parts.push(tail);
-
-      return parts;
+      // Scalar value
+      const formatted = norm(addAssignmentSpaces(addComparisonSpaces(value)));
+      return `let ${name} = ${formatted};`;
     }
 
-    // ── join formatter ─────────────────────────────────────────────────────────
-
-    /**
-     * Format a join segment:
-     *   join kind=inner (
-     *       <inner-query>
-     *   ) on Field1, Field2
-     */
-    function formatJoin(seg, col) {
-      // Attempt to parse: join [kind=...] ( <subquery> ) on <keys>
-      const joinMatch = seg.match(/^join(\s+kind\s*=\s*\w+)?\s*\(([\s\S]*)\)\s*on\s+([\s\S]*)$/i);
-
-      if (!joinMatch) {
-        // Can't parse structure; fall back to normalised whitespace
-        return normaliseWhitespace(seg);
+    function formatLetFunction(name, params, body) {
+      // §4 K&R style: opening paren on same line, closing brace on own line
+      const paramItems = splitOnCommas(params).map(p => norm(addAssignmentSpaces(p)));
+      let paramStr;
+      if (paramItems.length <= 1) {
+        paramStr = paramItems.join('');
+      } else {
+        paramStr = '\n    ' + paramItems[0] + '\n    , ' + paramItems.slice(1).join('\n    , ') + '\n';
       }
 
-      const kindPart  = joinMatch[1] ? joinMatch[1].trim() : '';
-      const innerRaw  = joinMatch[2].trim();
-      const onClause  = normaliseWhitespace(joinMatch[3].trim());
+      const bodyFmt = formatBody(body.trim());
+      const indentedBody = bodyFmt.split('\n').map(l => '    ' + l).join('\n');
 
-      const header = 'join' + (kindPart ? ' ' + kindPart : '');
+      return `let ${name} = (${paramStr}) {\n${indentedBody}\n};`;
+    }
 
-      // Format the inner query with 4-space indent
-      const innerFormatted = formatQueryBody(innerRaw)
-        .split('\n')
-        .map(l => '    ' + l)
-        .join('\n');
+    function hasPipes(s) {
+      let depth = 0;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (ch === '(' || ch === '[' || ch === '{') depth++;
+        else if (ch === ')' || ch === ']' || ch === '}') depth = Math.max(0, depth - 1);
+        else if (ch === '|' && depth === 0) return true;
+      }
+      return false;
+    }
+
+    // ── §1 Query body (pipe chain) formatter ─────────────────────────────────
+
+    function formatBody(stmt) {
+      const segments = splitOnPipes(stmt);
+      if (segments.length === 0) return stmt.trim();
+
+      const table = norm(segments[0].trim());
+      if (segments.length === 1) return table;
+
+      const pipeLines = segments.slice(1).map(seg => '    | ' + formatSegment(seg.trim()));
+      return [table, ...pipeLines].join('\n');
+    }
+
+    // ── Segment dispatcher ────────────────────────────────────────────────────
+
+    function formatSegment(seg) {
+      if (!seg) return '';
+      const kwM = seg.match(/^([\w][\w-]*)\b/i);
+      if (!kwM) return norm(seg);
+
+      switch (kwM[1].toLowerCase()) {
+        case 'where':          return formatWhere(seg);
+        case 'extend':
+        case 'summarize':
+        case 'project':
+        case 'project-away':
+        case 'project-rename': return formatColumnList(seg);
+        case 'join':           return formatJoin(seg);
+        case 'parse-kv':       return formatParseKv(seg);
+        default:               return norm(addComparisonSpaces(seg));
+      }
+    }
+
+    // ── §6 where formatter ────────────────────────────────────────────────────
+
+    function formatWhere(seg) {
+      const rest = seg.replace(/^where\s+/i, '').trim();
+      const parts = splitOnLogicalOps(rest);
+
+      if (parts.length === 1) {
+        return 'where ' + norm(addComparisonSpaces(parts[0].text));
+      }
+
+      // §6 + §[Decision]: and/or at START of continuation lines, 4-space indent
+      return parts.map((part, i) => {
+        const text = norm(addComparisonSpaces(part.text));
+        return i === 0 ? 'where ' + text : '    ' + part.op + ' ' + text;
+      }).join('\n');
+    }
+
+    // ── §3 Column-list formatter (extend / summarize / project / project-away / project-rename)
+
+    function formatColumnList(seg) {
+      const m = seg.match(/^([\w-]+)\s+([\s\S]*)$/i);
+      if (!m) return seg;
+
+      const kw = m[1].toLowerCase();
+      const rest = m[2].trim();
+
+      const items = splitOnCommas(rest)
+        .map(s => norm(addAssignmentSpaces(addComparisonSpaces(s))))
+        .filter(Boolean);
+
+      if (items.length === 0) return kw;
+
+      // §3 Single-column exception: stay on same line
+      if (items.length === 1) return `${kw} ${items[0]}`;
+
+      // §3 Multiple columns: keyword on own line, leading-comma style, 4-space indent
+      // §3 Alignment: align = signs when items have assignments
+      const aligned = alignAssignments(items);
 
       return [
-        header + ' (',
-        innerFormatted,
-        ') on ' + onClause
+        kw,
+        '    ' + aligned[0],
+        ...aligned.slice(1).map(item => '    , ' + item)
+      ].join('\n');
+    }
+
+    // §3 Align = signs within a column block
+    function alignAssignments(items) {
+      const parsed = items.map(item => {
+        // Match "lhs = rhs" where lhs has no internal = at depth 0
+        const eqIdx = findAssignmentEq(item);
+        if (eqIdx === -1) return { lhs: item, rhs: null };
+        return { lhs: item.slice(0, eqIdx).trimEnd(), rhs: item.slice(eqIdx + 1).trimStart() };
+      });
+
+      // Only align if all items have assignments
+      const allHaveEq = parsed.every(p => p.rhs !== null);
+      if (!allHaveEq) return items;
+
+      const maxLhs = Math.max(...parsed.map(p => p.lhs.length));
+      return parsed.map(p => p.lhs.padEnd(maxLhs) + ' = ' + p.rhs);
+    }
+
+    // Find position of the assignment = in an already-spaced item like "Name = expr"
+    function findAssignmentEq(s) {
+      let depth = 0;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (ch === '(' || ch === '[') depth++;
+        else if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
+        else if (ch === '=' && depth === 0) {
+          // Must be surrounded by spaces (i.e. it's a formatted assignment =)
+          if (s[i - 1] === ' ' && s[i + 1] === ' ') return i;
+        }
+      }
+      return -1;
+    }
+
+    // ── §7 join formatter ─────────────────────────────────────────────────────
+
+    function formatJoin(seg) {
+      // join [kind=word] ( subquery ) on keys
+      const m = seg.match(/^join(\s+kind\s*=\s*\w+)?\s*\(([\s\S]*)\)\s*on\s+([\s\S]*)$/i);
+      if (!m) return norm(seg);
+
+      const kind    = m[1] ? ' ' + norm(m[1]) : '';
+      const inner   = m[2].trim();
+      const onClause = norm(m[3].trim());
+
+      const innerFmt = formatBody(inner).split('\n').map(l => '    ' + l).join('\n');
+
+      return [`join${kind} (`, innerFmt, `) on ${onClause}`].join('\n');
+    }
+
+    // ── §8 parse-kv formatter ─────────────────────────────────────────────────
+
+    function formatParseKv(seg) {
+      // parse-kv col as ( fields ) with ( opts )
+      const m = seg.match(/^parse-kv\s+(\S+)\s+as\s*\(([\s\S]*?)\)\s*with\s*\(([\s\S]*)\)$/i);
+      if (!m) return norm(seg);
+
+      const col    = m[1];
+      const fields = splitOnCommas(m[2]).map(norm).filter(Boolean);
+      const opts   = splitOnCommas(m[3]).map(s => norm(addAssignmentSpaces(s))).filter(Boolean);
+
+      const blockLines = (arr) =>
+        arr.length <= 1
+          ? arr.join('')
+          : arr[0] + '\n    , ' + arr.slice(1).join('\n    , ');
+
+      return [
+        `parse-kv ${col} as (`,
+        '    ' + blockLines(fields),
+        ') with (',
+        '    ' + blockLines(opts),
+        ')'
       ].join('\n');
     }
 
@@ -727,7 +745,6 @@
         copyBtn.textContent = 'Copied!';
         setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
       }).catch(() => {
-        // Fallback for restricted environments
         const ta = document.createElement('textarea');
         ta.value = lastFormatted;
         ta.style.position = 'fixed';
@@ -750,11 +767,9 @@
       inputEl.focus();
     });
 
-    // Initialise counts
     updateInputCount();
     updateOutputCount('');
 
-    // Auto-format if URL had a query pre-filled
     if (inputEl.value.trim()) {
       runFormat();
     }
