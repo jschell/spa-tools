@@ -312,8 +312,9 @@ function initMonaco() {
         suggestOnTriggerCharacters: true,
       });
 
-      // Shift+Enter → run
+      // Shift+Enter or Ctrl+Enter → run
       editor.addCommand(monaco.KeyMod.Shift | monaco.KeyCode.Enter, runQuery);
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runQuery);
       // Restore query from URL
       const q = new URLSearchParams(location.search).get('q');
       if (q) editor.setValue(q);
@@ -480,6 +481,9 @@ function kqlExpr(expr) {
     .replace(/\btodouble\(([^)]+)\)/gi,  'CAST($1 AS DOUBLE)')
     .replace(/\btolong\(([^)]+)\)/gi,    'CAST($1 AS BIGINT)')
     .replace(/\bnow\(\)/gi,              'now()')
+    .replace(/\bunixtime_seconds_todatetime\(([^)]+)\)/gi,      'to_timestamp($1)')
+    .replace(/\bunixtime_milliseconds_todatetime\(([^)]+)\)/gi, 'epoch_ms(CAST($1 AS BIGINT))')
+    .replace(/\bunixtime_nanoseconds_todatetime\(([^)]+)\)/gi,  'to_timestamp(($1) / 1e9)')
     .replace(/\bbin\(([^,]+),\s*([^)]+)\)/gi, (_, col, span) => `floor(CAST(${col.trim()} AS DOUBLE)/${span.trim()})*${span.trim()}`);
 }
 
