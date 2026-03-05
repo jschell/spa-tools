@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KQL Playground</title>
+  <meta name="description" content="Query CSV files locally using Kusto Query Language (KQL) — no data leaves your browser.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      padding: 0.4rem 1rem;
+      background: #181825;
+      border-bottom: 1px solid #313244;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+    header a { color: #89b4fa; text-decoration: none; font-size: 0.8rem; }
+    header h1 { margin: 0; font-size: 1rem; color: #cba6f7; }
+    header p { margin: 0; font-size: 0.78rem; color: #6c7086; }
+    #error-bar {
+      background: #f38ba8; color: #1e1e2e;
+      padding: 0.35rem 1rem; font-size: 0.82rem;
+      display: none; flex-shrink: 0; white-space: pre-wrap; word-break: break-all;
+    }
+    .toolbar {
+      padding: 0.35rem 0.75rem;
+      background: #181825;
+      border-bottom: 1px solid #313244;
+      display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    button {
+      cursor: pointer; border: none; border-radius: 4px;
+      padding: 0.28rem 0.7rem; font-size: 0.8rem;
+    }
+    .btn-run  { background: #cba6f7; color: #1e1e2e; font-weight: 700; }
+    .btn-run:hover { background: #b4a0f7; }
+    .btn-run:disabled { background: #45475a; color: #6c7086; cursor: default; }
+    .btn-sec  { background: #313244; color: #cdd6f4; }
+    .btn-sec:hover { background: #45475a; }
+    #status { font-size: 0.78rem; color: #6c7086; margin-left: 0.25rem; }
+    #row-count { font-size: 0.78rem; color: #a6e3a1; margin-left: auto; }
+    .main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+    .sidebar {
+      width: 200px; min-width: 160px;
+      background: #181825; border-right: 1px solid #313244;
+      overflow-y: auto; padding: 0.6rem; font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+    .sidebar h3 {
+      margin: 0 0 0.3rem; font-size: 0.72rem; color: #6c7086;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .sidebar h3 + h3 { margin-top: 0.9rem; }
+    #table-name { color: #a6e3a1; word-break: break-all; margin-bottom: 0.2rem; }
+    #table-name.empty { color: #6c7086; font-style: italic; }
+    .col-list { list-style: none; margin: 0; padding: 0; }
+    .col-list li {
+      padding: 0.15rem 0.3rem; border-radius: 3px;
+      cursor: pointer; color: #89dceb; display: flex; justify-content: space-between;
+    }
+    .col-list li:hover { background: #313244; }
+    .col-list .typ { font-size: 0.68rem; color: #6c7086; align-self: center; }
+    .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .editor-wrap {
+      height: 150px; flex-shrink: 0;
+      border-bottom: 3px solid #313244; position: relative;
+    }
+    #editor { width: 100%; height: 100%; }
+    .results-wrap { flex: 1; overflow: auto; }
+    #drop-zone {
+      border: 2px dashed #45475a; border-radius: 8px;
+      padding: 2.5rem 2rem; text-align: center; cursor: pointer;
+      color: #6c7086; margin: 1.5rem;
+    }
+    #drop-zone.drag-over { border-color: #cba6f7; color: #cba6f7; }
+    #drop-zone input[type=file] { display: none; }
+    #drop-zone p { margin: 0.3rem 0; }
+    #results-tbl { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    #results-tbl th {
+      background: #181825; color: #89b4fa;
+      padding: 0.35rem 0.7rem; text-align: left;
+      position: sticky; top: 0; border-bottom: 2px solid #313244; white-space: nowrap;
+    }
+    #results-tbl td {
+      padding: 0.25rem 0.7rem; border-bottom: 1px solid #27273a;
+      white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis;
+    }
+    #results-tbl tr:nth-child(even) td { background: #181825; }
+    #results-tbl tr:hover td { background: #313244; }
+    .msg { color: #6c7086; padding: 1rem; font-style: italic; font-size: 0.85rem; }
+    footer {
+      padding: 0.3rem 1rem; background: #181825;
+      border-top: 1px solid #313244; font-size: 0.72rem; color: #6c7086;
+      flex-shrink: 0;
+    }
+    footer a { color: #89b4fa; }
+    @media (max-width: 600px) {
+      .sidebar { display: none; }
+      .editor-wrap { height: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html">&larr; All tools</a>
+  <h1>KQL Playground</h1>
+  <p>Query CSV files with Kusto Query Language &mdash; all data stays in your browser</p>
+</header>
+
+<div id="error-bar"></div>
+
+<div class="toolbar">
+  <button class="btn-run" id="run-btn" onclick="runQuery()" disabled>&#9654; Run</button>
+  <button class="btn-sec" onclick="clearResults()">Clear</button>
+  <button class="btn-sec" id="ps-btn" onclick="copyAsPowershell()">PS Export</button>
+  <button class="btn-sec" id="csv-btn" onclick="exportCSV()">Export CSV</button>
+  <span id="status">Loading…</span>
+  <span id="row-count"></span>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <h3>Table</h3>
+    <div id="table-name" class="empty">no file loaded</div>
+    <h3>Columns</h3>
+    <ul class="col-list" id="col-list"></ul>
+  </div>
+  <div class="workspace">
+    <div class="editor-wrap">
+      <div id="editor"></div>
+    </div>
+    <div class="results-wrap" id="results-wrap">
+      <div id="drop-zone">
+        <input type="file" id="file-input" accept=".csv">
+        <p style="font-size:1.5rem">&#128196;</p>
+        <p><strong>Drop a CSV file here</strong> or <u onclick="document.getElementById('file-input').click()" style="cursor:pointer">click to browse</u></p>
+        <p style="font-size:0.78rem">All processing is local &mdash; nothing is uploaded</p>
+      </div>
+      <div id="results-container"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="https://github.com/jschell/spa-tools/blob/main/kql-playground.html">View source</a>
+  &mdash; Powered by <a href="https://duckdb.org/docs/api/wasm/overview" target="_blank" rel="noopener">DuckDB-Wasm</a>
+  &amp; <a href="https://microsoft.github.io/monaco-editor/" target="_blank" rel="noopener">Monaco Editor</a>
+</footer>
+
+<!-- Monaco Editor loader — v0.44.0 -->
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+<!-- DuckDB-Wasm — v1.29.0 -->
+<script src="https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/dist/duckdb-browser-mvp.js"></script>
+
+<script>
+'use strict';
+
+// ── State ────────────────────────────────────────────────────────────────────
+let db = null, conn = null, editor = null;
+let currentTable = null;   // sanitised table name
+let currentCols  = [];     // [{name, type}]
+let lastArrow    = null;   // last Arrow result for export
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function setStatus(msg) { document.getElementById('status').textContent = msg; }
+function setRowCount(n)  { document.getElementById('row-count').textContent = n != null ? n.toLocaleString() + ' rows' : ''; }
+
+function showError(msg) {
+  const bar = document.getElementById('error-bar');
+  bar.textContent = msg;
+  bar.style.display = msg ? 'block' : 'none';
+}
+
+// ── DuckDB init ──────────────────────────────────────────────────────────────
+async function initDuckDB() {
+  try {
+    const BUNDLES = duckdb.getJsDelivrBundles();
+    const bundle  = await duckdb.selectBundle(BUNDLES);
+    const workerUrl = URL.createObjectURL(
+      new Blob([`importScripts("${bundle.mainWorker}");`], { type: 'text/javascript' })
+    );
+    const worker = new Worker(workerUrl);
+    const logger = new duckdb.ConsoleLogger(duckdb.LogLevel.WARNING);
+    db = new duckdb.AsyncDuckDB(logger, worker);
+    await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+    conn = await db.connect();
+    setStatus('Ready — drop a CSV to begin');
+    document.getElementById('run-btn').disabled = false;
+  } catch (e) {
+    setStatus('DuckDB failed to load');
+    showError('DuckDB init error: ' + e.message);
+  }
+}
+
+// ── Monaco init ──────────────────────────────────────────────────────────────
+function initMonaco() {
+  return new Promise(resolve => {
+    require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } });
+    require(['vs/editor/editor.main'], () => {
+
+      monaco.languages.register({ id: 'kql' });
+      monaco.languages.setMonarchTokensProvider('kql', {
+        keywords: ['where','project','take','extend','summarize','by','join','on',
+                   'order','sort','asc','desc','let','as','limit','top','count',
+                   'and','or','not','contains','startswith','endswith','has','in',
+                   'between','render','distinct'],
+        tokenizer: {
+          root: [
+            [/\/\/.*$/, 'comment'],
+            [/"[^"]*"/, 'string'],
+            [/'[^']*'/, 'string'],
+            [/\b\d+(\.\d+)?\b/, 'number'],
+            [/[|]/, { token: 'delimiter', fontStyle: 'bold' }],
+            [/[=!<>]+/, 'operator'],
+            [/[a-zA-Z_]\w*/, { cases: { '@keywords': 'keyword', '@default': 'identifier' } }],
+          ]
+        }
+      });
+
+      monaco.languages.setLanguageConfiguration('kql', {
+        comments: { lineComment: '//' },
+        brackets: [['(',')'],['{','}'],['[',']']],
+        autoClosingPairs: [{ open:'(', close:')' },{ open:'"', close:'"' },{ open:"'", close:"'" }],
+      });
+
+      editor = monaco.editor.create(document.getElementById('editor'), {
+        value: '// Drop a CSV, then write KQL\n// MyTable | where Col == "value" | project Col1, Col2 | take 100\n',
+        language: 'kql',
+        theme: 'vs-dark',
+        minimap: { enabled: false },
+        fontSize: 13,
+        lineNumbers: 'on',
+        scrollBeyondLastLine: false,
+        automaticLayout: true,
+        wordWrap: 'on',
+        suggestOnTriggerCharacters: true,
+      });
+
+      // Shift+Enter → run
+      editor.addCommand(monaco.KeyMod.Shift | monaco.KeyCode.Enter, runQuery);
+      // Restore query from URL
+      const q = new URLSearchParams(location.search).get('q');
+      if (q) editor.setValue(q);
+
+      editor.onDidChangeModelContent(() => {
+        const params = new URLSearchParams({ q: editor.getValue() });
+        history.replaceState(null, '', '?' + params.toString());
+      });
+
+      resolve();
+    });
+  });
+}
+
+// ── File loading ─────────────────────────────────────────────────────────────
+async function loadFile(file) {
+  if (!db || !conn) { showError('DuckDB not ready yet.'); return; }
+  if (!file.name.endsWith('.csv')) { showError('Only CSV files are supported in Phase 1.'); return; }
+
+  showError('');
+  setStatus('Loading file…');
+  setRowCount(null);
+
+  try {
+    const buf = await file.arrayBuffer();
+    const u8  = new Uint8Array(buf);
+    const vName = file.name;                                       // virtual FS name
+    const tName = file.name.replace(/\.csv$/i,'').replace(/[^a-zA-Z0-9_]/g,'_');
+
+    await db.registerFileBuffer(vName, u8);
+
+    // Drop previous table with same name if any
+    await conn.query(`DROP TABLE IF EXISTS "${tName}"`);
+
+    // DuckDB reads + types the CSV automatically
+    await conn.query(`CREATE TABLE "${tName}" AS SELECT * FROM read_csv_auto('${vName}', header=true, sample_size=1000)`);
+
+    // Introspect schema
+    const desc = await conn.query(`DESCRIBE "${tName}"`);
+    const rows = desc.toArray();
+    currentTable = tName;
+    currentCols  = rows.map(r => ({ name: String(r.column_name), type: String(r.column_type) }));
+
+    // Row count
+    const cnt = await conn.query(`SELECT count(*) AS n FROM "${tName}"`);
+    const total = Number(cnt.toArray()[0].n);
+
+    updateSidebar();
+    document.getElementById('drop-zone').style.display = 'none';
+    editor.setValue(`${tName} | take 100`);
+    editor.setPosition({ lineNumber: 1, column: 1000 });
+    setStatus(`Loaded ${total.toLocaleString()} rows`);
+
+    // Register column completions
+    registerCompletions();
+
+  } catch (e) {
+    showError('Load error: ' + e.message);
+    setStatus('Error');
+  }
+}
+
+function updateSidebar() {
+  const tn = document.getElementById('table-name');
+  tn.textContent = currentTable || '—';
+  tn.className   = currentTable ? '' : 'empty';
+  document.getElementById('col-list').innerHTML = currentCols.map(c =>
+    `<li onclick="insertText('${esc(c.name)}')" title="Click to insert">${esc(c.name)}<span class="typ">${esc(c.type)}</span></li>`
+  ).join('');
+}
+
+function insertText(text) {
+  if (!editor) return;
+  editor.trigger('user', 'type', { text });
+  editor.focus();
+}
+
+function registerCompletions() {
+  if (!editor || !currentCols.length) return;
+  monaco.languages.registerCompletionItemProvider('kql', {
+    provideCompletionItems: (model, position) => {
+      const word  = model.getWordUntilPosition(position);
+      const range = { startLineNumber: position.lineNumber, endLineNumber: position.lineNumber,
+                      startColumn: word.startColumn, endColumn: word.endColumn };
+      const colItems = currentCols.map(c => ({
+        label: c.name, kind: monaco.languages.CompletionItemKind.Field,
+        detail: c.type, insertText: c.name, range
+      }));
+      const kwItems = ['where','project','take','extend','summarize','by','order','sort',
+                       'asc','desc','count','sum','avg','min','max','distinct']
+        .map(k => ({ label: k, kind: monaco.languages.CompletionItemKind.Keyword, insertText: k, range }));
+      return { suggestions: [...colItems, ...kwItems] };
+    }
+  });
+}
+
+// ── KQL → SQL Transpiler ─────────────────────────────────────────────────────
+
+/** Split "A | B | C" into ["A","B","C"] respecting parens and strings */
+function splitPipes(kql) {
+  const parts = [];
+  let depth = 0, inStr = false, strCh = '', cur = '';
+  for (const ch of kql) {
+    if (inStr)       { cur += ch; if (ch === strCh) inStr = false; }
+    else if (ch === '"' || ch === "'") { inStr = true; strCh = ch; cur += ch; }
+    else if (ch === '(') { depth++; cur += ch; }
+    else if (ch === ')') { depth--; cur += ch; }
+    else if (ch === '|' && depth === 0) { parts.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  parts.push(cur);
+  return parts.map(p => p.trim()).filter(Boolean);
+}
+
+/** "operator rest" → {op, args} */
+function parseStage(stage) {
+  const m = stage.match(/^(\w[\w-]*)(?:\s+([\s\S]*))?$/);
+  if (!m) throw new Error('Cannot parse stage: ' + stage);
+  return { op: m[1].toLowerCase(), args: (m[2] || '').trim() };
+}
+
+/** KQL condition → SQL condition */
+function kqlCond(cond) {
+  return cond
+    // string operators (double-quoted)
+    .replace(/(\w+)\s+contains\s+"([^"]*)"/gi,   (_, c, v) => `"${c}" LIKE '%${v}%'`)
+    .replace(/(\w+)\s+!contains\s+"([^"]*)"/gi,  (_, c, v) => `"${c}" NOT LIKE '%${v}%'`)
+    .replace(/(\w+)\s+startswith\s+"([^"]*)"/gi, (_, c, v) => `"${c}" LIKE '${v}%'`)
+    .replace(/(\w+)\s+endswith\s+"([^"]*)"/gi,   (_, c, v) => `"${c}" LIKE '%${v}'`)
+    .replace(/(\w+)\s+has\s+"([^"]*)"/gi,        (_, c, v) => `"${c}" LIKE '%${v}%'`)
+    // string operators (single-quoted)
+    .replace(/(\w+)\s+contains\s+'([^']*)'/gi,   (_, c, v) => `"${c}" LIKE '%${v}%'`)
+    .replace(/(\w+)\s+startswith\s+'([^']*)'/gi, (_, c, v) => `"${c}" LIKE '${v}%'`)
+    .replace(/(\w+)\s+endswith\s+'([^']*)'/gi,   (_, c, v) => `"${c}" LIKE '%${v}'`)
+    // equality
+    .replace(/==/g, '=').replace(/!=/g, '<>')
+    // logical
+    .replace(/\band\b/gi, 'AND').replace(/\bor\b/gi, 'OR').replace(/\bnot\b/gi, 'NOT')
+    // literals
+    .replace(/\btrue\b/gi, 'TRUE').replace(/\bfalse\b/gi, 'FALSE')
+    // quote bare identifiers that look like column names before operators
+    .replace(/\b([A-Za-z_]\w*)\s*(?=[=<>!])/g, (m, id) => {
+      const skip = new Set(['AND','OR','NOT','NULL','TRUE','FALSE','LIKE','IS','IN','BETWEEN']);
+      return skip.has(id.toUpperCase()) ? m : `"${id}" `;
+    });
+}
+
+/** aggregate function names */
+function kqlAgg(expr) {
+  return expr
+    .replace(/\bcount\(\s*\)/gi, 'count(*)')
+    .replace(/\bdcount\(([^)]+)\)/gi,  'count(DISTINCT $1)')
+    .replace(/\bsum\(([^)]+)\)/gi,     'sum($1)')
+    .replace(/\bavg\(([^)]+)\)/gi,     'avg($1)')
+    .replace(/\bmin\(([^)]+)\)/gi,     'min($1)')
+    .replace(/\bmax\(([^)]+)\)/gi,     'max($1)');
+}
+
+/** scalar expressions */
+function kqlExpr(expr) {
+  return kqlAgg(expr)
+    .replace(/\btostring\(([^)]+)\)/gi,  'CAST($1 AS VARCHAR)')
+    .replace(/\btoint\(([^)]+)\)/gi,     'CAST($1 AS INTEGER)')
+    .replace(/\btodouble\(([^)]+)\)/gi,  'CAST($1 AS DOUBLE)')
+    .replace(/\btolong\(([^)]+)\)/gi,    'CAST($1 AS BIGINT)')
+    .replace(/\bnow\(\)/gi,              'now()')
+    .replace(/\bbin\(([^,]+),\s*([^)]+)\)/gi, (_, col, span) => `floor(CAST(${col.trim()} AS DOUBLE)/${span.trim()})*${span.trim()}`);
+}
+
+/** Parse "extend A = expr, B = expr" → SQL projection */
+function parseExtend(args) {
+  const parts = [];
+  let depth = 0, cur = '';
+  for (const ch of args) {
+    if (ch === '(' ) depth++;
+    else if (ch === ')') depth--;
+    else if (ch === ',' && depth === 0) { parts.push(cur.trim()); cur = ''; continue; }
+    cur += ch;
+  }
+  parts.push(cur.trim());
+
+  return parts.map(def => {
+    const eq = def.indexOf('=');
+    if (eq === -1) throw new Error('extend: missing = in: ' + def);
+    const alias = def.slice(0, eq).trim();
+    const expr  = def.slice(eq + 1).trim();
+    return `${kqlExpr(expr)} AS "${alias}"`;
+  }).join(', ');
+}
+
+/** Parse "summarize [alias =] agg(), ... [by col, ...]" */
+function parseSummarize(args) {
+  const byMatch = args.match(/^([\s\S]*?)\bby\b([\s\S]*)$/i);
+  const aggRaw   = byMatch ? byMatch[1].trim() : args.trim();
+  const groupRaw = byMatch ? byMatch[2].trim() : null;
+
+  const aggExprs = aggRaw.split(',').map(a => {
+    a = a.trim();
+    const eq = a.indexOf('=');
+    let alias, expr;
+    if (eq !== -1) { alias = a.slice(0,eq).trim(); expr = a.slice(eq+1).trim(); }
+    else           { expr = a; alias = expr.replace(/[^a-zA-Z0-9_]/g,'_').replace(/_$/,''); }
+    return `${kqlAgg(expr)} AS "${alias}"`;
+  }).join(', ');
+
+  const groupCols = groupRaw
+    ? groupRaw.split(',').map(c => `"${c.trim()}"`).join(', ')
+    : null;
+
+  return { aggExprs, groupCols };
+}
+
+/** Main transpile function: KQL string → SQL string */
+function transpile(kql) {
+  kql = kql.replace(/\/\/[^\n]*/g, '').replace(/\s+/g, ' ').trim();
+  if (!kql) throw new Error('Empty query');
+
+  const pipes = splitPipes(kql);
+  if (!pipes.length) throw new Error('Empty query');
+
+  const tableName = pipes[0].trim();
+  if (!tableName) throw new Error('Query must start with a table name');
+
+  if (pipes.length === 1) return `SELECT * FROM "${tableName}"`;
+
+  const ctes = [`cte0 AS (SELECT * FROM "${tableName}")`];
+
+  for (let i = 1; i < pipes.length; i++) {
+    const prev = `cte${i-1}`, curr = `cte${i}`;
+    const { op, args } = parseStage(pipes[i]);
+
+    switch (op) {
+      case 'where': {
+        ctes.push(`${curr} AS (SELECT * FROM ${prev} WHERE ${kqlCond(args)})`);
+        break;
+      }
+      case 'project': {
+        const cols = args.split(',').map(c => `"${c.trim()}"`).join(', ');
+        ctes.push(`${curr} AS (SELECT ${cols} FROM ${prev})`);
+        break;
+      }
+      case 'project-away': {
+        const dropCols = new Set(args.split(',').map(c => c.trim().toLowerCase()));
+        const keep = currentCols
+          .filter(c => !dropCols.has(c.name.toLowerCase()))
+          .map(c => `"${c.name}"`).join(', ');
+        if (!keep) throw new Error('project-away would remove all columns');
+        ctes.push(`${curr} AS (SELECT ${keep} FROM ${prev})`);
+        break;
+      }
+      case 'take':
+      case 'limit': {
+        const n = parseInt(args, 10);
+        if (isNaN(n) || n < 0) throw new Error(`Invalid ${op} value: ${args}`);
+        ctes.push(`${curr} AS (SELECT * FROM ${prev} LIMIT ${n})`);
+        break;
+      }
+      case 'top': {
+        const m = args.match(/^(\d+)\s+by\s+([\w.]+)(?:\s+(asc|desc))?/i);
+        if (!m) throw new Error('top syntax: top N by Column [asc|desc]');
+        const [, n, col, dir='desc'] = m;
+        ctes.push(`${curr} AS (SELECT * FROM ${prev} ORDER BY "${col}" ${dir.toUpperCase()} LIMIT ${n})`);
+        break;
+      }
+      case 'extend': {
+        const extCols = parseExtend(args);
+        ctes.push(`${curr} AS (SELECT *, ${extCols} FROM ${prev})`);
+        break;
+      }
+      case 'summarize': {
+        const { aggExprs, groupCols } = parseSummarize(args);
+        const sel = groupCols ? `${groupCols}, ${aggExprs}` : aggExprs;
+        const grp = groupCols ? ` GROUP BY ${groupCols}` : '';
+        ctes.push(`${curr} AS (SELECT ${sel} FROM ${prev}${grp})`);
+        break;
+      }
+      case 'count': {
+        ctes.push(`${curr} AS (SELECT count(*) AS count_ FROM ${prev})`);
+        break;
+      }
+      case 'distinct': {
+        const cols = args ? args.split(',').map(c => `"${c.trim()}"`).join(', ') : '*';
+        ctes.push(`${curr} AS (SELECT DISTINCT ${cols} FROM ${prev})`);
+        break;
+      }
+      case 'order':
+      case 'sort': {
+        const byRaw = args.replace(/^by\s+/i, '');
+        const orderCols = byRaw.split(',').map(o => {
+          const parts = o.trim().split(/\s+/);
+          return `"${parts[0]}" ${(parts[1] || 'asc').toUpperCase()}`;
+        }).join(', ');
+        ctes.push(`${curr} AS (SELECT * FROM ${prev} ORDER BY ${orderCols})`);
+        break;
+      }
+      default:
+        throw new Error(`Unsupported operator: ${op} — supported: where, project, take, extend, summarize, count, distinct, order/sort, top`);
+    }
+  }
+
+  return `WITH ${ctes.join(',\n  ')}\nSELECT * FROM cte${pipes.length - 1}`;
+}
+
+// ── Run query ────────────────────────────────────────────────────────────────
+async function runQuery() {
+  if (!db || !conn) { showError('DuckDB not ready.'); return; }
+  const kql = editor.getValue();
+  if (!kql.replace(/\/\/[^\n]*/g,'').trim()) return;
+
+  showError('');
+  setStatus('Running…');
+  setRowCount(null);
+  document.getElementById('results-container').innerHTML = '';
+
+  let sql;
+  try {
+    sql = transpile(kql);
+  } catch (e) {
+    showError('Transpiler error: ' + e.message);
+    setStatus('Error');
+    return;
+  }
+
+  try {
+    const result = await conn.query(sql);
+    lastArrow = result;
+    renderTable(result);
+    setStatus('Done');
+  } catch (e) {
+    showError('DuckDB error: ' + e.message + '\n\nGenerated SQL:\n' + sql);
+    setStatus('Error');
+  }
+}
+
+// ── Render results ───────────────────────────────────────────────────────────
+function renderTable(result) {
+  const cols = result.schema.fields.map(f => f.name);
+  const rows = result.toArray();
+  setRowCount(rows.length);
+
+  if (!rows.length) {
+    document.getElementById('results-container').innerHTML = '<p class="msg">No results.</p>';
+    return;
+  }
+
+  const MAX_ROWS = 10000;
+  const displayed = rows.slice(0, MAX_ROWS);
+
+  const thead = `<tr>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr>`;
+  const tbody = displayed.map(row =>
+    `<tr>${cols.map(c => `<td>${esc(row[c])}</td>`).join('')}</tr>`
+  ).join('');
+
+  const note = rows.length > MAX_ROWS
+    ? `<p class="msg">Showing first ${MAX_ROWS.toLocaleString()} of ${rows.length.toLocaleString()} rows. Export CSV for full results.</p>`
+    : '';
+
+  document.getElementById('results-container').innerHTML =
+    `${note}<table id="results-tbl"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+}
+
+function clearResults() {
+  document.getElementById('results-container').innerHTML = '';
+  setRowCount(null);
+  showError('');
+  lastArrow = null;
+}
+
+// ── PowerShell export ────────────────────────────────────────────────────────
+function copyAsPowershell() {
+  const kql = editor.getValue().replace(/\/\/[^\n]*/g,'').trim();
+  if (!kql) return;
+
+  try {
+    const ps = kqlToPS(kql);
+    navigator.clipboard.writeText(ps).then(() => {
+      const btn = document.getElementById('ps-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'PS Export', 1600);
+    });
+  } catch (e) {
+    showError('PS export error: ' + e.message);
+  }
+}
+
+function kqlToPS(kql) {
+  const pipes = splitPipes(kql);
+  const tbl   = pipes[0].trim();
+  let ps = `Import-Csv '.\\${tbl}.csv'`;
+
+  for (let i = 1; i < pipes.length; i++) {
+    const { op, args } = parseStage(pipes[i]);
+    switch (op) {
+      case 'where':
+        ps += `\n  | Where-Object { $_.${args
+          .replace(/==/g,'-eq').replace(/!=/g,'-ne')
+          .replace(/<=/g,'-le').replace(/>=/g,'-ge')
+          .replace(/</g,'-lt').replace(/>/g,'-gt')
+          .replace(/\band\b/gi,'-and').replace(/\bor\b/gi,'-or').replace(/\bnot\b/gi,'-not')
+        } }`;
+        break;
+      case 'project':
+        ps += `\n  | Select-Object ${args.split(',').map(c=>`'${c.trim()}'`).join(', ')}`;
+        break;
+      case 'take':
+      case 'limit':
+        ps += `\n  | Select-Object -First ${args.trim()}`;
+        break;
+      case 'order':
+      case 'sort': {
+        const m = args.replace(/^by\s+/i,'').match(/^(\w+)(?:\s+(asc|desc))?/i);
+        if (m) ps += `\n  | Sort-Object '${m[1]}'${/desc/i.test(m[2]||'') ? ' -Descending' : ''}`;
+        break;
+      }
+      case 'summarize': {
+        const byM = args.match(/\bby\s+([\s\S]+)$/i);
+        if (byM) ps += `\n  | Group-Object ${byM[1].split(',').map(c=>`'${c.trim()}'`).join(', ')}`;
+        break;
+      }
+      default:
+        ps += `\n  # [${op} — no PS equivalent]`;
+    }
+  }
+  return ps;
+}
+
+// ── CSV export ───────────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!lastArrow) { showError('Run a query first.'); return; }
+  const cols = lastArrow.schema.fields.map(f => f.name);
+  const rows = lastArrow.toArray();
+  const csvLines = [
+    cols.map(c => JSON.stringify(c)).join(','),
+    ...rows.map(r => cols.map(c => JSON.stringify(String(r[c] ?? ''))).join(','))
+  ];
+  const blob = new Blob([csvLines.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'kql-results.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ── Drop zone setup ──────────────────────────────────────────────────────────
+function setupDropZone() {
+  const zone  = document.getElementById('drop-zone');
+  const input = document.getElementById('file-input');
+
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f) loadFile(f);
+  });
+  input.addEventListener('change', e => { const f = e.target.files[0]; if (f) loadFile(f); });
+
+  // Full-page drag target
+  document.addEventListener('dragover', e => e.preventDefault());
+  document.addEventListener('drop', e => {
+    e.preventDefault();
+    const f = e.dataTransfer.files[0];
+    if (f && f.name.toLowerCase().endsWith('.csv')) loadFile(f);
+  });
+}
+
+// ── Bootstrap ────────────────────────────────────────────────────────────────
+(async () => {
+  setupDropZone();
+  await Promise.all([initDuckDB(), initMonaco()]);
+})();
+</script>
+</body>
+</html>
