@@ -462,6 +462,57 @@ function kqlCond(cond) {
     });
 }
 
+/** Translate a .NET datetime format string (KQL) to a strftime pattern (DuckDB).
+ *  Handles custom format specifiers; named specifiers fall back to ISO defaults. */
+function translateDatetimeFormat(fmtToken) {
+  const quote = fmtToken[0]; // ' or "
+  let fmt = fmtToken.slice(1, -1); // strip surrounding quotes
+
+  // Named (standard) format specifiers → fixed strftime equivalents
+  const named = {
+    d: '%Y-%m-%d',  D: '%A, %B %-d, %Y',  f: '%Y-%m-%d %H:%M',
+    F: '%Y-%m-%d %H:%M:%S',  g: '%Y-%m-%d %H:%M',  G: '%Y-%m-%d %H:%M:%S',
+    M: '%B %-d',  R: '%a, %d %b %Y %H:%M:%S',  s: '%Y-%m-%dT%H:%M:%S',
+    t: '%H:%M',  T: '%H:%M:%S',  u: '%Y-%m-%d %H:%M:%S',  Y: '%B %Y',
+  };
+  if (named[fmt]) return `'${named[fmt]}'`;
+
+  // Custom format specifiers — order matters (longer tokens first)
+  const map = [
+    ['yyyy', '%Y'], ['yy', '%y'],
+    ['MMMM', '%B'], ['MMM', '%b'], ['MM', '%m'], ['M', '%-m'],
+    ['dddd', '%A'], ['ddd', '%a'], ['dd', '%d'],  ['d', '%-d'],
+    ['HH', '%H'],   ['H', '%-H'],  ['hh', '%I'],  ['h', '%-I'],
+    ['mm', '%M'],   ['m', '%-M'],
+    ['ss', '%S'],   ['s', '%-S'],
+    ['fff', '%f'],  ['ff', '%f'],  ['f', '%f'],
+    ['tt', '%p'],   ['t', '%p'],
+    ['K', '%Z'],    ['z', '%z'],
+  ];
+  let out = '';
+  let i = 0;
+  while (i < fmt.length) {
+    // Literal text in single quotes within the format string
+    if (fmt[i] === "'") {
+      const end = fmt.indexOf("'", i + 1);
+      out += end === -1 ? fmt.slice(i + 1) : fmt.slice(i + 1, end);
+      i = end === -1 ? fmt.length : end + 1;
+      continue;
+    }
+    let matched = false;
+    for (const [token, spec] of map) {
+      if (fmt.startsWith(token, i)) {
+        out += spec;
+        i += token.length;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) { out += fmt[i]; i++; }
+  }
+  return `'${out}'`;
+}
+
 /** Parse KQL timespan literals like 1d, 2h30m, 0:30:00 → DuckDB INTERVAL expression */
 function parseKqlTimespan(s) {
   s = s.trim().replace(/^['"]|['"]$/g, '');
@@ -563,6 +614,13 @@ function kqlExpr(expr) {
     .replace(/\bago\(([^)]+)\)/gi,          (_, ts) => `(now() - ${parseKqlTimespan(ts)})`)
     .replace(/\bdatetime_diff\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi, 'date_diff($1, $3, $2)') // arg order swapped
     .replace(/\bdatetime_part\(([^,]+),\s*([^)]+)\)/gi,        'date_part($1, $2)')
+    // datetime_add(part, n, dt) → dt + INTERVAL (n) PART
+    // part is always a string literal in practice — strip quotes and use as SQL keyword
+    .replace(/\bdatetime_add\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi,
+      (_, part, n, dt) => `${dt.trim()} + INTERVAL (${n.trim()}) ${part.trim().replace(/^['"]|['"]$/g, '').toUpperCase()}`)
+    // format_datetime(dt, format) — translate .NET format strings to strftime patterns
+    .replace(/\bformat_datetime\(([^,]+),\s*(['"][^'"]*['"])\)/gi,
+      (_, dt, fmt) => `strftime(${translateDatetimeFormat(fmt)}, ${dt.trim()})`)
     .replace(/\bstartofday\(([^)]+)\)/gi,   "date_trunc('day', $1)")
     .replace(/\bstartofweek\(([^)]+)\)/gi,  "date_trunc('week', $1)")
     .replace(/\bstartofmonth\(([^)]+)\)/gi, "date_trunc('month', $1)")
@@ -644,17 +702,23 @@ function kqlExpr(expr) {
       (_, col, span) => `floor(CAST(${col.trim()} AS DOUBLE)/${span.trim()})*${span.trim()}`);
 }
 
-/** Parse "extend A = expr, B = expr" → SQL projection */
-function parseExtend(args) {
+/** Split a comma-separated argument list, respecting nested parentheses. */
+function splitCommaRespectingDepth(s) {
   const parts = [];
   let depth = 0, cur = '';
-  for (const ch of args) {
-    if (ch === '(' ) depth++;
+  for (const ch of s) {
+    if      (ch === '(') depth++;
     else if (ch === ')') depth--;
     else if (ch === ',' && depth === 0) { parts.push(cur.trim()); cur = ''; continue; }
     cur += ch;
   }
   parts.push(cur.trim());
+  return parts;
+}
+
+/** Parse "extend A = expr, B = expr" → SQL projection */
+function parseExtend(args) {
+  const parts = splitCommaRespectingDepth(args);
 
   return parts.map(def => {
     const eq = def.indexOf('=');
@@ -687,10 +751,117 @@ function parseSummarize(args) {
   return { aggExprs, groupCols };
 }
 
+/** Pre-process KQL `let` statements before transpilation.
+ *
+ *  Supports two forms:
+ *    let name = scalar_literal;     → text-substitute `name` in the remainder
+ *    let name = TabularExpr;        → becomes a named CTE prepended to the query
+ *
+ *  Returns { body: string, letCtes: Array<{name,sql}> }
+ */
+function processLet(kql) {
+  // Strip line comments first so semicolons inside // comments don't confuse us
+  kql = kql.replace(/\/\/[^\n]*/g, '');
+
+  const letCtes = [];      // tabular lets → extra CTEs
+  const scalars = {};      // scalar lets → substitution map
+
+  // Split on semicolons to find let statements.
+  // A let statement is:  let name = expr;
+  // The final segment (no trailing semicolon) is the main query body.
+  const segments = kql.split(/;/);
+  let body = segments[segments.length - 1].trim();
+
+  for (let s = 0; s < segments.length - 1; s++) {
+    const seg = segments[s].trim();
+    if (!seg) continue;
+
+    const letMatch = seg.match(/^\s*let\s+([A-Za-z_]\w*)\s*=\s*([\s\S]+)$/i);
+    if (!letMatch) {
+      // Not a let — treat as a statement we can't handle (ignore silently for now)
+      continue;
+    }
+    const name = letMatch[1];
+    const val  = letMatch[2].trim();
+
+    // Heuristic: if the value contains a pipe character or looks like a table
+    // expression (starts with an identifier then whitespace), treat as tabular.
+    // Otherwise treat as a scalar literal/expression.
+    const looksTabular = /\|/.test(val) || /^[A-Za-z_]\w*\s+(where|project|summarize|extend|take|top|join|union)\b/i.test(val);
+
+    if (looksTabular) {
+      // Recursively transpile the tabular expression to get SQL, then expose as CTE name
+      try {
+        const inner = transpile(val);
+        // inner is "WITH ... SELECT * FROM cteN" or plain "SELECT * FROM t"
+        // We need just the final SELECT, wrapped under the let name.
+        letCtes.push({ name, sql: inner });
+      } catch (e) {
+        throw new Error(`let ${name}: ${e.message}`);
+      }
+    } else {
+      scalars[name] = val;
+    }
+  }
+
+  // Substitute scalar variables in body (whole-word replacement, longest names first)
+  const names = Object.keys(scalars).sort((a, b) => b.length - a.length);
+  for (const name of names) {
+    body = body.replace(new RegExp(`\\b${name}\\b`, 'g'), scalars[name]);
+  }
+
+  return { body, letCtes };
+}
+
+/** Map KQL join kind to SQL JOIN keyword(s).
+ *  Returns { joinType, useNotExists } where useNotExists signals anti-join pattern. */
+function joinKindToSql(kind) {
+  switch ((kind || 'innerunique').toLowerCase()) {
+    case 'inner':        return { joinType: 'INNER JOIN',  anti: false, semi: false };
+    case 'innerunique':  return { joinType: 'INNER JOIN',  anti: false, semi: false }; // dedup handled by DISTINCT
+    case 'leftouter':    return { joinType: 'LEFT JOIN',   anti: false, semi: false };
+    case 'rightouter':   return { joinType: 'RIGHT JOIN',  anti: false, semi: false };
+    case 'fullouter':    return { joinType: 'FULL JOIN',   anti: false, semi: false };
+    case 'leftanti':
+    case 'anti':         return { joinType: 'LEFT JOIN',   anti: true,  semi: false };
+    case 'rightanti':    return { joinType: 'RIGHT JOIN',  anti: true,  semi: false };
+    case 'leftsemi':     return { joinType: 'INNER JOIN',  anti: false, semi: 'left'  };
+    case 'rightsemi':    return { joinType: 'INNER JOIN',  anti: false, semi: 'right' };
+    default: throw new Error(`Unknown join kind: ${kind}`);
+  }
+}
+
+/** Parse the `on` clause of a KQL join into SQL ON conditions.
+ *  Handles:  on Col                   → lhs."Col" = rhs."Col"
+ *            on $left.A == $right.B   → lhs."A" = rhs."B"
+ *            on Col1, Col2            → multiple equality conditions
+ */
+function parseJoinOn(onClause, lhsAlias, rhsAlias) {
+  const terms = onClause.split(',').map(t => t.trim());
+  return terms.map(term => {
+    // $left.X == $right.Y  (or = instead of ==)
+    const explicit = term.match(/\$left\.(\w+)\s*==?\s*\$right\.(\w+)/i);
+    if (explicit) return `${lhsAlias}."${explicit[1]}" = ${rhsAlias}."${explicit[2]}"`;
+    // bare column name → equi-join on same column
+    const bare = term.match(/^(\w+)$/);
+    if (bare) return `${lhsAlias}."${bare[1]}" = ${rhsAlias}."${bare[1]}"`;
+    // fall back: emit as-is (user wrote raw SQL-like expression)
+    return term.replace(/\$left\./g, `${lhsAlias}.`).replace(/\$right\./g, `${rhsAlias}.`);
+  }).join(' AND ');
+}
+
 /** Main transpile function: KQL string → SQL string */
 function transpile(kql) {
   kql = kql.replace(/\/\/[^\n]*/g, '').replace(/\s+/g, ' ').trim();
   if (!kql) throw new Error('Empty query');
+
+  // Process let statements — extract scalar substitutions and tabular CTEs
+  let letCtes = [];
+  if (/\blet\b/i.test(kql)) {
+    const processed = processLet(kql);
+    kql = processed.body.replace(/\s+/g, ' ').trim();
+    letCtes = processed.letCtes;
+  }
 
   const pipes = splitPipes(kql);
   if (!pipes.length) throw new Error('Empty query');
@@ -698,9 +869,27 @@ function transpile(kql) {
   const tableName = pipes[0].trim();
   if (!tableName) throw new Error('Query must start with a table name');
 
-  if (pipes.length === 1) return `SELECT * FROM "${tableName}"`;
+  // Build CTE preamble from tabular lets:
+  //   each becomes:  letName AS (inner SELECT ...)
+  const letCteSql = letCtes.map(({ name, sql }) => {
+    // sql may be "WITH ... SELECT * FROM cteN" — wrap it as a subquery
+    const sub = sql.includes('\n') || sql.toLowerCase().startsWith('with')
+      ? `(${sql})`
+      : sql;
+    return `"${name}" AS ${sub.startsWith('(') ? sub : `(${sub})`}`;
+  });
 
-  const ctes = [`cte0 AS (SELECT * FROM "${tableName}")`];
+  if (pipes.length === 1) {
+    if (letCteSql.length) {
+      return `WITH ${letCteSql.join(',\n  ')}\nSELECT * FROM "${tableName}"`;
+    }
+    return `SELECT * FROM "${tableName}"`;
+  }
+
+  const ctes = [
+    ...letCteSql,
+    `cte0 AS (SELECT * FROM "${tableName}")`
+  ];
 
   for (let i = 1; i < pipes.length; i++) {
     const prev = `cte${i-1}`, curr = `cte${i}`;
@@ -785,6 +974,31 @@ function transpile(kql) {
         ctes.push(`${curr} AS (SELECT ${cols} FROM ${prev})`);
         break;
       }
+      case 'mv-expand': {
+        // mv-expand col [to typeof(type)]  — expands array column into rows via UNNEST
+        // Also handles alias assignment:  mv-expand newName = col
+        // Multiple columns:  mv-expand a, b  (both unnested together)
+        const expandParts = splitCommaRespectingDepth(args);
+        const excludeCols = [];
+        const unnests = [];
+        expandParts.forEach(part => {
+          part = part.replace(/\s+to\s+typeof\([^)]*\)/i, '').trim();
+          const eq = part.indexOf('=');
+          if (eq !== -1) {
+            const alias = part.slice(0, eq).trim();
+            const col   = part.slice(eq + 1).trim();
+            excludeCols.push(`"${col}"`);
+            unnests.push(`unnest("${col}") AS "${alias}"`);
+          } else {
+            excludeCols.push(`"${part}"`);
+            unnests.push(`unnest("${part}") AS "${part}"`);
+          }
+        });
+        // EXCLUDE removes the original array column; unnest adds the expanded scalar column
+        const excl = excludeCols.length ? ` EXCLUDE (${excludeCols.join(', ')})` : '';
+        ctes.push(`${curr} AS (SELECT *${excl}, ${unnests.join(', ')} FROM ${prev})`);
+        break;
+      }
       case 'serialize': {
         // serialize is a no-op in SQL — just marks row set as ordered for window functions
         ctes.push(`${curr} AS (SELECT * FROM ${prev})`);
@@ -796,8 +1010,53 @@ function transpile(kql) {
         ctes.push(`${curr} AS (SELECT * FROM ${prev} UNION ALL SELECT * FROM "${target}")`);
         break;
       }
+      case 'join': {
+        // Syntax: join [kind=K] (RightExpr) on OnClause
+        // RightExpr can be a table name or a full piped subquery inside parens.
+        const joinMatch = args.match(/^(?:kind\s*=\s*(\w+)\s+)?\(([^)]*(?:\([^)]*\)[^)]*)*)\)\s+on\s+([\s\S]+)$/i);
+        if (!joinMatch) throw new Error('join syntax: join [kind=K] (RightTable | RightExpr) on Column');
+        const [, kind, rightRaw, onClause] = joinMatch;
+
+        // Transpile the right-hand side (may itself be a piped KQL expression)
+        const rhsSql = transpile(rightRaw.trim());
+        const rhsName = `cte${i}_rhs`;
+        // Embed RHS as an additional CTE
+        const rhsCteSql = rhsSql.toLowerCase().startsWith('with')
+          ? `${rhsName} AS (SELECT * FROM (${rhsSql}) AS _rhs)`
+          : `${rhsName} AS (${rhsSql})`;
+
+        const { joinType, anti, semi } = joinKindToSql(kind);
+        const lhsAlias = 'lhs', rhsAlias = 'rhs';
+        const onSql = parseJoinOn(onClause.trim(), lhsAlias, rhsAlias);
+
+        let selectClause;
+        if (anti) {
+          // Anti-join: return lhs rows with no match — use NULL check after LEFT JOIN
+          const nullCheck = onClause.split(',').map(t => {
+            const col = t.trim().match(/\$right\.(\w+)/i)?.[1]
+                     || t.trim().match(/^(\w+)$/)?.[1];
+            return col ? `${rhsAlias}."${col}" IS NULL` : null;
+          }).filter(Boolean).join(' AND ') || `${rhsAlias}.* IS NULL`;
+          selectClause = `SELECT ${lhsAlias}.* FROM ${prev} AS ${lhsAlias} LEFT JOIN ${rhsName} AS ${rhsAlias} ON ${onSql} WHERE ${nullCheck}`;
+        } else if (semi === 'left') {
+          // Left semi: return distinct lhs rows that have a match
+          selectClause = `SELECT DISTINCT ${lhsAlias}.* FROM ${prev} AS ${lhsAlias} INNER JOIN ${rhsName} AS ${rhsAlias} ON ${onSql}`;
+        } else if (semi === 'right') {
+          // Right semi: return distinct rhs rows that have a match
+          selectClause = `SELECT DISTINCT ${rhsAlias}.* FROM ${prev} AS ${lhsAlias} INNER JOIN ${rhsName} AS ${rhsAlias} ON ${onSql}`;
+        } else {
+          // Standard join — innerunique deduplicates lhs matches via DISTINCT
+          const distinct = (kind || 'innerunique').toLowerCase() === 'innerunique' ? 'DISTINCT ' : '';
+          selectClause = `SELECT ${distinct}${lhsAlias}.*, ${rhsAlias}.* FROM ${prev} AS ${lhsAlias} ${joinType} ${rhsName} AS ${rhsAlias} ON ${onSql}`;
+        }
+
+        // Splice the RHS CTE in before this step's CTE
+        ctes.push(rhsCteSql);
+        ctes.push(`${curr} AS (${selectClause})`);
+        break;
+      }
       default:
-        throw new Error(`Unsupported operator: ${op} — supported: where, project, project-rename, project-away, take, extend, summarize, count, distinct, order/sort, top, serialize, union`);
+        throw new Error(`Unsupported operator: ${op} — supported: where, project, project-rename, project-away, take, extend, summarize, count, distinct, order/sort, top, join, mv-expand, serialize, union`);
     }
   }
 
