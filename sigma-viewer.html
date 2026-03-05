@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGMA Rule Viewer</title>
+  <meta name="description" content="Paste a SIGMA rule YAML and get a structured view with schema validation, Sentinel table mapping, and a KQL scaffold.">
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
+  <style>
+    :root[data-theme="light"] {
+      --bg: #ffffff;
+      --surface: #f5f5f5;
+      --text: #1a1a1a;
+      --border: #e0e0e0;
+      --mono-bg: #f8f8f8;
+      --link: #0066cc;
+      --tab-active-bg: #ffffff;
+      --tab-inactive-bg: #f0f0f0;
+      --tab-active-border: #0066cc;
+      --badge-text: #ffffff;
+      --error-bg: #fff0f0;
+      --error-border: #ffcccc;
+      --error-text: #cc0000;
+      --warn-bg: #fffbe6;
+      --warn-border: #ffe58f;
+      --warn-text: #a67c00;
+      --ok-bg: #f0fff4;
+      --ok-border: #b7eb8f;
+      --ok-text: #237804;
+      --selection-bg: #f0f4ff;
+      --selection-border: #adc6ff;
+    }
+    :root[data-theme="dark"] {
+      --bg: #1a1a1a;
+      --surface: #2a2a2a;
+      --text: #e8e8e8;
+      --border: #444444;
+      --mono-bg: #121212;
+      --link: #5b9cf6;
+      --tab-active-bg: #2a2a2a;
+      --tab-inactive-bg: #1e1e1e;
+      --tab-active-border: #5b9cf6;
+      --badge-text: #ffffff;
+      --error-bg: #2a1010;
+      --error-border: #7a2020;
+      --error-text: #ff6b6b;
+      --warn-bg: #2a2200;
+      --warn-border: #7a5c00;
+      --warn-text: #ffd666;
+      --ok-bg: #0d2010;
+      --ok-border: #2a6020;
+      --ok-text: #73d13d;
+      --selection-bg: #1a2040;
+      --selection-border: #3a5080;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: sans-serif;
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    a { color: var(--link); }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    #theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    h1 { margin: 0 0 0.25rem 0; font-size: 1.6rem; }
+    .subtitle { margin: 0 0 1rem 0; color: #888; font-size: 0.95rem; }
+
+    .input-section { margin-bottom: 1.5rem; }
+    .input-section label { display: block; font-weight: 600; margin-bottom: 0.4rem; }
+
+    textarea {
+      width: 100%;
+      height: 220px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 0.75rem;
+      background: var(--mono-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      resize: vertical;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    button {
+      padding: 0.45rem 1rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 0.9rem;
+      background: var(--surface);
+      color: var(--text);
+    }
+    button.primary {
+      background: #0066cc;
+      color: #fff;
+      border-color: #0055aa;
+    }
+    button.primary:hover { background: #0055aa; }
+    button:hover { filter: brightness(0.95); }
+
+    .parse-error {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      font-family: monospace;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    /* Tabs */
+    .tabs-container { display: none; }
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      flex-wrap: wrap;
+      gap: 2px;
+      margin-bottom: 1rem;
+    }
+    .tab-btn {
+      padding: 0.5rem 1.1rem;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+      background: var(--tab-inactive-bg);
+      color: var(--text);
+      font-size: 0.9rem;
+      position: relative;
+      bottom: -2px;
+    }
+    .tab-btn.active {
+      background: var(--tab-active-bg);
+      border-color: var(--border);
+      border-bottom-color: var(--tab-active-bg);
+      font-weight: 600;
+      color: var(--tab-active-border);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--badge-text);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .badge-green  { background: #389e0d; }
+    .badge-yellow { background: #d48806; }
+    .badge-orange { background: #d4380d; background: #e07b00; }
+    .badge-red    { background: #cf1322; }
+    .badge-blue   { background: #0958d9; }
+    .badge-grey   { background: #8c8c8c; }
+
+    /* ATT&CK pills */
+    .tag-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.3rem; }
+    .tag-pill {
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      background: #f0f4ff;
+      border: 1px solid #adc6ff;
+      color: #0066cc;
+      text-decoration: none;
+    }
+    [data-theme="dark"] .tag-pill {
+      background: #1a2040;
+      border-color: #3a5080;
+      color: #5b9cf6;
+    }
+    .tag-pill:hover { text-decoration: underline; }
+
+    /* Info rows */
+    .info-grid {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 0.4rem 1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .info-label { font-weight: 600; color: #888; white-space: nowrap; }
+    .info-value { word-break: break-word; }
+
+    /* Panels */
+    .panel-section { margin-bottom: 1.5rem; }
+    .panel-section h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #888;
+      margin: 0 0 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.3rem;
+    }
+
+    /* Logsource */
+    .table-mapping {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      font-family: monospace;
+      font-size: 0.88rem;
+      word-break: break-all;
+    }
+    .no-mapping {
+      color: #888;
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    /* Detection selections */
+    .selection-block {
+      background: var(--selection-bg);
+      border: 1px solid var(--selection-border);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .selection-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      font-family: monospace;
+    }
+    .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 0.4rem;
+      margin-bottom: 0.5rem;
+    }
+    .field-name {
+      font-family: monospace;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .op-badge {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #e6f7ff;
+      border: 1px solid #91d5ff;
+      color: #0958d9;
+      font-family: monospace;
+    }
+    [data-theme="dark"] .op-badge {
+      background: #0d2033;
+      border-color: #1d4f7a;
+      color: #5b9cf6;
+    }
+    .value-list {
+      margin: 0.2rem 0 0 1.5rem;
+      padding: 0;
+      list-style: disc;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+    .value-list li { margin-bottom: 0.15rem; }
+
+    .condition-box {
+      background: var(--mono-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.6rem 0.9rem;
+      font-family: monospace;
+      font-size: 0.9rem;
+      word-break: break-word;
+      margin-bottom: 0.5rem;
+    }
+    .cond-ref { font-weight: 700; color: #0066cc; }
+    [data-theme="dark"] .cond-ref { color: #5b9cf6; }
+    .cond-ref-missing { font-weight: 700; color: var(--error-text); text-decoration: underline dotted; }
+    .cond-keyword { color: #888; font-style: italic; }
+
+    .timeframe-row {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Validation */
+    .val-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .val-item.ok    { background: var(--ok-bg);   border: 1px solid var(--ok-border);   color: var(--ok-text); }
+    .val-item.warn  { background: var(--warn-bg);  border: 1px solid var(--warn-border);  color: var(--warn-text); }
+    .val-item.error { background: var(--error-bg); border: 1px solid var(--error-border); color: var(--error-text); }
+    .val-icon { font-size: 1rem; line-height: 1.4; flex-shrink: 0; }
+
+    /* KQL */
+    .kql-disclaimer {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      color: var(--warn-text);
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+    .kql-output {
+      background: var(--mono-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      font-family: monospace;
+      font-size: 0.88rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Refs list */
+    .ref-list { margin: 0.3rem 0 0 0; padding: 0 0 0 1.2rem; }
+    .ref-list li { font-size: 0.9rem; margin-bottom: 0.2rem; word-break: break-all; }
+
+    .fp-list { margin: 0.3rem 0 0 0; padding: 0 0 0 1.2rem; }
+    .fp-list li { font-size: 0.9rem; margin-bottom: 0.2rem; }
+
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: #888; }
+    footer a { color: #888; }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <p style="margin:0"><a href="index.html">&larr; All tools</a></p>
+    <button id="theme-toggle" title="Toggle dark mode">🌙</button>
+  </div>
+
+  <h1>SIGMA Rule Viewer</h1>
+  <p class="subtitle">Paste a SIGMA rule YAML and get a structured view with schema validation, Sentinel table mapping, and a KQL scaffold.</p>
+
+  <div class="input-section">
+    <label for="yaml-input">SIGMA Rule YAML</label>
+    <textarea id="yaml-input" spellcheck="false" placeholder="Paste SIGMA YAML here…"></textarea>
+    <div class="btn-row">
+      <button class="primary" id="parse-btn">Parse Rule</button>
+      <button id="clear-btn">Clear</button>
+      <button id="sample-btn">Load Sample</button>
+    </div>
+  </div>
+
+  <div class="parse-error" id="parse-error"></div>
+
+  <div class="tabs-container" id="tabs-container">
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="metadata">Metadata</button>
+      <button class="tab-btn" data-tab="logsource">Logsource</button>
+      <button class="tab-btn" data-tab="detection">Detection</button>
+      <button class="tab-btn" data-tab="validation">Validation</button>
+      <button class="tab-btn" data-tab="kql">KQL Scaffold</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-metadata"></div>
+    <div class="tab-panel" id="tab-logsource"></div>
+    <div class="tab-panel" id="tab-detection"></div>
+    <div class="tab-panel" id="tab-validation"></div>
+    <div class="tab-panel" id="tab-kql"></div>
+  </div>
+
+  <footer>
+    <p><a href="https://github.com/jschell/spa-tools/blob/main/sigma-viewer.html">View source</a></p>
+  </footer>
+
+  <script>
+    // ── Constants ──────────────────────────────────────────────────────────────
+
+    const SAMPLE_RULE = `title: Suspicious PowerShell Encoded Command Execution
+description: Detects PowerShell execution with encoded commands which is a common technique used by threat actors to obfuscate malicious payloads.
+status: experimental
+level: high
+author: Security Team
+date: 2026/03/01
+modified: 2026/03/05
+tags:
+  - attack.t1059.001
+  - attack.execution
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+falsepositives:
+  - Legitimate administrative scripts using encoded commands
+  - Software deployment tools
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith:
+      - '\\\\powershell.exe'
+      - '\\\\pwsh.exe'
+    CommandLine|contains:
+      - ' -EncodedCommand '
+      - ' -enc '
+      - ' -e '
+  filter_legitimate:
+    CommandLine|contains:
+      - 'SCCM'
+      - 'Intune'
+  condition: selection and not filter_legitimate
+timeframe: 15m`;
+
+    const LOGSOURCE_TABLE_MAP = [
+      { product: "windows", category: "process_creation", table: "SecurityEvent | where EventID == 4688 // or DeviceProcessEvents" },
+      { product: "windows", category: "process_termination", table: "SecurityEvent | where EventID == 4689" },
+      { product: "windows", category: "network_connection", table: "DeviceNetworkEvents // or WindowsEvent" },
+      { product: "windows", category: "file_event", table: "DeviceFileEvents" },
+      { product: "windows", category: "registry_event", table: "DeviceRegistryEvents" },
+      { product: "windows", category: "registry_set", table: "DeviceRegistryEvents | where ActionType == 'RegistryValueSet'" },
+      { product: "windows", category: "registry_add", table: "DeviceRegistryEvents | where ActionType == 'RegistryKeyCreated'" },
+      { product: "windows", category: "registry_delete", table: "DeviceRegistryEvents | where ActionType in ('RegistryKeyDeleted','RegistryValueDeleted')" },
+      { product: "windows", category: "image_load", table: "DeviceImageLoadEvents" },
+      { product: "windows", category: "driver_load", table: "DeviceEvents | where ActionType == 'DriverLoad'" },
+      { product: "windows", category: "pipe_created", table: "DeviceEvents | where ActionType == 'NamedPipeEvent'" },
+      { product: "windows", category: "ps_script", table: "DeviceEvents | where ActionType == 'PowerShellCommand'" },
+      { product: "windows", category: "ps_classic_start", table: "SecurityEvent | where EventID == 400" },
+      { product: "windows", category: "dns_query", table: "DeviceDnsEvents // or DnsEvents" },
+      { product: "windows", service: "security", table: "SecurityEvent" },
+      { product: "windows", service: "system", table: "Event | where EventLog == 'System'" },
+      { product: "windows", service: "application", table: "Event | where EventLog == 'Application'" },
+      { product: "windows", service: "powershell", table: "Event | where EventLog == 'Windows PowerShell'" },
+      { product: "windows", service: "powershell-classic", table: "SecurityEvent | where EventID in (400, 403)" },
+      { product: "windows", service: "sysmon", table: "WindowsEvent // with Sysmon provider filter" },
+      { product: "windows", service: "taskscheduler", table: "SecurityEvent | where EventID in (4698, 4699, 4700, 4701, 4702)" },
+      { product: "azure", service: "auditlogs", table: "AuditLogs" },
+      { product: "azure", service: "signinlogs", table: "SigninLogs" },
+      { product: "azure", service: "activitylogs", table: "AzureActivity" },
+      { product: "azure", service: "riskdetections", table: "AADRiskDetections" },
+      { product: "azure", service: "identity_protection", table: "AADRiskyUsers" },
+      { product: "m365", service: "threat_management", table: "SecurityAlert" },
+      { product: "m365", service: "compliance", table: "OfficeActivity" },
+      { product: "m365", service: "exchange", table: "OfficeActivity | where OfficeWorkload == 'Exchange'" },
+      { product: "m365", service: "teams", table: "OfficeActivity | where OfficeWorkload == 'MicrosoftTeams'" },
+      { product: "m365", service: "sharepoint", table: "OfficeActivity | where OfficeWorkload == 'SharePoint'" },
+      { product: "m365defender", category: "process_creation", table: "DeviceProcessEvents" },
+      { product: "m365defender", category: "network_connection", table: "DeviceNetworkEvents" },
+      { product: "m365defender", category: "file_event", table: "DeviceFileEvents" },
+      { product: "m365defender", category: "registry_event", table: "DeviceRegistryEvents" },
+      { product: "m365defender", category: "alert", table: "AlertInfo | join AlertEvidence on AlertId" },
+      { product: "linux", category: "process_creation", table: "Syslog // or DeviceProcessEvents for MDE-onboarded" },
+      { product: "linux", service: "sshd", table: "Syslog | where ProcessName == 'sshd'" },
+      { product: "linux", service: "syslog", table: "Syslog" },
+      { product: "linux", service: "auditd", table: "AuditLog_CL // Custom log via agent" }
+    ];
+
+    const FIELD_MAPPINGS = {
+      "process_creation": {
+        "Image": "FolderPath",
+        "CommandLine": "ProcessCommandLine",
+        "ParentImage": "InitiatingProcessFolderPath",
+        "ParentCommandLine": "InitiatingProcessCommandLine",
+        "User": "AccountName",
+        "ProcessId": "ProcessId",
+        "ParentProcessId": "InitiatingProcessId",
+        "IntegrityLevel": "ProcessIntegrityLevel",
+        "Company": "ProcessVersionInfoCompanyName",
+        "Description": "ProcessVersionInfoFileDescription",
+        "md5": "MD5",
+        "sha256": "SHA256"
+      },
+      "network_connection": {
+        "DestinationIp": "RemoteIP",
+        "DestinationPort": "RemotePort",
+        "SourceIp": "LocalIP",
+        "SourcePort": "LocalPort",
+        "Protocol": "Protocol",
+        "Image": "InitiatingProcessFolderPath"
+      },
+      "file_event": {
+        "TargetFilename": "FolderPath",
+        "Image": "InitiatingProcessFolderPath",
+        "User": "InitiatingProcessAccountName"
+      },
+      "registry_event": {
+        "TargetObject": "RegistryKey",
+        "Details": "RegistryValueData",
+        "EventType": "ActionType",
+        "Image": "InitiatingProcessFolderPath"
+      },
+      "security": {
+        "EventID": "EventID",
+        "SubjectUserName": "SubjectUserName",
+        "SubjectDomainName": "SubjectDomainName",
+        "TargetUserName": "TargetUserName",
+        "IpAddress": "IpAddress",
+        "LogonType": "LogonType"
+      }
+    };
+
+    // ── Utility ────────────────────────────────────────────────────────────────
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function el(tag, attrs, ...children) {
+      const e = document.createElement(tag);
+      if (attrs) Object.entries(attrs).forEach(([k, v]) => {
+        if (k === 'class') e.className = v;
+        else if (k === 'html') e.innerHTML = v;
+        else e.setAttribute(k, v);
+      });
+      children.flat().forEach(c => {
+        if (c == null) return;
+        e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+      });
+      return e;
+    }
+
+    // ── Dark mode ──────────────────────────────────────────────────────────────
+
+    const themeToggle = document.getElementById('theme-toggle');
+    function applyTheme(dark) {
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      themeToggle.textContent = dark ? '☀' : '🌙';
+    }
+    const savedTheme = localStorage.getItem('sigma-viewer-theme');
+    applyTheme(savedTheme === 'dark');
+    themeToggle.addEventListener('click', () => {
+      const dark = document.documentElement.getAttribute('data-theme') !== 'dark';
+      applyTheme(dark);
+      localStorage.setItem('sigma-viewer-theme', dark ? 'dark' : 'light');
+    });
+
+    // ── Tabs ───────────────────────────────────────────────────────────────────
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ── Logsource lookup ───────────────────────────────────────────────────────
+
+    function lookupTable(logsource) {
+      if (!logsource) return null;
+      const p = (logsource.product || '').toLowerCase();
+      const c = (logsource.category || '').toLowerCase();
+      const s = (logsource.service || '').toLowerCase();
+      // prefer category match, then service match
+      let match = LOGSOURCE_TABLE_MAP.find(m =>
+        m.product === p && m.category && m.category === c
+      );
+      if (!match) {
+        match = LOGSOURCE_TABLE_MAP.find(m =>
+          m.product === p && m.service && m.service === s
+        );
+      }
+      return match ? match.table : null;
+    }
+
+    function getFieldMapping(logsource) {
+      if (!logsource) return {};
+      const c = (logsource.category || '').toLowerCase();
+      const s = (logsource.service || '').toLowerCase();
+      return FIELD_MAPPINGS[c] || FIELD_MAPPINGS[s] || {};
+    }
+
+    // ── Field/modifier parsing ─────────────────────────────────────────────────
+
+    function parseFieldKey(key) {
+      // e.g. "CommandLine|contains" → { field: "CommandLine", modifiers: ["contains"] }
+      const parts = key.split('|');
+      return { field: parts[0], modifiers: parts.slice(1) };
+    }
+
+    function modifierLabel(modifiers) {
+      if (!modifiers.length) return 'equals';
+      // consolidate: "all" is a qualifier, the rest describe the op
+      const ops = modifiers.filter(m => m !== 'all');
+      return ops.length ? ops.join('|') : 'equals';
+    }
+
+    // Parse a selection object into [{field, modifiers, values, all}]
+    function parseSelection(selObj) {
+      if (typeof selObj !== 'object' || Array.isArray(selObj) || selObj === null) return [];
+      return Object.entries(selObj).map(([key, val]) => {
+        const { field, modifiers } = parseFieldKey(key);
+        const values = Array.isArray(val) ? val : [val];
+        const all = modifiers.includes('all');
+        return { field, modifiers, op: modifierLabel(modifiers), values, all };
+      });
+    }
+
+    // ── ATT&CK tag helpers ─────────────────────────────────────────────────────
+
+    const ATTACK_TAG_RE = /^attack\.(t\d{4}(?:\.\d{3})?|[a-z_]+)$/i;
+
+    function tagToMitreUrl(tag) {
+      // attack.t1059.001 → T1059/001
+      // attack.t1059 → T1059
+      // attack.execution → null (tactic — no direct technique URL)
+      const lower = tag.toLowerCase().replace(/^attack\./, '');
+      const techMatch = lower.match(/^t(\d{4})(?:\.(\d{3}))?$/);
+      if (techMatch) {
+        let url = `https://attack.mitre.org/techniques/T${techMatch[1]}/`;
+        if (techMatch[2]) url += `${techMatch[2]}/`;
+        return url;
+      }
+      return null;
+    }
+
+    // ── Condition tokeniser ────────────────────────────────────────────────────
+
+    function tokeniseCondition(cond) {
+      // Returns array of {type: 'name'|'keyword'|'paren', value}
+      const tokens = [];
+      const re = /(\(|\)|\bor\b|\band\b|\bnot\b|\b\d+\s+of\s+[\w*]+|\b[\w*]+\b)/gi;
+      let m;
+      while ((m = re.exec(cond)) !== null) {
+        const v = m[1];
+        if (/^(or|and|not)$/i.test(v) || /^\d+\s+of/i.test(v)) {
+          tokens.push({ type: 'keyword', value: v });
+        } else if (v === '(' || v === ')') {
+          tokens.push({ type: 'paren', value: v });
+        } else {
+          tokens.push({ type: 'name', value: v });
+        }
+      }
+      return tokens;
+    }
+
+    // ── KQL scaffold ───────────────────────────────────────────────────────────
+
+    function mapField(fieldName, fieldMap) {
+      return fieldMap[fieldName] || fieldName;
+    }
+
+    function quoteKql(v) {
+      return `"${String(v).replace(/"/g, '\\"')}"`;
+    }
+
+    function selectionToKql(selName, selObj, fieldMap) {
+      if (typeof selObj !== 'object' || Array.isArray(selObj)) return `// ${selName}: (complex)`;
+      const parts = parseSelection(selObj);
+      const clauses = parts.map(({ field, op, values, all }) => {
+        const col = mapField(field, fieldMap);
+        const joinOp = all ? 'and' : 'or';
+        if (values.length === 1) {
+          return singleKqlClause(col, op, values[0]);
+        }
+        const subs = values.map(v => singleKqlClause(col, op, v));
+        return '(' + subs.join(` ${joinOp} `) + ')';
+      });
+      if (!clauses.length) return `// ${selName}: (empty)`;
+      return clauses.join('\n    and ');
+    }
+
+    function singleKqlClause(col, op, val) {
+      switch (op) {
+        case 'contains': return `${col} has ${quoteKql(val)}`;
+        case 'endswith':  return `${col} endswith ${quoteKql(val)}`;
+        case 'startswith': return `${col} startswith ${quoteKql(val)}`;
+        case 're':       return `${col} matches regex ${quoteKql(val)}`;
+        case 'cidr':     return `ipv4_is_in_range(${col}, ${quoteKql(val)})`;
+        default:         return `${col} == ${quoteKql(val)}`;
+      }
+    }
+
+    function buildKql(rule) {
+      const det = rule.detection || {};
+      const condition = (det.condition || '').toString();
+      const timeframe = rule.timeframe;
+      const logsource = rule.logsource || {};
+      const fieldMap = getFieldMapping(logsource);
+      const tableEntry = lookupTable(logsource);
+
+      const selections = {};
+      Object.entries(det).forEach(([k, v]) => {
+        if (k === 'condition' || k === 'timeframe') return;
+        selections[k] = v;
+      });
+
+      const lines = [];
+
+      // Table comment
+      if (tableEntry) {
+        lines.push(`// Suggested table: ${tableEntry}`);
+      } else {
+        lines.push(`// No known Sentinel table mapping for this logsource`);
+      }
+      lines.push('');
+
+      // Per-selection KQL
+      const selKql = {};
+      Object.entries(selections).forEach(([name, obj]) => {
+        selKql[name] = selectionToKql(name, obj, fieldMap);
+      });
+
+      // Emit each selection as a named comment block
+      Object.entries(selKql).forEach(([name, kql]) => {
+        lines.push(`// Selection: ${name}`);
+        lines.push(`| where ${kql}`);
+        lines.push('');
+      });
+
+      // Condition glue
+      if (condition) {
+        lines.push(`// Condition: ${condition}`);
+        const combined = buildCombinedKql(condition, selKql);
+        if (combined) {
+          lines.push('// Combined where clause (approximate):');
+          lines.push(`| where ${combined}`);
+        }
+        if (timeframe) {
+          lines.push(`// Timeframe: ${timeframe}`);
+        }
+      }
+
+      return lines.join('\n');
+    }
+
+    function buildCombinedKql(condition, selKql) {
+      // Simple parser for conditions like "sel and not filter"
+      // Supports: and, or, not, parentheses, N of selection*
+      const tokens = tokeniseCondition(condition);
+      const parts = tokens.map(tok => {
+        if (tok.type === 'name') {
+          return selKql[tok.value]
+            ? `(\n    ${selKql[tok.value]}\n  )`
+            : `/* unknown: ${tok.value} */`;
+        }
+        if (tok.type === 'keyword') {
+          const v = tok.value.toLowerCase();
+          if (v === 'and') return '\nand ';
+          if (v === 'or') return '\nor ';
+          if (v === 'not') return 'not ';
+          return `/* ${tok.value} */`;
+        }
+        return tok.value;
+      });
+      return parts.join(' ').trim();
+    }
+
+    // ── Render helpers ─────────────────────────────────────────────────────────
+
+    function statusBadge(status) {
+      const map = { stable: 'green', test: 'yellow', experimental: 'orange', deprecated: 'red' };
+      const cls = map[(status || '').toLowerCase()] || 'grey';
+      return el('span', { class: `badge badge-${cls}` }, status || '—');
+    }
+
+    function levelBadge(level) {
+      const map = { critical: 'red', high: 'orange', medium: 'yellow', low: 'blue', informational: 'grey' };
+      const cls = map[(level || '').toLowerCase()] || 'grey';
+      return el('span', { class: `badge badge-${cls}` }, level || '—');
+    }
+
+    function infoRow(label, ...valueNodes) {
+      return [
+        el('div', { class: 'info-label' }, label),
+        el('div', { class: 'info-value' }, ...valueNodes)
+      ];
+    }
+
+    // ── Render panels ──────────────────────────────────────────────────────────
+
+    function renderMetadata(rule) {
+      const panel = document.getElementById('tab-metadata');
+      panel.innerHTML = '';
+
+      const grid = el('div', { class: 'info-grid' });
+
+      // Title
+      grid.append(...infoRow('Title', el('strong', null, rule.title || '—')));
+
+      // Status + Level on same row
+      const statusEl = rule.status ? statusBadge(rule.status) : document.createTextNode('—');
+      grid.append(...infoRow('Status', statusEl));
+      const levelEl = rule.level ? levelBadge(rule.level) : document.createTextNode('—');
+      grid.append(...infoRow('Level', levelEl));
+
+      // Description
+      if (rule.description) {
+        grid.append(...infoRow('Description', rule.description));
+      }
+
+      // Author
+      if (rule.author) grid.append(...infoRow('Author', rule.author));
+
+      // Date / Modified
+      if (rule.date) grid.append(...infoRow('Date', String(rule.date)));
+      if (rule.modified) grid.append(...infoRow('Modified', String(rule.modified)));
+
+      panel.appendChild(grid);
+
+      // Tags (ATT&CK)
+      const tags = Array.isArray(rule.tags) ? rule.tags : [];
+      if (tags.length) {
+        const sec = el('div', { class: 'panel-section' });
+        sec.appendChild(el('h3', null, 'ATT&CK Tags'));
+        const pills = el('div', { class: 'tag-pills' });
+        tags.forEach(tag => {
+          const url = tagToMitreUrl(tag);
+          const pill = url
+            ? el('a', { class: 'tag-pill', href: url, target: '_blank', rel: 'noopener' }, tag)
+            : el('span', { class: 'tag-pill' }, tag);
+          pills.appendChild(pill);
+        });
+        sec.appendChild(pills);
+        panel.appendChild(sec);
+      }
+
+      // References
+      const refs = Array.isArray(rule.references) ? rule.references : (rule.references ? [rule.references] : []);
+      if (refs.length) {
+        const sec = el('div', { class: 'panel-section' });
+        sec.appendChild(el('h3', null, 'References'));
+        const ul = el('ul', { class: 'ref-list' });
+        refs.forEach(r => {
+          const a = el('a', { href: r, target: '_blank', rel: 'noopener' }, r);
+          ul.appendChild(el('li', null, a));
+        });
+        sec.appendChild(ul);
+        panel.appendChild(sec);
+      }
+
+      // False positives
+      const fps = Array.isArray(rule.falsepositives) ? rule.falsepositives : (rule.falsepositives ? [rule.falsepositives] : []);
+      if (fps.length) {
+        const sec = el('div', { class: 'panel-section' });
+        sec.appendChild(el('h3', null, 'False Positives'));
+        const ul = el('ul', { class: 'fp-list' });
+        fps.forEach(fp => ul.appendChild(el('li', null, String(fp))));
+        sec.appendChild(ul);
+        panel.appendChild(sec);
+      }
+    }
+
+    function renderLogsource(rule) {
+      const panel = document.getElementById('tab-logsource');
+      panel.innerHTML = '';
+
+      const ls = rule.logsource || {};
+      const grid = el('div', { class: 'info-grid' });
+      ['product', 'category', 'service', 'definition'].forEach(key => {
+        if (ls[key]) grid.append(...infoRow(key.charAt(0).toUpperCase() + key.slice(1), String(ls[key])));
+      });
+      panel.appendChild(grid);
+
+      const sec = el('div', { class: 'panel-section' });
+      sec.appendChild(el('h3', null, 'Sentinel / Log Analytics Table'));
+      const tableEntry = lookupTable(ls);
+      if (tableEntry) {
+        sec.appendChild(el('div', { class: 'table-mapping' }, tableEntry));
+      } else {
+        sec.appendChild(el('div', { class: 'no-mapping' }, 'No known Sentinel table mapping for this logsource combination.'));
+      }
+      panel.appendChild(sec);
+    }
+
+    function renderDetection(rule) {
+      const panel = document.getElementById('tab-detection');
+      panel.innerHTML = '';
+
+      const det = rule.detection || {};
+      const condition = det.condition ? String(det.condition) : null;
+      const timeframe = rule.timeframe ? String(rule.timeframe) : null;
+
+      // Gather selection names (excluding condition and timeframe)
+      const selNames = Object.keys(det).filter(k => k !== 'condition' && k !== 'timeframe');
+
+      // Selections
+      if (selNames.length) {
+        const sec = el('div', { class: 'panel-section' });
+        sec.appendChild(el('h3', null, 'Selections'));
+        selNames.forEach(name => {
+          const block = el('div', { class: 'selection-block' });
+          block.appendChild(el('div', { class: 'selection-name' }, name));
+
+          const selObj = det[name];
+          if (typeof selObj === 'object' && !Array.isArray(selObj) && selObj !== null) {
+            const fields = parseSelection(selObj);
+            fields.forEach(({ field, op, values, all }) => {
+              const row = el('div', { class: 'field-row' });
+              row.appendChild(el('span', { class: 'field-name' }, field));
+              row.appendChild(el('span', { class: 'op-badge' }, op + (all ? ' (all)' : '')));
+              block.appendChild(row);
+              const ul = el('ul', { class: 'value-list' });
+              values.forEach(v => ul.appendChild(el('li', null, String(v))));
+              block.appendChild(ul);
+            });
+          } else if (Array.isArray(selObj)) {
+            const ul = el('ul', { class: 'value-list' });
+            selObj.forEach(v => ul.appendChild(el('li', null, JSON.stringify(v))));
+            block.appendChild(ul);
+          } else {
+            block.appendChild(el('span', null, JSON.stringify(selObj)));
+          }
+
+          sec.appendChild(block);
+        });
+        panel.appendChild(sec);
+      }
+
+      // Condition
+      if (condition) {
+        const sec = el('div', { class: 'panel-section' });
+        sec.appendChild(el('h3', null, 'Condition'));
+        const box = el('div', { class: 'condition-box' });
+        const tokens = tokeniseCondition(condition);
+        tokens.forEach(tok => {
+          if (tok.type === 'name') {
+            const missing = !selNames.includes(tok.value);
+            const span = el('span', { class: missing ? 'cond-ref-missing' : 'cond-ref' }, tok.value);
+            if (missing) span.title = `"${tok.value}" is not defined as a selection`;
+            box.appendChild(span);
+          } else if (tok.type === 'keyword') {
+            box.appendChild(el('span', { class: 'cond-keyword' }, ' ' + tok.value + ' '));
+          } else {
+            box.appendChild(document.createTextNode(tok.value));
+          }
+        });
+        sec.appendChild(box);
+        panel.appendChild(sec);
+      }
+
+      // Timeframe
+      if (timeframe) {
+        const sec = el('div', { class: 'panel-section' });
+        sec.appendChild(el('h3', null, 'Timeframe'));
+        sec.appendChild(el('div', { class: 'timeframe-row' }, timeframe));
+        panel.appendChild(sec);
+      }
+
+      if (!selNames.length && !condition) {
+        panel.appendChild(el('p', null, 'No detection content found.'));
+      }
+    }
+
+    function renderValidation(rule) {
+      const panel = document.getElementById('tab-validation');
+      panel.innerHTML = '';
+
+      const items = [];
+
+      function check(ok, msg, level = 'error') {
+        items.push({ ok, msg, level: ok ? 'ok' : level });
+      }
+
+      // Required fields
+      check(!!rule.title, 'Required field: title');
+      check(!!(rule.logsource), 'Required field: logsource');
+      check(!!(rule.detection), 'Required field: detection');
+
+      // Condition references
+      const det = rule.detection || {};
+      const condition = det.condition ? String(det.condition) : null;
+      const selNames = Object.keys(det).filter(k => k !== 'condition' && k !== 'timeframe');
+
+      if (condition) {
+        const tokens = tokeniseCondition(condition);
+        const refNames = tokens.filter(t => t.type === 'name').map(t => t.value);
+        const missing = refNames.filter(n => !selNames.includes(n));
+        if (missing.length) {
+          check(false, `Condition references undefined selection(s): ${missing.join(', ')}`);
+        } else {
+          check(true, 'All condition references resolve to defined selections');
+        }
+      } else if (rule.detection) {
+        check(false, 'No condition defined in detection', 'error');
+      }
+
+      // Timeframe only with aggregation
+      const timeframe = rule.timeframe ? String(rule.timeframe) : null;
+      if (timeframe) {
+        const hasAgg = condition && /\|\s*(count|sum|avg|min|max|near)/i.test(condition);
+        check(hasAgg, 'Timeframe is present but condition does not contain an aggregation function', 'warn');
+      }
+
+      // Deprecated fields
+      const deprecated = ['falsepositives_expected', 'action'];
+      deprecated.forEach(f => {
+        if (rule[f] !== undefined) {
+          items.push({ ok: false, msg: `Deprecated field present: "${f}"`, level: 'warn' });
+        }
+      });
+
+      // ATT&CK tag format
+      const tags = Array.isArray(rule.tags) ? rule.tags : [];
+      if (tags.length) {
+        const badTags = tags.filter(t => !ATTACK_TAG_RE.test(t));
+        if (badTags.length) {
+          check(false, `Invalid ATT&CK tag format: ${badTags.map(t => `"${t}"`).join(', ')}`, 'warn');
+        } else {
+          check(true, 'All tags follow ATT&CK tag format (attack.tNNNN or attack.tacticname)');
+        }
+      }
+
+      // Status value
+      const validStatuses = ['stable', 'test', 'experimental', 'deprecated'];
+      if (rule.status && !validStatuses.includes(rule.status.toLowerCase())) {
+        items.push({ ok: false, msg: `Unknown status value: "${rule.status}". Expected: ${validStatuses.join(', ')}`, level: 'warn' });
+      }
+
+      // Level value
+      const validLevels = ['informational', 'low', 'medium', 'high', 'critical'];
+      if (rule.level && !validLevels.includes(rule.level.toLowerCase())) {
+        items.push({ ok: false, msg: `Unknown level value: "${rule.level}". Expected: ${validLevels.join(', ')}`, level: 'warn' });
+      }
+
+      items.forEach(({ ok, msg, level }) => {
+        const icon = ok ? '✓' : (level === 'warn' ? '⚠' : '✕');
+        const cls = ok ? 'ok' : level;
+        const div = el('div', { class: `val-item ${cls}` },
+          el('span', { class: 'val-icon' }, icon),
+          el('span', null, msg)
+        );
+        panel.appendChild(div);
+      });
+    }
+
+    function renderKql(rule) {
+      const panel = document.getElementById('tab-kql');
+      panel.innerHTML = '';
+
+      panel.appendChild(el('div', { class: 'kql-disclaimer' },
+        'Approximate scaffold — use pySigma for production output. Field names and operators may not be exact.'
+      ));
+
+      const kql = buildKql(rule);
+      const pre = el('div', { class: 'kql-output' }, kql);
+      panel.appendChild(pre);
+
+      const copyBtn = el('button', null, 'Copy KQL');
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(kql).then(() => {
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => copyBtn.textContent = 'Copy KQL', 1500);
+        });
+      });
+      panel.appendChild(copyBtn);
+    }
+
+    // ── Main parse & render ────────────────────────────────────────────────────
+
+    function parseAndRender() {
+      const yaml = document.getElementById('yaml-input').value.trim();
+      const errEl = document.getElementById('parse-error');
+      const tabsEl = document.getElementById('tabs-container');
+
+      if (!yaml) {
+        errEl.style.display = 'none';
+        tabsEl.style.display = 'none';
+        return;
+      }
+
+      let rule;
+      try {
+        rule = jsyaml.load(yaml);
+      } catch (e) {
+        errEl.textContent = 'YAML parse error: ' + e.message;
+        errEl.style.display = 'block';
+        tabsEl.style.display = 'none';
+        return;
+      }
+
+      if (typeof rule !== 'object' || Array.isArray(rule) || rule === null) {
+        errEl.textContent = 'YAML did not parse to an object. Expected a SIGMA rule.';
+        errEl.style.display = 'block';
+        tabsEl.style.display = 'none';
+        return;
+      }
+
+      errEl.style.display = 'none';
+      tabsEl.style.display = 'block';
+
+      renderMetadata(rule);
+      renderLogsource(rule);
+      renderDetection(rule);
+      renderValidation(rule);
+      renderKql(rule);
+
+      // Persist to URL
+      try {
+        const params = new URLSearchParams({ rule: yaml });
+        history.replaceState(null, '', '?' + params.toString());
+      } catch (_) {}
+    }
+
+    // ── Event wiring ───────────────────────────────────────────────────────────
+
+    document.getElementById('parse-btn').addEventListener('click', parseAndRender);
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      document.getElementById('yaml-input').value = '';
+      document.getElementById('parse-error').style.display = 'none';
+      document.getElementById('tabs-container').style.display = 'none';
+      history.replaceState(null, '', location.pathname);
+    });
+    document.getElementById('sample-btn').addEventListener('click', () => {
+      document.getElementById('yaml-input').value = SAMPLE_RULE;
+      parseAndRender();
+    });
+
+    // Ctrl/Cmd+Enter to parse
+    document.getElementById('yaml-input').addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') parseAndRender();
+    });
+
+    // ── Startup ────────────────────────────────────────────────────────────────
+
+    (function init() {
+      const params = new URLSearchParams(location.search);
+      const fromUrl = params.get('rule');
+      if (fromUrl) {
+        document.getElementById('yaml-input').value = fromUrl;
+        parseAndRender();
+      } else {
+        // Pre-load sample on first open
+        document.getElementById('yaml-input').value = SAMPLE_RULE;
+        parseAndRender();
+      }
+    })();
+  </script>
+</body>
+</html>

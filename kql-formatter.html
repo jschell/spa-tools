@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KQL Formatter</title>
+  <meta name="description" content="Paste a KQL query and get it back cleanly formatted with consistent indentation and operator alignment.">
+  <style>
+    :root[data-theme="light"] {
+      --bg: #ffffff;
+      --surface: #f5f5f5;
+      --text: #1a1a1a;
+      --border: #e0e0e0;
+      --mono-bg: #f8f8f8;
+      --btn-primary-bg: #0066cc;
+      --btn-primary-text: #ffffff;
+      --btn-secondary-bg: #e8e8e8;
+      --btn-secondary-text: #1a1a1a;
+      --btn-secondary-hover: #d0d0d0;
+      --label: #555555;
+      --count: #888888;
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #1a1a1a;
+      --surface: #2a2a2a;
+      --text: #e8e8e8;
+      --border: #444444;
+      --mono-bg: #121212;
+      --btn-primary-bg: #3388ff;
+      --btn-primary-text: #ffffff;
+      --btn-secondary-bg: #3a3a3a;
+      --btn-secondary-text: #e8e8e8;
+      --btn-secondary-hover: #4a4a4a;
+      --label: #aaaaaa;
+      --count: #777777;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    a {
+      color: var(--btn-primary-bg);
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 0.25rem;
+    }
+
+    .theme-toggle {
+      background: var(--btn-secondary-bg);
+      color: var(--btn-secondary-text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      font-size: 1rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .theme-toggle:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    h1 {
+      margin: 0.25rem 0 0.4rem;
+      font-size: 1.6rem;
+    }
+
+    .description {
+      margin: 0 0 1.25rem;
+      color: var(--label);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: sans-serif;
+      transition: background 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--btn-primary-bg);
+      color: var(--btn-primary-text);
+      border-color: var(--btn-primary-bg);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.88;
+    }
+
+    .btn-secondary {
+      background: var(--btn-secondary-bg);
+      color: var(--btn-secondary-text);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .panels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .panel-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--label);
+    }
+
+    textarea, .output-area {
+      width: 100%;
+      min-height: 360px;
+      padding: 0.75rem;
+      font-family: 'Cascadia Code', 'Fira Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--mono-bg);
+      color: var(--text);
+      resize: vertical;
+      tab-size: 4;
+    }
+
+    textarea {
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--btn-primary-bg);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--btn-primary-bg) 25%, transparent);
+    }
+
+    .output-area {
+      white-space: pre;
+      overflow: auto;
+      cursor: text;
+      user-select: text;
+    }
+
+    .output-area.empty {
+      color: var(--count);
+      font-style: italic;
+      white-space: normal;
+    }
+
+    .char-count {
+      font-size: 0.75rem;
+      color: var(--count);
+      text-align: right;
+    }
+
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--label);
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <p style="margin:0"><a href="index.html">&larr; All tools</a></p>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">&#9728;</button>
+  </div>
+  <h1>KQL Formatter</h1>
+  <p class="description">Paste a KQL query and get it back cleanly formatted with consistent indentation and operator alignment.</p>
+
+  <div class="toolbar">
+    <button class="btn-primary" id="formatBtn">Format</button>
+    <button class="btn-secondary" id="copyBtn" disabled>Copy</button>
+    <button class="btn-secondary" id="clearBtn">Clear</button>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-label">Input</div>
+      <textarea id="input" placeholder="Paste your KQL query here..." spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+      <div class="char-count" id="inputCount">0 characters</div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Output</div>
+      <div class="output-area empty" id="output" tabindex="0" aria-label="Formatted KQL output">Formatted output will appear here.</div>
+      <div class="char-count" id="outputCount">0 characters</div>
+    </div>
+  </div>
+
+  <footer>
+    <p><a href="https://github.com/jschell/spa-tools/blob/main/kql-formatter.html">View source</a></p>
+  </footer>
+
+  <script>
+    /*
+     * Sample KQL for testing:
+     *
+     * let threshold = 10;
+     * let base = SigninLogs | where TimeGenerated > ago(1d);
+     * base | where ResultType != 0 and UserPrincipalName contains "admin" | summarize FailedAttempts = count(), Locations = make_set(Location) by UserPrincipalName | where FailedAttempts > threshold | project UserPrincipalName, FailedAttempts, Locations
+     */
+
+    // ─── DOM refs ───────────────────────────────────────────────────────────────
+
+    const inputEl      = document.getElementById('input');
+    const outputEl     = document.getElementById('output');
+    const inputCount   = document.getElementById('inputCount');
+    const outputCount  = document.getElementById('outputCount');
+    const formatBtn    = document.getElementById('formatBtn');
+    const copyBtn      = document.getElementById('copyBtn');
+    const clearBtn     = document.getElementById('clearBtn');
+    const themeToggle  = document.getElementById('themeToggle');
+
+    // ─── Theme ──────────────────────────────────────────────────────────────────
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '\u2600' : '\uD83C\uDF19'; // ☀ / 🌙
+      themeToggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    }
+
+    (function initTheme() {
+      const saved = localStorage.getItem('kql-theme');
+      const preferred = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      applyTheme(preferred);
+    })();
+
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('kql-theme', next);
+      applyTheme(next);
+    });
+
+    // ─── Character counts ────────────────────────────────────────────────────────
+
+    function updateInputCount() {
+      const n = inputEl.value.length;
+      inputCount.textContent = n.toLocaleString() + ' character' + (n === 1 ? '' : 's');
+    }
+
+    function updateOutputCount(text) {
+      const n = text.length;
+      outputCount.textContent = n > 0 ? n.toLocaleString() + ' character' + (n === 1 ? '' : 's') : '0 characters';
+    }
+
+    inputEl.addEventListener('input', updateInputCount);
+
+    // ─── URL state ───────────────────────────────────────────────────────────────
+
+    (function loadFromUrl() {
+      const params = new URLSearchParams(location.search);
+      const q = params.get('q');
+      if (q) {
+        inputEl.value = q;
+        updateInputCount();
+      }
+    })();
+
+    function saveToUrl() {
+      const val = inputEl.value;
+      if (val) {
+        const params = new URLSearchParams({ q: val });
+        history.replaceState(null, '', '?' + params.toString());
+      } else {
+        history.replaceState(null, '', location.pathname);
+      }
+    }
+
+    // ─── KQL Formatter ──────────────────────────────────────────────────────────
+
+    /**
+     * Formats a raw KQL string according to the project spec.
+     *
+     * Strategy:
+     *  1. Extract string literals (double-quoted) → placeholders
+     *  2. Extract single-line comments (//) → placeholders
+     *  3. Tokenise the query into "statements" separated by semicolons
+     *     (respecting paren depth so semicolons inside join sub-queries are safe)
+     *  4. Within each statement, split on pipe operators that are at paren-depth 0
+     *  5. Format each segment according to its leading keyword
+     *  6. Reassemble and restore placeholders
+     */
+    function formatKQL(raw) {
+      const trimmed = raw.trim();
+      if (!trimmed) return '';
+
+      // ── Step 1 & 2: extract literals and comments ──────────────────────────
+      const placeholders = [];
+
+      function stash(text) {
+        const key = `\x00PH${placeholders.length}\x00`;
+        placeholders.push(text);
+        return key;
+      }
+
+      // Replace double-quoted strings (handle escaped quotes)
+      let src = trimmed.replace(/"(?:[^"\\]|\\.)*"/g, match => stash(match));
+
+      // Replace single-quoted strings (KQL also uses them for some literals)
+      src = src.replace(/'(?:[^'\\]|\\.)*'/g, match => stash(match));
+
+      // Replace single-line comments
+      src = src.replace(/\/\/[^\n]*/g, match => stash(match.trimEnd()));
+
+      // ── Step 3: split into semicolon-separated statements ──────────────────
+      const statements = splitOnSemicolons(src);
+
+      const formattedStatements = [];
+      let prevWasLet = false;
+
+      for (let si = 0; si < statements.length; si++) {
+        const stmt = statements[si].trim();
+        if (!stmt) continue;
+
+        const isLet = /^let\s+/i.test(stmt);
+
+        if (isLet) {
+          // let bindings: format the value side then emit at column 0
+          const formatted = formatLetStatement(stmt);
+          formattedStatements.push({ text: formatted, isLet: true });
+          prevWasLet = true;
+        } else {
+          // Query body: split into pipe segments and format each
+          const formatted = formatQueryBody(stmt);
+          formattedStatements.push({ text: formatted, isLet: false });
+          prevWasLet = false;
+        }
+      }
+
+      // Assemble: blank line between last let and the query body
+      let lines = [];
+      for (let i = 0; i < formattedStatements.length; i++) {
+        const cur = formattedStatements[i];
+        const prev = formattedStatements[i - 1];
+        if (prev && prev.isLet && !cur.isLet) {
+          lines.push(''); // blank separator
+        }
+        lines.push(cur.text);
+      }
+
+      const result = lines.join('\n');
+
+      // ── Restore placeholders ────────────────────────────────────────────────
+      return result.replace(/\x00PH(\d+)\x00/g, (_, i) => placeholders[parseInt(i, 10)]);
+    }
+
+    /** Split src on `;` characters that are at paren/bracket depth 0 */
+    function splitOnSemicolons(src) {
+      const parts = [];
+      let depth = 0;
+      let start = 0;
+
+      for (let i = 0; i < src.length; i++) {
+        const ch = src[i];
+        if (ch === '(' || ch === '[') depth++;
+        else if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
+        else if (ch === ';' && depth === 0) {
+          parts.push(src.slice(start, i));
+          start = i + 1;
+        }
+      }
+
+      const tail = src.slice(start).trim();
+      if (tail) parts.push(tail);
+
+      return parts;
+    }
+
+    /** Format a `let x = ...` statement */
+    function formatLetStatement(stmt) {
+      // Preserve the let statement as-is except normalise whitespace
+      // The value part might itself be a sub-query with pipes
+      const match = stmt.match(/^(let\s+\w+\s*=\s*)([\s\S]*)$/i);
+      if (!match) return stmt.trim();
+
+      const prefix = match[1].replace(/\s+/g, ' ');
+      const value = match[2].trim();
+
+      // If value looks like a tabular query, format it with pipes
+      if (isPipeQuery(value)) {
+        const subFormatted = formatQueryBody(value, prefix.length);
+        return prefix + subFormatted;
+      }
+
+      return prefix + value;
+    }
+
+    /** Heuristic: does the text look like a tabular expression? */
+    function isPipeQuery(value) {
+      return /\|/.test(value) || /^\w[\w.]*\s*$/.test(value.trim());
+    }
+
+    /** Format a query body (not a let statement) by splitting on pipes */
+    function formatQueryBody(stmt, baseIndent) {
+      const segments = splitOnPipes(stmt);
+
+      if (segments.length === 0) return stmt.trim();
+      if (segments.length === 1) return formatSegment(segments[0].trim(), 0);
+
+      const tableSegment = formatSegment(segments[0].trim(), 0);
+      const pipeIndent = '    '; // 4 spaces
+
+      const pipeLines = segments.slice(1).map(seg => {
+        return pipeIndent + '| ' + formatSegment(seg.trim(), pipeIndent.length + 2);
+      });
+
+      return [tableSegment, ...pipeLines].join('\n');
+    }
+
+    /** Split on `|` characters at paren/bracket depth 0 */
+    function splitOnPipes(src) {
+      const parts = [];
+      let depth = 0;
+      let start = 0;
+
+      for (let i = 0; i < src.length; i++) {
+        const ch = src[i];
+        if (ch === '(' || ch === '[') depth++;
+        else if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
+        else if (ch === '|' && depth === 0) {
+          parts.push(src.slice(start, i));
+          start = i + 1;
+        }
+      }
+
+      parts.push(src.slice(start));
+      return parts;
+    }
+
+    /**
+     * Format a single pipe segment (already stripped of the leading `|`).
+     * `col` is the column position after the leading `| ` prefix so we can
+     * calculate wrap widths correctly.
+     */
+    function formatSegment(seg, col) {
+      const s = seg.trim();
+      if (!s) return '';
+
+      // Identify leading keyword
+      const kwMatch = s.match(/^(\w[\w-]*)\s*/i);
+      if (!kwMatch) return s;
+
+      const kw = kwMatch[1].toLowerCase();
+
+      switch (kw) {
+        case 'where':    return formatWhere(s, col);
+        case 'summarize':
+        case 'extend':
+        case 'project':
+        case 'project-away':
+          return formatColumnList(s, col);
+        case 'join':     return formatJoin(s, col);
+        default:         return normaliseWhitespace(s);
+      }
+    }
+
+    /** Normalise interior whitespace without reformatting */
+    function normaliseWhitespace(s) {
+      // Collapse runs of whitespace (but not newlines inside sub-expressions)
+      return s.replace(/[ \t]+/g, ' ').trim();
+    }
+
+    // ── where formatter ────────────────────────────────────────────────────────
+
+    /**
+     * Format a where clause. Predicates joined by top-level `and`/`or` are
+     * wrapped onto new lines, indented to align under the first predicate term.
+     *
+     * `col` = column where the first character of this segment appears in output.
+     */
+    function formatWhere(seg, col) {
+      // Strip leading "where" keyword
+      const rest = seg.replace(/^where\s+/i, '').trim();
+
+      // Split on top-level `and` / `or`
+      const parts = splitOnLogicalOps(rest);
+
+      if (parts.length === 1) {
+        return 'where ' + normaliseWhitespace(parts[0].text);
+      }
+
+      // Indentation: "where " is 6 chars; continuation aligns there
+      const indent = ' '.repeat(6); // "where ".length === 6
+
+      const lines = parts.map((part, idx) => {
+        const op = idx === 0 ? '' : part.op.toLowerCase() + ' ';
+        const text = normaliseWhitespace(part.text);
+        return idx === 0 ? 'where ' + text : indent + op + text;
+      });
+
+      return lines.join('\n');
+    }
+
+    /**
+     * Split an expression on top-level `and` / `or` tokens.
+     * Returns array of { op: 'and'|'or'|'', text: string }
+     */
+    function splitOnLogicalOps(expr) {
+      const parts = [];
+      let depth = 0;
+      let start = 0;
+      let i = 0;
+
+      while (i < expr.length) {
+        const ch = expr[i];
+
+        if (ch === '(' || ch === '[') { depth++; i++; continue; }
+        if (ch === ')' || ch === ']') { depth = Math.max(0, depth - 1); i++; continue; }
+
+        if (depth === 0) {
+          const remaining = expr.slice(i);
+          const andMatch = remaining.match(/^(and)\b/i);
+          const orMatch  = remaining.match(/^(or)\b/i);
+
+          const opMatch = andMatch || orMatch;
+          if (opMatch) {
+            const text = expr.slice(start, i).trim();
+            if (text) parts.push({ op: parts.length === 0 ? '' : (andMatch ? 'and' : 'or'), text });
+            start = i + opMatch[1].length;
+            i = start;
+            continue;
+          }
+        }
+
+        i++;
+      }
+
+      const tail = expr.slice(start).trim();
+      if (tail) {
+        parts.push({ op: parts.length === 0 ? '' : '', text: tail });
+      }
+
+      // Patch: the op for all but the first is set during splitting above,
+      // but the first part always has op:''. Fix the op for non-first items
+      // by re-scanning (they were pushed with the correct op already).
+
+      return parts;
+    }
+
+    // ── column-list formatter (summarize / extend / project / project-away) ───
+
+    const WRAP_WIDTH = 120;
+    const CONT_INDENT = '        '; // 8 spaces
+
+    function formatColumnList(seg, col) {
+      // Split keyword from the rest (handles "project-away")
+      const match = seg.match(/^([\w-]+)\s+([\s\S]*)$/i);
+      if (!match) return seg;
+
+      const kw   = match[1];
+      const rest = match[2].trim();
+
+      // Split rest on top-level commas
+      const items = splitOnCommas(rest).map(s => normaliseWhitespace(s));
+
+      if (items.length <= 1) {
+        return kw + ' ' + items.join('');
+      }
+
+      // Try to fit on one line first (col is where the segment starts in output)
+      const oneLiner = kw + ' ' + items.join(', ');
+      if (col + oneLiner.length <= WRAP_WIDTH) {
+        return oneLiner;
+      }
+
+      // Wrap: first item on same line as keyword, continuations indented 8
+      const firstLine = kw + ' ' + items[0] + ',';
+      const contLines = items.slice(1).map((item, idx) => {
+        const isLast = idx === items.length - 2;
+        return CONT_INDENT + item + (isLast ? '' : ',');
+      });
+
+      return [firstLine, ...contLines].join('\n');
+    }
+
+    /** Split `expr` on `,` at depth 0 */
+    function splitOnCommas(expr) {
+      const parts = [];
+      let depth = 0;
+      let start = 0;
+
+      for (let i = 0; i < expr.length; i++) {
+        const ch = expr[i];
+        if (ch === '(' || ch === '[') depth++;
+        else if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
+        else if (ch === ',' && depth === 0) {
+          parts.push(expr.slice(start, i).trim());
+          start = i + 1;
+        }
+      }
+
+      const tail = expr.slice(start).trim();
+      if (tail) parts.push(tail);
+
+      return parts;
+    }
+
+    // ── join formatter ─────────────────────────────────────────────────────────
+
+    /**
+     * Format a join segment:
+     *   join kind=inner (
+     *       <inner-query>
+     *   ) on Field1, Field2
+     */
+    function formatJoin(seg, col) {
+      // Attempt to parse: join [kind=...] ( <subquery> ) on <keys>
+      const joinMatch = seg.match(/^join(\s+kind\s*=\s*\w+)?\s*\(([\s\S]*)\)\s*on\s+([\s\S]*)$/i);
+
+      if (!joinMatch) {
+        // Can't parse structure; fall back to normalised whitespace
+        return normaliseWhitespace(seg);
+      }
+
+      const kindPart  = joinMatch[1] ? joinMatch[1].trim() : '';
+      const innerRaw  = joinMatch[2].trim();
+      const onClause  = normaliseWhitespace(joinMatch[3].trim());
+
+      const header = 'join' + (kindPart ? ' ' + kindPart : '');
+
+      // Format the inner query with 4-space indent
+      const innerFormatted = formatQueryBody(innerRaw)
+        .split('\n')
+        .map(l => '    ' + l)
+        .join('\n');
+
+      return [
+        header + ' (',
+        innerFormatted,
+        ') on ' + onClause
+      ].join('\n');
+    }
+
+    // ─── UI wiring ───────────────────────────────────────────────────────────────
+
+    let lastFormatted = '';
+
+    function runFormat() {
+      const raw = inputEl.value;
+      saveToUrl();
+
+      if (!raw.trim()) {
+        showOutput('', true);
+        return;
+      }
+
+      try {
+        const result = formatKQL(raw);
+        lastFormatted = result;
+        showOutput(result, false);
+      } catch (err) {
+        showOutput('Error: ' + err.message, true);
+        lastFormatted = '';
+      }
+    }
+
+    function showOutput(text, isEmpty) {
+      if (isEmpty || !text) {
+        outputEl.textContent = text || 'Formatted output will appear here.';
+        outputEl.classList.add('empty');
+        copyBtn.disabled = true;
+        updateOutputCount('');
+      } else {
+        outputEl.textContent = text;
+        outputEl.classList.remove('empty');
+        copyBtn.disabled = false;
+        updateOutputCount(text);
+      }
+    }
+
+    formatBtn.addEventListener('click', runFormat);
+
+    // Format on Ctrl+Enter / Cmd+Enter
+    inputEl.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runFormat();
+      }
+    });
+
+    copyBtn.addEventListener('click', () => {
+      if (!lastFormatted) return;
+      navigator.clipboard.writeText(lastFormatted).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+      }).catch(() => {
+        // Fallback for restricted environments
+        const ta = document.createElement('textarea');
+        ta.value = lastFormatted;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+      });
+    });
+
+    clearBtn.addEventListener('click', () => {
+      inputEl.value = '';
+      lastFormatted = '';
+      showOutput('', true);
+      updateInputCount();
+      history.replaceState(null, '', location.pathname);
+      inputEl.focus();
+    });
+
+    // Initialise counts
+    updateInputCount();
+    updateOutputCount('');
+
+    // Auto-format if URL had a query pre-filled
+    if (inputEl.value.trim()) {
+      runFormat();
+    }
+  </script>
+</body>
+</html>
