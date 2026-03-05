@@ -218,9 +218,10 @@ let db = null, conn = null, editor = null;
 
 // Apply saved theme before first paint (default: light)
 applyTheme(localStorage.getItem('kql-theme') || 'light');
-let currentTable = null;   // sanitised table name
-let currentCols  = [];     // [{name, type}]
-let lastArrow    = null;   // last Arrow result for export
+let currentTable      = null;  // sanitised table name
+let currentCols       = [];    // [{name, type}]
+let lastArrow         = null;  // last Arrow result for export
+let completionDispose = null;  // disposable for the active completion provider
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function esc(s) {
@@ -276,10 +277,27 @@ function initMonaco() {
 
       monaco.languages.register({ id: 'kql' });
       monaco.languages.setMonarchTokensProvider('kql', {
-        keywords: ['where','project','take','extend','summarize','by','join','on',
-                   'order','sort','asc','desc','let','as','limit','top','count',
-                   'and','or','not','contains','startswith','endswith','has','in',
-                   'between','render','distinct'],
+        keywords: [
+          'where','project','project-away','project-rename','take','extend','summarize',
+          'by','join','on','order','sort','asc','desc','let','as','limit','top','count',
+          'and','or','not','contains','startswith','endswith','has','in','between',
+          'render','distinct','mv-expand','parse','serialize',
+          'ago','now','bin','datetime','iif','iff','case','isempty','isnotempty',
+          'isnull','isnotnull','tostring','toint','tolong','todouble','tobool',
+          'todatetime','totimespan','tolower','toupper','strlen','strcat','split',
+          'indexof','substring','trim','replace','extract','parse_json','hash',
+          'format_datetime','format_timespan','datetime_part','datetime_diff','datetime_add',
+          'unixtime_seconds_todatetime','unixtime_milliseconds_todatetime',
+          'unixtime_microseconds_todatetime','unixtime_nanoseconds_todatetime',
+          'startofday','startofweek','startofmonth','startofyear',
+          'endofday','endofweek','endofmonth','endofyear',
+          'hourofday','dayofweek','dayofmonth','dayofyear','weekofyear',
+          'dcount','countif','dcountif','sum','sumif','avg','avgif',
+          'min','minif','max','maxif','stdev','stdevp','variance','variancep',
+          'percentile','make_list','make_set','make_list_if','make_set_if',
+          'arg_max','arg_min','take_any','gettype','abs','round','sqrt','pow',
+          'rand','true','false',
+        ],
         tokenizer: {
           root: [
             [/\/\/.*$/, 'comment'],
@@ -324,6 +342,8 @@ function initMonaco() {
         history.replaceState(null, '', '?' + params.toString());
       });
 
+      // Register completions immediately so keywords/functions work before any CSV is loaded
+      registerCompletions();
       resolve();
     });
   });
@@ -393,20 +413,158 @@ function insertText(text) {
 }
 
 function registerCompletions() {
-  if (!editor || !currentCols.length) return;
-  monaco.languages.registerCompletionItemProvider('kql', {
+  if (!editor || !monaco) return;
+  if (completionDispose) { completionDispose.dispose(); completionDispose = null; }
+
+  const KW = monaco.languages.CompletionItemKind.Keyword;
+  const FN = monaco.languages.CompletionItemKind.Function;
+  const OP = monaco.languages.CompletionItemKind.Operator;
+  const Snippet = monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet;
+
+  // Pipe operators
+  const operators = [
+    'where','project','project-away','project-rename','extend','summarize','by',
+    'order','sort','asc','desc','take','limit','top','count','distinct',
+    'join','on','let','as','render','serialize','mv-expand','parse',
+  ].map(k => ({ label: k, kind: KW, insertText: k }));
+
+  // Logical / filter keywords (used inside expressions)
+  const logicals = [
+    'and','or','not','in','between','contains','!contains','startswith','endswith',
+    'has','!has','has_cs','contains_cs','matches regex',
+  ].map(k => ({ label: k, kind: OP, insertText: k }));
+
+  // Scalar functions — snippet with $0 cursor inside parens
+  const scalarFns = [
+    ['ago','ago($0)'],
+    ['now','now()'],
+    ['bin','bin($1, $2)'],
+    ['datetime','datetime($0)'],
+    ['iif','iif($1, $2, $3)'],
+    ['iff','iff($1, $2, $3)'],
+    ['case','case($1, $2, $3)'],
+    ['isempty','isempty($0)'],
+    ['isnotempty','isnotempty($0)'],
+    ['isnull','isnull($0)'],
+    ['isnotnull','isnotnull($0)'],
+    ['tostring','tostring($0)'],
+    ['toint','toint($0)'],
+    ['tolong','tolong($0)'],
+    ['todouble','todouble($0)'],
+    ['tobool','tobool($0)'],
+    ['todatetime','todatetime($0)'],
+    ['totimespan','totimespan($0)'],
+    ['tolower','tolower($0)'],
+    ['toupper','toupper($0)'],
+    ['strlen','strlen($0)'],
+    ['strcat','strcat($1, $2)'],
+    ['split','split($1, $2)'],
+    ['indexof','indexof($1, $2)'],
+    ['substring','substring($1, $2, $3)'],
+    ['trim','trim($1, $2)'],
+    ['replace','replace($1, $2, $3)'],
+    ['extract','extract($1, $2, $3)'],
+    ['parse_json','parse_json($0)'],
+    ['url_encode','url_encode($0)'],
+    ['url_decode','url_decode($0)'],
+    ['base64_encode_tostring','base64_encode_tostring($0)'],
+    ['base64_decode_tostring','base64_decode_tostring($0)'],
+    ['hash','hash($0)'],
+    ['format_datetime','format_datetime($1, $2)'],
+    ['format_timespan','format_timespan($1, $2)'],
+    ['datetime_part','datetime_part($1, $2)'],
+    ['datetime_diff','datetime_diff($1, $2, $3)'],
+    ['datetime_add','datetime_add($1, $2, $3)'],
+    ['unixtime_seconds_todatetime','unixtime_seconds_todatetime($0)'],
+    ['unixtime_milliseconds_todatetime','unixtime_milliseconds_todatetime($0)'],
+    ['unixtime_microseconds_todatetime','unixtime_microseconds_todatetime($0)'],
+    ['unixtime_nanoseconds_todatetime','unixtime_nanoseconds_todatetime($0)'],
+    ['startofday','startofday($0)'],
+    ['startofweek','startofweek($0)'],
+    ['startofmonth','startofmonth($0)'],
+    ['startofyear','startofyear($0)'],
+    ['endofday','endofday($0)'],
+    ['endofweek','endofweek($0)'],
+    ['endofmonth','endofmonth($0)'],
+    ['endofyear','endofyear($0)'],
+    ['hourofday','hourofday($0)'],
+    ['dayofweek','dayofweek($0)'],
+    ['dayofmonth','dayofmonth($0)'],
+    ['dayofyear','dayofyear($0)'],
+    ['weekofyear','weekofyear($0)'],
+    ['array_length','array_length($0)'],
+    ['array_concat','array_concat($1, $2)'],
+    ['array_slice','array_slice($1, $2, $3)'],
+    ['set_union','set_union($1, $2)'],
+    ['set_intersect','set_intersect($1, $2)'],
+    ['set_difference','set_difference($1, $2)'],
+    ['bag_keys','bag_keys($0)'],
+    ['pack','pack($1, $2)'],
+    ['pack_array','pack_array($0)'],
+    ['zip','zip($1, $2)'],
+    ['gettype','gettype($0)'],
+    ['abs','abs($0)'],
+    ['ceiling','ceiling($0)'],
+    ['floor','floor($0)'],
+    ['round','round($1, $2)'],
+    ['log','log($0)'],
+    ['log2','log2($0)'],
+    ['log10','log10($0)'],
+    ['exp','exp($0)'],
+    ['sqrt','sqrt($0)'],
+    ['pow','pow($1, $2)'],
+    ['sign','sign($0)'],
+    ['rand','rand()'],
+    ['pi','pi()'],
+  ].map(([label, snippet]) => ({
+    label, kind: FN,
+    insertText: snippet, insertTextRules: Snippet,
+  }));
+
+  // Aggregation functions (used inside summarize)
+  const aggFns = [
+    ['count','count()'],
+    ['dcount','dcount($0)'],
+    ['countif','countif($0)'],
+    ['dcountif','dcountif($1, $2)'],
+    ['sum','sum($0)'],
+    ['sumif','sumif($1, $2)'],
+    ['avg','avg($0)'],
+    ['avgif','avgif($1, $2)'],
+    ['min','min($0)'],
+    ['minif','minif($1, $2)'],
+    ['max','max($0)'],
+    ['maxif','maxif($1, $2)'],
+    ['stdev','stdev($0)'],
+    ['stdevp','stdevp($0)'],
+    ['variance','variance($0)'],
+    ['variancep','variancep($0)'],
+    ['percentile','percentile($1, $2)'],
+    ['make_list','make_list($0)'],
+    ['make_set','make_set($0)'],
+    ['make_list_if','make_list_if($1, $2)'],
+    ['make_set_if','make_set_if($1, $2)'],
+    ['arg_max','arg_max($1, $2)'],
+    ['arg_min','arg_min($1, $2)'],
+    ['take_any','take_any($0)'],
+  ].map(([label, snippet]) => ({
+    label, kind: FN,
+    detail: 'aggregation',
+    insertText: snippet, insertTextRules: Snippet,
+  }));
+
+  completionDispose = monaco.languages.registerCompletionItemProvider('kql', {
     provideCompletionItems: (model, position) => {
       const word  = model.getWordUntilPosition(position);
       const range = { startLineNumber: position.lineNumber, endLineNumber: position.lineNumber,
                       startColumn: word.startColumn, endColumn: word.endColumn };
       const colItems = currentCols.map(c => ({
         label: c.name, kind: monaco.languages.CompletionItemKind.Field,
-        detail: c.type, insertText: c.name, range
+        detail: c.type, insertText: c.name, range,
       }));
-      const kwItems = ['where','project','take','extend','summarize','by','order','sort',
-                       'asc','desc','count','sum','avg','min','max','distinct']
-        .map(k => ({ label: k, kind: monaco.languages.CompletionItemKind.Keyword, insertText: k, range }));
-      return { suggestions: [...colItems, ...kwItems] };
+      const withRange = items => items.map(i => ({ ...i, range }));
+      return { suggestions: [...colItems, ...withRange(operators), ...withRange(logicals),
+                             ...withRange(scalarFns), ...withRange(aggFns)] };
     }
   });
 }
