@@ -439,16 +439,15 @@ function parseStage(stage) {
 /** KQL condition → SQL condition */
 function kqlCond(cond) {
   return cond
-    // string operators (double-quoted)
-    .replace(/(\w+)\s+contains\s+"([^"]*)"/gi,   (_, c, v) => `"${c}" LIKE '%${v}%'`)
-    .replace(/(\w+)\s+!contains\s+"([^"]*)"/gi,  (_, c, v) => `"${c}" NOT LIKE '%${v}%'`)
-    .replace(/(\w+)\s+startswith\s+"([^"]*)"/gi, (_, c, v) => `"${c}" LIKE '${v}%'`)
-    .replace(/(\w+)\s+endswith\s+"([^"]*)"/gi,   (_, c, v) => `"${c}" LIKE '%${v}'`)
-    .replace(/(\w+)\s+has\s+"([^"]*)"/gi,        (_, c, v) => `"${c}" LIKE '%${v}%'`)
+    // convert KQL double-quoted string literals to SQL single-quoted first,
+    // so the string-operator patterns below only need single-quoted variants
+    .replace(/"([^"]*)"/g, "'$1'")
     // string operators (single-quoted)
     .replace(/(\w+)\s+contains\s+'([^']*)'/gi,   (_, c, v) => `"${c}" LIKE '%${v}%'`)
+    .replace(/(\w+)\s+!contains\s+'([^']*)'/gi,  (_, c, v) => `"${c}" NOT LIKE '%${v}%'`)
     .replace(/(\w+)\s+startswith\s+'([^']*)'/gi, (_, c, v) => `"${c}" LIKE '${v}%'`)
     .replace(/(\w+)\s+endswith\s+'([^']*)'/gi,   (_, c, v) => `"${c}" LIKE '%${v}'`)
+    .replace(/(\w+)\s+has\s+'([^']*)'/gi,        (_, c, v) => `"${c}" LIKE '%${v}%'`)
     // equality
     .replace(/==/g, '=').replace(/!=/g, '<>')
     // logical
@@ -901,7 +900,15 @@ function transpile(kql) {
         break;
       }
       case 'project': {
-        const cols = args.split(',').map(c => `"${c.trim()}"`).join(', ');
+        const cols = splitCommaRespectingDepth(args).map(c => {
+          const eq = c.indexOf('=');
+          if (eq !== -1) {
+            const alias = c.slice(0, eq).trim();
+            const expr  = c.slice(eq + 1).trim();
+            return `${kqlExpr(expr)} AS "${alias}"`;
+          }
+          return `"${c.trim()}"`;
+        }).join(', ');
         ctes.push(`${curr} AS (SELECT ${cols} FROM ${prev})`);
         break;
       }
@@ -1096,7 +1103,8 @@ async function runQuery() {
 
 // ── Render results ───────────────────────────────────────────────────────────
 function renderTable(result) {
-  const cols = result.schema.fields.map(f => f.name);
+  const fields = result.schema.fields;
+  const cols = fields.map(f => f.name);
   const rows = result.toArray();
   setRowCount(rows.length);
 
@@ -1105,12 +1113,21 @@ function renderTable(result) {
     return;
   }
 
+  // Build a formatter per column: timestamps → ISO string, others → default
+  const formatters = fields.map(f => {
+    const t = String(f.type);
+    if (t.startsWith('Timestamp') || t.startsWith('Date')) {
+      return v => v == null ? '' : esc(new Date(v).toISOString().replace('T', ' ').replace(/\.000Z$/, ' UTC'));
+    }
+    return v => esc(v);
+  });
+
   const MAX_ROWS = 10000;
   const displayed = rows.slice(0, MAX_ROWS);
 
   const thead = `<tr>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr>`;
   const tbody = displayed.map(row =>
-    `<tr>${cols.map(c => `<td>${esc(row[c])}</td>`).join('')}</tr>`
+    `<tr>${cols.map((c, i) => `<td>${formatters[i](row[c])}</td>`).join('')}</tr>`
   ).join('');
 
   const note = rows.length > MAX_ROWS
