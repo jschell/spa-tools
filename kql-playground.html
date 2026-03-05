@@ -707,7 +707,7 @@ function kqlAgg(expr) {
     // Basic counts
     .replace(/\bcount\(\s*\)/gi,                                    'count(*)')
     .replace(/\bdcountif\(([^,]+),\s*([^)]+)\)/gi,                  'count(DISTINCT $1) FILTER (WHERE $2)')
-    .replace(/\bdcount\(([^)]+)\)/gi,                               'count(DISTINCT $1)')
+    .replace(/\bdcount\(([^,)]+)(?:,\s*[^)]+)?\)/gi,               'count(DISTINCT $1)')
     .replace(/\bcountif\(([^)]+)\)/gi,                              'count(*) FILTER (WHERE $1)')
     // Conditional aggs (if-variants before plain)
     .replace(/\bsumif\(([^,]+),\s*([^)]+)\)/gi,                     'sum($1) FILTER (WHERE $2)')
@@ -892,7 +892,7 @@ function parseSummarize(args) {
   const aggRaw   = byMatch ? byMatch[1].trim() : args.trim();
   const groupRaw = byMatch ? byMatch[2].trim() : null;
 
-  const aggExprs = aggRaw.split(',').map(a => {
+  const aggExprs = splitCommaRespectingDepth(aggRaw).map(a => {
     a = a.trim();
     const eq = a.indexOf('=');
     let alias, expr;
