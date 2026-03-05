@@ -312,8 +312,9 @@ function initMonaco() {
         suggestOnTriggerCharacters: true,
       });
 
-      // Shift+Enter → run
+      // Shift+Enter or Ctrl+Enter → run
       editor.addCommand(monaco.KeyMod.Shift | monaco.KeyCode.Enter, runQuery);
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runQuery);
       // Restore query from URL
       const q = new URLSearchParams(location.search).get('q');
       if (q) editor.setValue(q);
