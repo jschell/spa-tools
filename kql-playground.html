@@ -604,10 +604,10 @@ function kqlExpr(expr) {
     .replace(/\bisnotempty\(([^)]+)\)/gi,  "($1 IS NOT NULL AND $1 <> '')")
     .replace(/\bisempty\(([^)]+)\)/gi,     "($1 IS NULL OR $1 = '')")
     // ── Unixtime → datetime ──────────────────────────────────────────────────
-    .replace(/\bunixtime_microseconds_todatetime\(([^)]+)\)/gi, 'to_timestamp(($1) / 1e6)')
-    .replace(/\bunixtime_seconds_todatetime\(([^)]+)\)/gi,      'to_timestamp($1)')
-    .replace(/\bunixtime_milliseconds_todatetime\(([^)]+)\)/gi, 'epoch_ms(CAST($1 AS BIGINT))')
-    .replace(/\bunixtime_nanoseconds_todatetime\(([^)]+)\)/gi,  'to_timestamp(($1) / 1e9)')
+    .replace(/\bunixtime_microseconds_todatetime\(([^)]+)\)/gi, 'COALESCE(to_timestamp(TRY_CAST(($1) AS DOUBLE) / 1e6), ($1)::TIMESTAMPTZ)')
+    .replace(/\bunixtime_seconds_todatetime\(([^)]+)\)/gi,      'COALESCE(to_timestamp(TRY_CAST(($1) AS DOUBLE)), ($1)::TIMESTAMPTZ)')
+    .replace(/\bunixtime_milliseconds_todatetime\(([^)]+)\)/gi, 'COALESCE(epoch_ms(TRY_CAST(($1) AS BIGINT)), ($1)::TIMESTAMPTZ)')
+    .replace(/\bunixtime_nanoseconds_todatetime\(([^)]+)\)/gi,  'COALESCE(to_timestamp(TRY_CAST(($1) AS DOUBLE) / 1e9), ($1)::TIMESTAMPTZ)')
     // ── DateTime helpers ─────────────────────────────────────────────────────
     .replace(/\bnow\(\)/gi,                                     'now()')
     .replace(/\bago\(([^)]+)\)/gi,          (_, ts) => `(now() - ${parseKqlTimespan(ts)})`)
