@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Format Inspector</title>
+  <meta name="description" content="Paste a CEF, LEEF, Syslog, JSON, or key=value log line and get it parsed into an annotated field table.">
+  <style>
+    :root[data-theme="light"] {
+      --bg: #ffffff;
+      --surface: #f5f5f5;
+      --text: #1a1a1a;
+      --border: #e0e0e0;
+      --mono-bg: #f8f8f8;
+      --accent: #0066cc;
+      --accent-light: #e8f0fb;
+      --muted: #666666;
+      --badge-known-bg: #0d7a5f;
+      --badge-known-text: #ffffff;
+      --badge-unknown-bg: #888888;
+      --badge-unknown-text: #ffffff;
+      --sev-critical-bg: #c0392b; --sev-critical-text: #fff;
+      --sev-high-bg: #e67e22; --sev-high-text: #fff;
+      --sev-medium-bg: #f39c12; --sev-medium-text: #fff;
+      --sev-low-bg: #2980b9; --sev-low-text: #fff;
+      --sev-info-bg: #888; --sev-info-text: #fff;
+      --tab-active-bg: #0066cc;
+      --tab-active-text: #fff;
+      --tab-bg: #e8e8e8;
+      --tab-text: #333;
+      --enrich-private: #1a6b3c;
+      --enrich-loopback: #555;
+      --enrich-link: #7a4b00;
+      --row-hover: #f0f4ff;
+      --table-header-bg: #eeeeee;
+    }
+    :root[data-theme="dark"] {
+      --bg: #1a1a1a;
+      --surface: #2a2a2a;
+      --text: #e8e8e8;
+      --border: #444444;
+      --mono-bg: #121212;
+      --accent: #4da6ff;
+      --accent-light: #1a2a3a;
+      --muted: #aaaaaa;
+      --badge-known-bg: #0d9e7a;
+      --badge-known-text: #ffffff;
+      --badge-unknown-bg: #666666;
+      --badge-unknown-text: #ffffff;
+      --sev-critical-bg: #c0392b; --sev-critical-text: #fff;
+      --sev-high-bg: #d4600a; --sev-high-text: #fff;
+      --sev-medium-bg: #b8860b; --sev-medium-text: #fff;
+      --sev-low-bg: #1a6fa8; --sev-low-text: #fff;
+      --sev-info-bg: #666; --sev-info-text: #fff;
+      --tab-active-bg: #4da6ff;
+      --tab-active-text: #1a1a1a;
+      --tab-bg: #333;
+      --tab-text: #ccc;
+      --enrich-private: #4caf7a;
+      --enrich-loopback: #aaa;
+      --enrich-link: #d4a017;
+      --row-hover: #1e2d3a;
+      --table-header-bg: #333333;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 960px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      line-height: 1.5;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    a { color: var(--accent); }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .top-bar a { font-size: 13px; }
+
+    #theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text);
+      transition: background 0.2s;
+    }
+    #theme-toggle:hover { background: var(--border); }
+
+    h1 { margin: 0 0 0.25rem; font-size: 1.5rem; }
+    .subtitle { color: var(--muted); margin: 0 0 1rem; }
+
+    .input-section { margin-bottom: 1rem; }
+
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    #log-input {
+      flex: 1;
+      font-family: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+      font-size: 12px;
+      padding: 8px 10px;
+      background: var(--mono-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.5;
+      transition: border-color 0.2s;
+    }
+    #log-input:focus { outline: none; border-color: var(--accent); }
+    #log-input::placeholder { color: var(--muted); }
+
+    .controls-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+
+    select, button {
+      font-size: 13px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+    }
+    button:hover { background: var(--border); }
+    #clear-btn {
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .format-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 9px;
+      border-radius: 12px;
+      background: var(--badge-unknown-bg);
+      color: var(--badge-unknown-text);
+      transition: background 0.2s;
+    }
+    .format-badge.known {
+      background: var(--badge-known-bg);
+      color: var(--badge-known-text);
+    }
+
+    /* Tabs */
+    .tabs-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 0.75rem;
+    }
+    .tab-btn {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--tab-bg);
+      color: var(--tab-text);
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: var(--tab-active-bg);
+      color: var(--tab-active-text);
+      border-color: var(--tab-active-bg);
+    }
+
+    /* Output */
+    #output { min-height: 40px; }
+
+    .parse-error {
+      color: #c0392b;
+      background: #fdecea;
+      border: 1px solid #f5c6c2;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    [data-theme="dark"] .parse-error {
+      background: #2a1010;
+      border-color: #6b2c2c;
+      color: #f08080;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 1rem;
+    }
+    th {
+      background: var(--table-header-bg);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 6px 10px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      word-break: break-word;
+    }
+    tr:hover td { background: var(--row-hover); }
+    .field-key {
+      font-family: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .mapped-name { color: var(--muted); font-style: italic; font-size: 12px; }
+    .value-cell {
+      font-family: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+      font-size: 12px;
+    }
+    .type-badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* Severity badges */
+    .sev { display: inline-block; font-size: 10px; font-weight: 700;
+           padding: 1px 7px; border-radius: 10px; white-space: nowrap; }
+    .sev-critical { background: var(--sev-critical-bg); color: var(--sev-critical-text); }
+    .sev-high     { background: var(--sev-high-bg); color: var(--sev-high-text); }
+    .sev-medium   { background: var(--sev-medium-bg); color: var(--sev-medium-text); }
+    .sev-low      { background: var(--sev-low-bg); color: var(--sev-low-text); }
+    .sev-info     { background: var(--sev-info-bg); color: var(--sev-info-text); }
+
+    /* IP enrichment */
+    .ip-tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-left: 4px;
+      font-family: sans-serif;
+    }
+    .ip-private  { background: #d4edda; color: var(--enrich-private); border: 1px solid #a8d5b5; }
+    .ip-loopback { background: #e8e8e8; color: var(--enrich-loopback); border: 1px solid #ccc; }
+    .ip-link     { background: #fff3cd; color: var(--enrich-link); border: 1px solid #ffe082; }
+    [data-theme="dark"] .ip-private  { background: #1a3a28; border-color: #2d6b45; }
+    [data-theme="dark"] .ip-loopback { background: #333; border-color: #555; }
+    [data-theme="dark"] .ip-link     { background: #2e2200; border-color: #5a4000; }
+
+    .iso-note { font-size: 11px; color: var(--muted); display: block; font-family: sans-serif; }
+
+    /* JSON tree */
+    .json-tree { font-family: 'Cascadia Code', 'Fira Code', 'Courier New', monospace; font-size: 12px; }
+    .json-tree ul { list-style: none; padding-left: 1.2em; margin: 0; border-left: 1px solid var(--border); }
+    .json-tree > ul { border-left: none; padding-left: 0; }
+    .json-tree li { padding: 2px 0; }
+    .json-key { color: var(--accent); }
+    .json-string { color: #27ae60; }
+    [data-theme="dark"] .json-string { color: #6fcf97; }
+    .json-number { color: #c0392b; }
+    [data-theme="dark"] .json-number { color: #ff7c7c; }
+    .json-bool { color: #8e44ad; }
+    [data-theme="dark"] .json-bool { color: #c39bd3; }
+    .json-null { color: var(--muted); font-style: italic; }
+    .json-toggle { cursor: pointer; user-select: none; }
+    .json-toggle::before { content: '▾ '; font-size: 10px; }
+    .json-toggle.collapsed::before { content: '▸ '; }
+    .json-toggle.collapsed + ul { display: none; }
+    .json-count { color: var(--muted); font-size: 11px; }
+
+    /* Section header */
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-weight: 600;
+      margin: 1rem 0 0.4rem;
+      padding-bottom: 3px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    footer { margin-top: 2rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+    footer p { font-size: 12px; color: var(--muted); margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="index.html">&larr; All tools</a>
+    <button id="theme-toggle" title="Toggle dark mode">☀</button>
+  </div>
+  <h1>Log Format Inspector</h1>
+  <p class="subtitle">Paste a CEF, LEEF, Syslog, JSON, or key=value log line and get it parsed into an annotated field table.</p>
+
+  <div class="input-section">
+    <textarea id="log-input" rows="4" placeholder="Paste one or more log lines here, or choose a sample…"></textarea>
+    <div class="controls-row">
+      <select id="sample-select">
+        <option value="">Load sample…</option>
+        <option value="cef">CEF – High Severity Event</option>
+        <option value="leef">LEEF – Authentication</option>
+        <option value="rfc5424">Syslog RFC 5424</option>
+        <option value="rfc3164">Syslog RFC 3164</option>
+        <option value="json">JSON – Auth Error</option>
+        <option value="kv">Key=Value pairs</option>
+        <option value="w3c">W3C Extended Log</option>
+        <option value="multi">Multi-line (3 formats)</option>
+      </select>
+      <button id="clear-btn">Clear</button>
+      <span id="format-badge" class="format-badge">—</span>
+    </div>
+  </div>
+
+  <div id="tabs-bar" class="tabs-bar" style="display:none"></div>
+  <div id="output"></div>
+
+  <footer>
+    <p><a href="https://github.com/jschell/spa-tools/blob/main/log-inspector.html">View source</a></p>
+  </footer>
+
+<script>
+'use strict';
+
+// ─── Theme ───────────────────────────────────────────────────────────────────
+const html = document.documentElement;
+const themeBtn = document.getElementById('theme-toggle');
+function applyTheme(t) {
+  html.setAttribute('data-theme', t);
+  themeBtn.textContent = t === 'dark' ? '☀' : '🌙';
+  localStorage.setItem('log-inspector-theme', t);
+}
+applyTheme(localStorage.getItem('log-inspector-theme') || 'light');
+themeBtn.addEventListener('click', () => {
+  applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+// ─── Samples ─────────────────────────────────────────────────────────────────
+const SAMPLES = {
+  cef: 'CEF:0|ArcSight|Logger|7.0.1|100|High severity event|8|src=192.168.1.100 dst=10.0.0.50 spt=54321 dpt=443 proto=TCP act=blocked msg=Unauthorized access attempt rt=1709640896000 suser=jsmith duser=admin',
+  leef: 'LEEF:2.0|IBM|QRadar|7.3|AUTH_FAIL|cat=Authentication\tsrc=172.16.5.22\tdst=10.10.1.5\tspt=51422\tdpt=22\tusrName=bob\tdevTime=Mar 05 2026 12:34:56\tproto=TCP',
+  rfc5424: '<165>1 2026-03-05T12:34:56.789Z webserver01.example.com nginx 1234 REQ001 [meta sequenceId="12345" requestId="abc-123"] GET /api/data HTTP/1.1 200 1024',
+  rfc3164: '<34>Mar  5 12:34:56 myhost sshd[22091]: Failed password for invalid user root from 203.0.113.42 port 52634 ssh2',
+  json: '{"timestamp":"2026-03-05T12:34:56Z","level":"ERROR","service":"auth","message":"Login failed","user":"jsmith","ip":"192.168.1.55","attempts":5,"metadata":{"browser":"Firefox","os":"Linux"}}',
+  kv: 'time="2026-03-05T12:34:56Z" level=warn src=10.0.0.1 dst=8.8.8.8 spt=12345 dpt=53 proto=UDP bytes_in=256 bytes_out=512 action=allow msg="DNS query blocked"',
+  w3c: '#Version: 1.0\n#Date: 2026-03-05 12:34:56\n#Fields: date time cs-method cs-uri-stem sc-status sc-bytes cs(User-Agent)\n2026-03-05 12:34:56 GET /index.html 200 1234 Mozilla/5.0',
+  multi: 'CEF:0|Palo Alto|NGFW|10.1|threat|Malware Detected|9|src=10.1.2.3 dst=93.184.216.34 dpt=80 proto=TCP fname=evil.exe fsize=40960 act=blocked\n<165>1 2026-03-05T09:00:00Z fw.corp.net panos 999 - - connection accepted from 10.0.0.5\n{"ts":"2026-03-05T08:59:00Z","event":"startup","service":"proxy","pid":4567}'
+};
+
+document.getElementById('sample-select').addEventListener('change', function() {
+  if (this.value && SAMPLES[this.value]) {
+    document.getElementById('log-input').value = SAMPLES[this.value];
+    this.value = '';
+    processInput();
+  }
+});
+
+document.getElementById('clear-btn').addEventListener('click', () => {
+  document.getElementById('log-input').value = '';
+  document.getElementById('output').innerHTML = '';
+  document.getElementById('tabs-bar').style.display = 'none';
+  setFormatBadge('—', false);
+});
+
+// ─── CEF Key Dictionary ───────────────────────────────────────────────────────
+const CEF_KEYS = {
+  src: 'Source Address', dst: 'Destination Address',
+  spt: 'Source Port', dpt: 'Destination Port',
+  proto: 'Protocol', act: 'Device Action', app: 'Application Protocol',
+  msg: 'Message', request: 'Request URL', requestMethod: 'Request Method',
+  outcome: 'Event Outcome', suser: 'Source User Name', duser: 'Destination User Name',
+  spriv: 'Source User Privileges', dpriv: 'Destination User Privileges',
+  shost: 'Source Hostname', dhost: 'Destination Hostname',
+  smac: 'Source MAC Address', dmac: 'Destination MAC Address',
+  suid: 'Source User ID', duid: 'Destination User ID',
+  cs1: 'Custom String 1', cs2: 'Custom String 2', cs3: 'Custom String 3',
+  cs4: 'Custom String 4', cs5: 'Custom String 5', cs6: 'Custom String 6',
+  cs1Label: 'Custom String 1 Label', cs2Label: 'Custom String 2 Label',
+  cs3Label: 'Custom String 3 Label', cs4Label: 'Custom String 4 Label',
+  cs5Label: 'Custom String 5 Label', cs6Label: 'Custom String 6 Label',
+  cn1: 'Custom Number 1', cn2: 'Custom Number 2', cn3: 'Custom Number 3', cn4: 'Custom Number 4',
+  cn1Label: 'Custom Number 1 Label', cn2Label: 'Custom Number 2 Label',
+  cn3Label: 'Custom Number 3 Label', cn4Label: 'Custom Number 4 Label',
+  deviceDirection: 'Device Direction', cat: 'Device Event Category',
+  cnt: 'Event Count', rt: 'Receipt Time', start: 'Start Time', end: 'End Time',
+  in: 'Bytes In', out: 'Bytes Out', reason: 'Reason', deviceAction: 'Device Action',
+  externalId: 'External ID', fileType: 'File Type', fname: 'Filename', fsize: 'File Size',
+  filePath: 'File Path', flexDate1: 'Flexible Date 1', flexDate1Label: 'Flexible Date 1 Label',
+  deviceExternalId: 'Device External ID', deviceFacility: 'Device Facility',
+  deviceHostName: 'Device Hostname', deviceAddress: 'Device Address',
+  deviceMacAddress: 'Device MAC Address', deviceProcessName: 'Device Process Name',
+  deviceTranslatedAddress: 'Device Translated Address',
+  sourceTranslatedAddress: 'Source Translated Address',
+  destinationTranslatedAddress: 'Destination Translated Address',
+  sourceTranslatedPort: 'Source Translated Port',
+  destinationTranslatedPort: 'Destination Translated Port',
+  transportProtocol: 'Transport Protocol', type: 'Event Type',
+  categoryObject: 'Category Object', categoryBehavior: 'Category Behavior',
+  categoryTechnique: 'Category Technique', categoryDeviceGroup: 'Category Device Group',
+  categorySignificance: 'Category Significance', categoryOutcome: 'Category Outcome',
+  agentAddress: 'Agent Address', agentHostName: 'Agent Hostname',
+  agentId: 'Agent ID', agentType: 'Agent Type', agentVersion: 'Agent Version',
+  agt: 'Agent Address', ahost: 'Agent Hostname',
+};
+
+const SYSLOG_FACILITIES = ['kern','user','mail','daemon','auth','syslog','lpr','news','uucp','cron','authpriv',
+  'ftp','ntp','security','console','solaris-cron','local0','local1','local2','local3','local4','local5','local6','local7'];
+const SYSLOG_SEVERITIES = ['Emergency','Alert','Critical','Error','Warning','Notice','Info','Debug'];
+
+// ─── Format Detection ─────────────────────────────────────────────────────────
+function detectFormat(line) {
+  line = line.trim();
+  if (!line) return 'unknown';
+  if (/^CEF:/i.test(line)) return 'cef';
+  if (/^LEEF:/i.test(line)) return 'leef';
+  if (/^<\d+>\d+ /.test(line)) return 'rfc5424';
+  if (/^<\d+>[A-Za-z]/.test(line)) return 'rfc3164';
+  if (line.startsWith('{') || line.startsWith('[')) {
+    try { JSON.parse(line); return 'json'; } catch(e) {}
+  }
+  if (/^#Version:/i.test(line) || /^#Fields:/i.test(line)) return 'w3c';
+  if (/\w+=/.test(line)) return 'kv';
+  return 'unknown';
+}
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function ipCategory(ip) {
+  const parts = ip.split('.').map(Number);
+  if (parts.length !== 4 || parts.some(isNaN)) return null;
+  const [a,b,c] = parts;
+  if (a === 127) return 'loopback';
+  if (a === 10) return 'private';
+  if (a === 172 && b >= 16 && b <= 31) return 'private';
+  if (a === 192 && b === 168) return 'private';
+  if (a === 169 && b === 254) return 'link-local';
+  return null;
+}
+
+function enrichValue(val, key) {
+  let out = escHtml(val);
+
+  // IP address
+  if (/^(\d{1,3}\.){3}\d{1,3}$/.test(val.trim())) {
+    const cat = ipCategory(val.trim());
+    if (cat === 'private')    out += ' <span class="ip-tag ip-private">RFC1918 private</span>';
+    if (cat === 'loopback')   out += ' <span class="ip-tag ip-loopback">loopback</span>';
+    if (cat === 'link-local') out += ' <span class="ip-tag ip-link">link-local</span>';
+    return out;
+  }
+
+  // Timestamp: epoch ms or ISO
+  const tsNum = /^\d{10,13}$/.test(val.trim()) ? parseInt(val) : null;
+  if (tsNum) {
+    const ms = val.length === 10 ? tsNum * 1000 : tsNum;
+    const d = new Date(ms);
+    if (!isNaN(d.getTime())) {
+      out += `<span class="iso-note">${escHtml(d.toISOString())}</span>`;
+      return out;
+    }
+  }
+  const isoRe = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}/;
+  if (isoRe.test(val.trim())) {
+    const d = new Date(val.trim());
+    if (!isNaN(d.getTime()) && !val.trim().endsWith('Z') && !val.trim().match(/[+-]\d{2}:?\d{2}$/)) {
+      out += `<span class="iso-note">${escHtml(d.toISOString())} (UTC)</span>`;
+    }
+    return out;
+  }
+  // Syslog-style timestamp
+  const syslogTs = /^[A-Za-z]{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}/.test(val.trim());
+  if (syslogTs) {
+    const d = new Date(val.trim() + ' ' + new Date().getFullYear());
+    if (!isNaN(d.getTime())) {
+      out += `<span class="iso-note">${escHtml(d.toISOString())} (approx UTC)</span>`;
+    }
+    return out;
+  }
+
+  // MAC address
+  if (/^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$/.test(val.trim())) {
+    const mac = val.trim().replace(/[:-]/g,':').toUpperCase();
+    if (mac !== val.trim().toUpperCase().replace(/-/g,':')) out = escHtml(mac);
+    return out;
+  }
+
+  return out;
+}
+
+function typeBadge(val) {
+  if (val === null) return '<span class="type-badge">null</span>';
+  if (typeof val === 'boolean') return '<span class="type-badge">boolean</span>';
+  if (typeof val === 'number') return '<span class="type-badge">number</span>';
+  if (Array.isArray(val)) return '<span class="type-badge">array</span>';
+  if (typeof val === 'object') return '<span class="type-badge">object</span>';
+  // string sub-types
+  const s = String(val).trim();
+  if (/^(\d{1,3}\.){3}\d{1,3}$/.test(s)) return '<span class="type-badge">IP address</span>';
+  if (/^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$/.test(s)) return '<span class="type-badge">MAC address</span>';
+  if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}/.test(s)) return '<span class="type-badge">timestamp</span>';
+  if (/^\d{10,13}$/.test(s) && parseInt(s) > 1e9) return '<span class="type-badge">epoch</span>';
+  if (/^\d+$/.test(s)) return '<span class="type-badge">integer</span>';
+  if (/^\d+\.\d+$/.test(s)) return '<span class="type-badge">float</span>';
+  return '<span class="type-badge">string</span>';
+}
+
+function makeTable(rows) {
+  // rows: [{key, mapped, value, type}]
+  let html = `<table><thead><tr><th>Field Name</th><th>Mapped Name</th><th>Value</th><th>Type</th></tr></thead><tbody>`;
+  for (const r of rows) {
+    const mapped = r.mapped ? `<span class="mapped-name">${escHtml(r.mapped)}</span>` : '<span class="mapped-name" style="opacity:0.3">—</span>';
+    html += `<tr>
+      <td class="field-key">${escHtml(r.key)}</td>
+      <td>${mapped}</td>
+      <td class="value-cell">${r.enriched !== undefined ? r.enriched : escHtml(r.value)}</td>
+      <td>${r.typeBadge || typeBadge(r.value)}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+function sevLabel(n) {
+  n = parseInt(n);
+  if (isNaN(n)) return null;
+  if (n <= 3)  return {label:'Low',    cls:'sev-low'};
+  if (n <= 6)  return {label:'Medium', cls:'sev-medium'};
+  if (n <= 8)  return {label:'High',   cls:'sev-high'};
+  return          {label:'Very High', cls:'sev-critical'};
+}
+
+function syslogSevLabel(n) {
+  n = parseInt(n);
+  const names = SYSLOG_SEVERITIES;
+  const label = names[n] || String(n);
+  const cls = n <= 1 ? 'sev-critical' : n <= 3 ? 'sev-high' : n <= 4 ? 'sev-medium' : n <= 5 ? 'sev-low' : 'sev-info';
+  return {label, cls};
+}
+
+// ─── CEF Parser ───────────────────────────────────────────────────────────────
+function parseCEF(line) {
+  // CEF:Version|Device Vendor|Device Product|Device Version|Signature ID|Name|Severity|Extension
+  const prefix = line.match(/^CEF:(\d+)/i);
+  if (!prefix) throw new Error('Not a valid CEF line');
+  const rest = line.slice(line.indexOf('|'));
+  // Split on unescaped |
+  const parts = rest.split(/(?<!\\)\|/);
+  if (parts.length < 7) throw new Error('CEF header requires 7 pipe-delimited fields');
+  const headers = [
+    {key:'Device Vendor', val: parts[1]},
+    {key:'Device Product', val: parts[2]},
+    {key:'Device Version', val: parts[3]},
+    {key:'Signature ID', val: parts[4]},
+    {key:'Name', val: parts[5]},
+    {key:'Severity', val: parts[6]},
+  ];
+  const ext = parts.slice(7).join('|');
+
+  const rows = [];
+  rows.push({key:'CEF Version', mapped:'', value: prefix[1], enriched: escHtml(prefix[1]), typeBadge: typeBadge(prefix[1])});
+  for (const h of headers) {
+    let enriched = escHtml(h.val);
+    let tb = typeBadge(h.val);
+    if (h.key === 'Severity') {
+      const sv = sevLabel(h.val);
+      if (sv) {
+        enriched = `${escHtml(h.val)} <span class="sev ${sv.cls}">${sv.label}</span>`;
+        tb = '<span class="type-badge">severity</span>';
+      }
+    }
+    rows.push({key: h.key, mapped:'', value: h.val, enriched, typeBadge: tb});
+  }
+
+  // Parse extension
+  if (ext.trim()) {
+    const extRows = parseCEFExtension(ext);
+    rows.push(...extRows);
+  }
+  return {format:'CEF', rows};
+}
+
+function parseCEFExtension(ext) {
+  // key=value pairs; values may contain spaces, escaped \= and \|
+  const rows = [];
+  const re = /(\w+)=((?:[^\\=\s]|\\.|\s(?!\w+=))*)/g;
+  let m;
+  while ((m = re.exec(ext)) !== null) {
+    const key = m[1];
+    const value = m[2].trim().replace(/\\=/g,'=').replace(/\\\|/g,'|').replace(/\\n/g,'\n').replace(/\\\\/g,'\\');
+    const mapped = CEF_KEYS[key] || '';
+    const enriched = enrichValue(value, key);
+    rows.push({key, mapped, value, enriched, typeBadge: typeBadge(value)});
+  }
+  return rows;
+}
+
+// ─── LEEF Parser ──────────────────────────────────────────────────────────────
+function parseLEEF(line) {
+  // LEEF:version|Vendor|Product|Version|EventID[|delimiter]|fields
+  const m = line.match(/^LEEF:(\d+(?:\.\d+)?)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|?(.*)/i);
+  if (!m) throw new Error('Not a valid LEEF line');
+  const [, ver, vendor, product, prodVer, eventId, rest] = m;
+
+  // Detect delimiter for LEEF 2.0 (may have extra field before attributes)
+  // Attributes are tab-separated (default) or custom delimiter specified
+  let delim = '\t';
+  let attrStr = rest;
+
+  // LEEF 2.0: optional delimiter field
+  if (ver.startsWith('2') && /^0x[0-9a-fA-F]+\|/.test(rest)) {
+    const di = rest.indexOf('|');
+    const hexDelim = rest.slice(0, di);
+    delim = String.fromCharCode(parseInt(hexDelim, 16));
+    attrStr = rest.slice(di + 1);
+  }
+
+  const rows = [];
+  rows.push({key:'LEEF Version', mapped:'', value:ver, enriched:escHtml(ver), typeBadge:typeBadge(ver)});
+  rows.push({key:'Vendor', mapped:'', value:vendor, enriched:escHtml(vendor), typeBadge:typeBadge(vendor)});
+  rows.push({key:'Product', mapped:'', value:product, enriched:escHtml(product), typeBadge:typeBadge(product)});
+  rows.push({key:'Product Version', mapped:'', value:prodVer, enriched:escHtml(prodVer), typeBadge:typeBadge(prodVer)});
+  rows.push({key:'Event ID', mapped:'', value:eventId, enriched:escHtml(eventId), typeBadge:typeBadge(eventId)});
+
+  // Parse attributes
+  const pairs = attrStr.split(delim);
+  for (const pair of pairs) {
+    const eq = pair.indexOf('=');
+    if (eq === -1) continue;
+    const key = pair.slice(0, eq).trim();
+    const value = pair.slice(eq + 1).trim();
+    if (!key) continue;
+    const mapped = CEF_KEYS[key] || '';
+    rows.push({key, mapped, value, enriched: enrichValue(value, key), typeBadge: typeBadge(value)});
+  }
+  return {format:'LEEF', rows};
+}
+
+// ─── RFC 5424 Parser ──────────────────────────────────────────────────────────
+function parseRFC5424(line) {
+  const m = line.match(/^<(\d+)>(\d+) (\S+) (\S+) (\S+) (\S+) (\S+) (\[.*?\](?:\[.*?\])*)?(.*)?$/s);
+  if (!m) {
+    // Try simpler match
+    const m2 = line.match(/^<(\d+)>(\d+) (\S+) (\S+) (\S+) (\S+) (\S+) (.*)/s);
+    if (!m2) throw new Error('Could not parse RFC 5424');
+    return parseRFC5424Fields(...m2.slice(1));
+  }
+  const [, pri, ver, ts, host, app, procid, msgid, sd, msg] = m;
+  return parseRFC5424Fields(pri, ver, ts, host, app, procid, msgid, sd, msg);
+}
+
+function parseRFC5424Fields(pri, ver, ts, host, app, procid, msgid, sd, msg) {
+  const priority = parseInt(pri);
+  const facility = priority >> 3;
+  const severity = priority & 7;
+  const facName = SYSLOG_FACILITIES[facility] || String(facility);
+  const sev = syslogSevLabel(severity);
+
+  const rows = [];
+  rows.push({key:'Priority', mapped:'Raw priority value', value:pri,
+    enriched:`${escHtml(pri)} <span class="sev ${sev.cls}">${sev.label}</span>`,
+    typeBadge:'<span class="type-badge">priority</span>'});
+  rows.push({key:'Facility', mapped:'Syslog facility', value:facName, enriched:escHtml(`${facName} (${facility})`), typeBadge:'<span class="type-badge">facility</span>'});
+  rows.push({key:'Severity', mapped:'Syslog severity', value:String(severity),
+    enriched:`${escHtml(SYSLOG_SEVERITIES[severity]||String(severity))} <span class="sev ${sev.cls}">${escHtml(SYSLOG_SEVERITIES[severity]||'')}</span>`,
+    typeBadge:'<span class="type-badge">severity</span>'});
+  rows.push({key:'Version', mapped:'Syslog version', value:ver, enriched:escHtml(ver), typeBadge:typeBadge(ver)});
+  rows.push({key:'Timestamp', mapped:'Event timestamp', value:ts, enriched:enrichValue(ts,'ts'), typeBadge:'<span class="type-badge">timestamp</span>'});
+  rows.push({key:'Hostname', mapped:'Source hostname', value:host, enriched:enrichValue(host,'host'), typeBadge:typeBadge(host)});
+  rows.push({key:'App-Name', mapped:'Application name', value:app, enriched:escHtml(app), typeBadge:typeBadge(app)});
+  rows.push({key:'ProcID', mapped:'Process ID', value:procid, enriched:escHtml(procid), typeBadge:typeBadge(procid)});
+  rows.push({key:'MsgID', mapped:'Message ID', value:msgid, enriched:escHtml(msgid), typeBadge:typeBadge(msgid)});
+
+  // Structured data
+  if (sd && sd !== '-') {
+    const sdRe = /\[(\S+)((?:\s+\w+="[^"]*")*)\]/g;
+    let sdm;
+    while ((sdm = sdRe.exec(sd)) !== null) {
+      const sdId = sdm[1];
+      rows.push({key:`[${sdId}]`, mapped:'Structured Data ID', value:sdId, enriched:`<em>${escHtml(sdId)}</em>`, typeBadge:'<span class="type-badge">SD-ID</span>'});
+      const kvRe = /(\w+)="([^"]*)"/g;
+      let kvm;
+      while ((kvm = kvRe.exec(sdm[2])) !== null) {
+        rows.push({key:`${sdId}.${kvm[1]}`, mapped:'SD param', value:kvm[2],
+          enriched:enrichValue(kvm[2],kvm[1]), typeBadge:typeBadge(kvm[2])});
+      }
+    }
+  }
+
+  if (msg && msg.trim()) {
+    rows.push({key:'MSG', mapped:'Log message', value:msg.trim(), enriched:escHtml(msg.trim()), typeBadge:typeBadge(msg.trim())});
+  }
+  return {format:'Syslog RFC5424', rows};
+}
+
+// ─── RFC 3164 Parser ──────────────────────────────────────────────────────────
+function parseRFC3164(line) {
+  const m = line.match(/^<(\d+)>([A-Za-z]{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+([^:\s]+(?:\[\d+\])?):?\s*(.*)/);
+  if (!m) {
+    // Minimal parse
+    const m2 = line.match(/^<(\d+)>(.*)/);
+    if (!m2) throw new Error('Could not parse RFC 3164');
+    const priority = parseInt(m2[1]);
+    const fac = priority >> 3, sev = priority & 7;
+    const sevInfo = syslogSevLabel(sev);
+    return {format:'Syslog RFC3164', rows:[
+      {key:'Priority', mapped:'Raw priority', value:m2[1],
+        enriched:`${escHtml(m2[1])} <span class="sev ${sevInfo.cls}">${sevInfo.label}</span>`,
+        typeBadge:'<span class="type-badge">priority</span>'},
+      {key:'MSG', mapped:'Log message', value:m2[2].trim(), enriched:escHtml(m2[2].trim()), typeBadge:typeBadge(m2[2].trim())}
+    ]};
+  }
+  const [, pri, ts, host, tag, msg] = m;
+  const priority = parseInt(pri);
+  const facility = priority >> 3, severity = priority & 7;
+  const facName = SYSLOG_FACILITIES[facility] || String(facility);
+  const sev = syslogSevLabel(severity);
+
+  const rows = [];
+  rows.push({key:'Priority', mapped:'Raw priority value', value:pri,
+    enriched:`${escHtml(pri)} <span class="sev ${sev.cls}">${sev.label}</span>`,
+    typeBadge:'<span class="type-badge">priority</span>'});
+  rows.push({key:'Facility', mapped:'Syslog facility', value:facName, enriched:escHtml(`${facName} (${facility})`), typeBadge:'<span class="type-badge">facility</span>'});
+  rows.push({key:'Severity', mapped:'Syslog severity', value:String(severity),
+    enriched:`<span class="sev ${sev.cls}">${escHtml(SYSLOG_SEVERITIES[severity]||String(severity))}</span>`,
+    typeBadge:'<span class="type-badge">severity</span>'});
+  rows.push({key:'Timestamp', mapped:'Event timestamp', value:ts.trim(), enriched:enrichValue(ts.trim(),'ts'), typeBadge:'<span class="type-badge">timestamp</span>'});
+  rows.push({key:'Hostname', mapped:'Source hostname', value:host, enriched:enrichValue(host,'host'), typeBadge:typeBadge(host)});
+  rows.push({key:'Tag', mapped:'Application/process tag', value:tag, enriched:escHtml(tag), typeBadge:typeBadge(tag)});
+  if (msg) rows.push({key:'MSG', mapped:'Log message', value:msg, enriched:escHtml(msg), typeBadge:typeBadge(msg)});
+  return {format:'Syslog RFC3164', rows};
+}
+
+// ─── JSON Parser ──────────────────────────────────────────────────────────────
+function parseJSON(line) {
+  let obj;
+  try { obj = JSON.parse(line); } catch(e) { throw new Error('Invalid JSON: ' + e.message); }
+  return {format:'JSON', obj};
+}
+
+function renderJSONTree(obj, depth) {
+  depth = depth || 0;
+  if (obj === null) return `<span class="json-null">null</span>`;
+  if (typeof obj === 'boolean') return `<span class="json-bool">${obj}</span>`;
+  if (typeof obj === 'number') return `<span class="json-number">${obj}</span>`;
+  if (typeof obj === 'string') {
+    // Enrich known value types inline
+    let display = `<span class="json-string">"${escHtml(obj)}"</span>`;
+    const enriched = enrichValue(obj, '');
+    // Only show enriched if it adds something
+    if (enriched !== escHtml(obj)) {
+      display += ' ' + enriched.replace(escHtml(obj), '');
+    }
+    return display;
+  }
+  if (Array.isArray(obj)) {
+    if (obj.length === 0) return '<span class="json-null">[]</span>';
+    const items = obj.map((v,i) => `<li><span class="json-key">${i}</span>: ${renderJSONTree(v, depth+1)}</li>`).join('');
+    const toggle = depth < 3 ? '' : ' collapsed';
+    return `<span class="json-toggle${toggle}" onclick="this.classList.toggle('collapsed')">Array <span class="json-count">[${obj.length}]</span></span><ul>${items}</ul>`;
+  }
+  if (typeof obj === 'object') {
+    const keys = Object.keys(obj);
+    if (keys.length === 0) return '<span class="json-null">{}</span>';
+    const items = keys.map(k => `<li><span class="json-key">"${escHtml(k)}"</span>: ${renderJSONTree(obj[k], depth+1)}</li>`).join('');
+    const toggle = depth < 2 ? '' : ' collapsed';
+    return `<span class="json-toggle${toggle}" onclick="this.classList.toggle('collapsed')">Object <span class="json-count">{${keys.length}}</span></span><ul>${items}</ul>`;
+  }
+  return escHtml(String(obj));
+}
+
+// ─── W3C Parser ───────────────────────────────────────────────────────────────
+function parseW3C(lines) {
+  let fields = [];
+  let dataLines = [];
+  let metaRows = [];
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    if (/^#Version:/i.test(line)) {
+      metaRows.push({key:'#Version', mapped:'W3C log version', value:line.replace(/^#Version:\s*/i,'').trim()});
+    } else if (/^#Date:/i.test(line)) {
+      metaRows.push({key:'#Date', mapped:'Log date', value:line.replace(/^#Date:\s*/i,'').trim()});
+    } else if (/^#Software:/i.test(line)) {
+      metaRows.push({key:'#Software', mapped:'Logging software', value:line.replace(/^#Software:\s*/i,'').trim()});
+    } else if (/^#Fields:/i.test(line)) {
+      fields = line.replace(/^#Fields:\s*/i,'').trim().split(/\s+/);
+    } else if (/^#/.test(line)) {
+      // other comment, skip
+    } else {
+      dataLines.push(line.trim().split(/\s+/));
+    }
+  }
+
+  const rows = metaRows.map(r => ({key:r.key, mapped:r.mapped, value:r.value, enriched:enrichValue(r.value,r.key), typeBadge:typeBadge(r.value)}));
+  if (fields.length) {
+    rows.push({key:'#Fields', mapped:'Column definitions', value:fields.join(' '), enriched:escHtml(fields.join(' ')), typeBadge:'<span class="type-badge">header</span>'});
+  }
+
+  for (let di = 0; di < dataLines.length; di++) {
+    const vals = dataLines[di];
+    const prefix = dataLines.length > 1 ? `[row${di+1}] ` : '';
+    for (let i = 0; i < Math.max(fields.length, vals.length); i++) {
+      const key = prefix + (fields[i] || `col${i+1}`);
+      const val = vals[i] || '';
+      rows.push({key, mapped:'', value:val, enriched:enrichValue(val,fields[i]||''), typeBadge:typeBadge(val)});
+    }
+  }
+  return {format:'W3C', rows};
+}
+
+// ─── KV Parser ────────────────────────────────────────────────────────────────
+function parseKV(line) {
+  const rows = [];
+  // Handles: key=value key="value with spaces" key='value'
+  // Delimiters between pairs: space, comma, semicolon
+  const re = /([A-Za-z_][\w.\-]*)=(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|([^,;\s]*))/g;
+  let m;
+  while ((m = re.exec(line)) !== null) {
+    const key = m[1];
+    const value = (m[2] !== undefined ? m[2] : m[3] !== undefined ? m[3] : m[4] || '')
+      .replace(/\\"/g,'"').replace(/\\'/g,"'").replace(/\\\\/g,'\\');
+    const mapped = CEF_KEYS[key] || '';
+    rows.push({key, mapped, value, enriched:enrichValue(value,key), typeBadge:typeBadge(value)});
+  }
+  if (!rows.length) throw new Error('No key=value pairs found');
+  return {format:'KV', rows};
+}
+
+// ─── Main parse dispatcher ───────────────────────────────────────────────────
+function parseLine(line) {
+  line = line.trim();
+  const fmt = detectFormat(line);
+  switch(fmt) {
+    case 'cef':      return parseCEF(line);
+    case 'leef':     return parseLEEF(line);
+    case 'rfc5424':  return parseRFC5424(line);
+    case 'rfc3164':  return parseRFC3164(line);
+    case 'json':     return parseJSON(line);
+    case 'kv':       return parseKV(line);
+    default:
+      // Try JSON anyway
+      if (line.startsWith('{') || line.startsWith('[')) {
+        try { return parseJSON(line); } catch(e) {}
+      }
+      // Try KV
+      try { return parseKV(line); } catch(e) {}
+      return {format:'Unknown', rows:[{key:'raw', mapped:'', value:line, enriched:escHtml(line), typeBadge:typeBadge(line)}]};
+  }
+}
+
+function renderResult(result) {
+  if (result.format === 'JSON') {
+    return `<div class="json-tree"><ul>${renderJSONTree(result.obj, 0).startsWith('<span') ?
+      '<li>' + renderJSONTree(result.obj, 0) + '</li>' :
+      renderJSONTree(result.obj, 0)}</ul></div>`;
+  }
+  if (result.format === 'W3C') {
+    return makeTable(result.rows);
+  }
+  return makeTable(result.rows);
+}
+
+// ─── Format badge ─────────────────────────────────────────────────────────────
+function setFormatBadge(text, known) {
+  const el = document.getElementById('format-badge');
+  el.textContent = text;
+  el.className = 'format-badge' + (known ? ' known' : '');
+}
+
+// ─── Main processing ──────────────────────────────────────────────────────────
+const logInput = document.getElementById('log-input');
+const outputEl = document.getElementById('output');
+const tabsBar = document.getElementById('tabs-bar');
+
+let parsedResults = [];
+let activeTab = 0;
+
+function processInput() {
+  const raw = logInput.value;
+  if (!raw.trim()) {
+    outputEl.innerHTML = '';
+    tabsBar.style.display = 'none';
+    setFormatBadge('—', false);
+    return;
+  }
+
+  // Check for W3C multi-line block
+  const allLines = raw.split('\n');
+  if (allLines.some(l => /^#Fields:/i.test(l.trim()) || /^#Version:/i.test(l.trim()))) {
+    // Treat entire input as one W3C block
+    try {
+      const result = parseW3C(allLines);
+      parsedResults = [result];
+      activeTab = 0;
+      renderTabs();
+      return;
+    } catch(e) {}
+  }
+
+  const nonEmpty = allLines.filter(l => l.trim());
+  if (!nonEmpty.length) {
+    outputEl.innerHTML = '';
+    tabsBar.style.display = 'none';
+    setFormatBadge('—', false);
+    return;
+  }
+
+  parsedResults = nonEmpty.map(line => {
+    try { return parseLine(line); }
+    catch(e) { return {format:'Error', error: e.message, raw: line}; }
+  });
+
+  activeTab = 0;
+  renderTabs();
+}
+
+function renderTabs() {
+  if (parsedResults.length === 1) {
+    tabsBar.style.display = 'none';
+    renderActive();
+    const fmt = parsedResults[0].format;
+    setFormatBadge(fmt, fmt !== 'Unknown' && fmt !== 'Error');
+    return;
+  }
+
+  tabsBar.style.display = 'flex';
+  tabsBar.innerHTML = parsedResults.map((r, i) =>
+    `<button class="tab-btn${i===activeTab?' active':''}" data-idx="${i}">Line ${i+1}: ${escHtml(r.format)}</button>`
+  ).join('');
+  tabsBar.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTab = parseInt(btn.dataset.idx);
+      tabsBar.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b===btn));
+      renderActive();
+      const fmt = parsedResults[activeTab].format;
+      setFormatBadge(fmt, fmt !== 'Unknown' && fmt !== 'Error');
+    });
+  });
+
+  const fmt = parsedResults[activeTab].format;
+  setFormatBadge(`${fmt} (+${parsedResults.length-1} more)`, fmt !== 'Unknown' && fmt !== 'Error');
+  renderActive();
+}
+
+function renderActive() {
+  const result = parsedResults[activeTab];
+  if (!result) return;
+
+  if (result.format === 'Error') {
+    outputEl.innerHTML = `<div class="parse-error">Parse error: ${escHtml(result.error)}<br><code>${escHtml(result.raw)}</code></div>`;
+    return;
+  }
+
+  outputEl.innerHTML = renderResult(result);
+}
+
+let debounceTimer;
+logInput.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(processInput, 250);
+});
+logInput.addEventListener('paste', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(processInput, 50);
+});
+
+// ─── URL state ────────────────────────────────────────────────────────────────
+const params = new URLSearchParams(location.search);
+if (params.get('q')) {
+  logInput.value = params.get('q');
+  processInput();
+}
+logInput.addEventListener('change', () => {
+  const p = new URLSearchParams({ q: logInput.value });
+  history.replaceState(null, '', '?' + p.toString());
+});
+</script>
+</body>
+</html>

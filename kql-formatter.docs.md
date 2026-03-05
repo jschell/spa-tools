@@ -1,0 +1,5 @@
+KQL Formatter takes a raw Kusto Query Language query and reformats it with consistent indentation and operator alignment. Paste any KQL query — copied from Sentinel, documentation, or a detection rule — into the left panel and click Format to get a cleanly structured version on the right.
+
+The formatter handles KQL-specific idioms: pipe operators are placed on their own lines indented from the table name, `let` bindings each get their own line at column zero with a blank line separating the final binding from the query body, and `where` predicates joined by `and` or `or` wrap onto aligned continuation lines. Column lists for `summarize`, `extend`, `project`, and `project-away` wrap at 120 characters, and `join` blocks are formatted as an indented multi-line structure with the `on` clause on its own line.
+
+String literals containing pipe characters are preserved correctly and not mistaken for operator pipes. Formatting is idempotent — running the formatter on already-formatted input produces identical output. All processing happens in the browser; no query text is sent anywhere.

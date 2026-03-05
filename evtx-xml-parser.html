@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows Event Log XML Parser</title>
+  <meta name="description" content="Paste raw Windows Event Log XML and get a clean structured view with field annotations and a generated KQL query.">
+  <style>
+    :root[data-theme="light"] {
+      --bg: #ffffff;
+      --surface: #f5f5f5;
+      --text: #1a1a1a;
+      --border: #e0e0e0;
+      --mono-bg: #f8f8f8;
+      --link: #0066cc;
+      --badge-text: #fff;
+      --tab-active-bg: #fff;
+      --tab-inactive-bg: #eee;
+      --tab-active-border: #0066cc;
+      --annotation-text: #555;
+      --copy-btn-bg: #e8e8e8;
+      --copy-btn-hover: #d0d0d0;
+      --header-bg: #f0f0f0;
+    }
+    :root[data-theme="dark"] {
+      --bg: #1a1a1a;
+      --surface: #2a2a2a;
+      --text: #e8e8e8;
+      --border: #444444;
+      --mono-bg: #121212;
+      --link: #5599ff;
+      --badge-text: #fff;
+      --tab-active-bg: #2a2a2a;
+      --tab-inactive-bg: #1a1a1a;
+      --tab-active-border: #5599ff;
+      --annotation-text: #aaa;
+      --copy-btn-bg: #3a3a3a;
+      --copy-btn-hover: #4a4a4a;
+      --header-bg: #222;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    a { color: var(--link); }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    #theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    h1 { margin: 0 0 0.5rem; font-size: 1.6rem; }
+    p.desc { margin: 0 0 1rem; color: var(--annotation-text); }
+
+    textarea {
+      width: 100%;
+      height: 180px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--mono-bg);
+      color: var(--text);
+      resize: vertical;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      margin: 0.5rem 0 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    button:hover { background: var(--copy-btn-hover); }
+
+    button.primary {
+      background: #0066cc;
+      color: #fff;
+      border-color: #0055aa;
+    }
+    button.primary:hover { background: #0055aa; }
+
+    #error-msg {
+      color: #cc3333;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      display: none;
+    }
+
+    /* Event tabs (multiple events) */
+    .event-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .event-tab {
+      padding: 0.4rem 1rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      background: var(--tab-inactive-bg);
+      color: var(--text);
+      font-size: 0.85rem;
+      margin-right: 3px;
+    }
+    .event-tab.active {
+      background: var(--tab-active-bg);
+      border-bottom: 2px solid var(--tab-active-bg);
+      margin-bottom: -2px;
+      font-weight: bold;
+      color: var(--tab-active-border);
+    }
+
+    /* Panel tabs (System / EventData / KQL) */
+    .panel-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .panel-tab {
+      padding: 0.4rem 1.1rem;
+      cursor: pointer;
+      border: none;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      color: var(--annotation-text);
+      font-size: 0.95rem;
+      margin-bottom: -2px;
+    }
+    .panel-tab.active {
+      color: var(--tab-active-border);
+      border-bottom-color: var(--tab-active-border);
+      font-weight: 600;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th {
+      text-align: left;
+      background: var(--header-bg);
+      padding: 0.4rem 0.7rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--annotation-text);
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.45rem 0.7rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    td.field-name {
+      font-weight: 600;
+      white-space: nowrap;
+      width: 22%;
+    }
+    td.field-value {
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+      width: 35%;
+    }
+    td.field-annotation {
+      color: var(--annotation-text);
+      font-size: 0.82rem;
+      font-style: italic;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--badge-text);
+      vertical-align: middle;
+    }
+    .badge-green { background: #2a7a2a; }
+    .badge-red { background: #aa2222; }
+    .badge-blue { background: #1a5fa8; }
+    .badge-orange { background: #b86a00; }
+    .badge-gray { background: #666; }
+
+    /* Triage note */
+    .triage-note {
+      background: #fffbe6;
+      border-left: 3px solid #f0b429;
+      padding: 0.4rem 0.7rem;
+      margin: 0.7rem 0;
+      font-size: 0.85rem;
+      color: #7a5700;
+      border-radius: 0 4px 4px 0;
+    }
+    :root[data-theme="dark"] .triage-note {
+      background: #2d2200;
+      color: #f0c060;
+      border-left-color: #c08000;
+    }
+
+    /* Copy button inline */
+    .copy-inline {
+      font-size: 0.72rem;
+      padding: 0.1rem 0.4rem;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+      background: var(--copy-btn-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .copy-inline:hover { background: var(--copy-btn-hover); }
+
+    /* KQL panel */
+    .kql-output {
+      background: var(--mono-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .kql-actions { display: flex; gap: 0.5rem; }
+
+    /* Hex+decimal display */
+    .hex-val { font-family: 'Courier New', monospace; }
+    .hex-dec { color: var(--annotation-text); font-size: 0.82rem; }
+
+    #output { display: none; }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--annotation-text);
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <p style="margin:0"><a href="index.html">&larr; All tools</a></p>
+    <button id="theme-toggle" title="Toggle dark mode">🌙</button>
+  </div>
+
+  <h1>Windows Event Log XML Parser</h1>
+  <p class="desc">Paste raw Windows Event Log XML and get a clean structured view with field annotations and a generated KQL query.</p>
+
+  <textarea id="xml-input" spellcheck="false" placeholder="Paste Windows Event XML here..."></textarea>
+
+  <div class="controls">
+    <button class="primary" id="parse-btn">Parse Event</button>
+    <button id="clear-btn">Clear</button>
+    <button id="sample-btn">Load Sample (4625)</button>
+  </div>
+
+  <div id="error-msg"></div>
+
+  <div id="output">
+    <div class="event-tabs" id="event-tabs"></div>
+    <div id="event-panels"></div>
+  </div>
+
+  <footer>
+    <p><a href="https://github.com/jschell/spa-tools/blob/main/evtx-xml-parser.html">View source</a></p>
+  </footer>
+
+  <script>
+    // ── Embedded reference data ──────────────────────────────────────────────
+
+    const EVENT_IDS = {
+      4624: { desc: "An account was successfully logged on", channel: "Security", triage: "Check LogonType and IP" },
+      4625: { desc: "An account failed to log on", channel: "Security", triage: "Check failure reason and SubjectUserName" },
+      4648: { desc: "A logon was attempted using explicit credentials", channel: "Security", triage: "Check TargetUserName and TargetServerName" },
+      4662: { desc: "An operation was performed on an object", channel: "Security", triage: "Check ObjectType and AccessMask" },
+      4663: { desc: "An attempt was made to access an object", channel: "Security", triage: "Check ObjectName and AccessMask" },
+      4688: { desc: "A new process has been created", channel: "Security", triage: "Check CommandLine and ParentProcessName" },
+      4689: { desc: "A process has exited", channel: "Security", triage: "Check ExitCode" },
+      4697: { desc: "A service was installed in the system", channel: "Security", triage: "Check ServiceFileName for suspicious paths" },
+      4698: { desc: "A scheduled task was created", channel: "Security", triage: "Check TaskContent for persistence indicators" },
+      4699: { desc: "A scheduled task was deleted", channel: "Security", triage: "" },
+      4700: { desc: "A scheduled task was enabled", channel: "Security", triage: "" },
+      4701: { desc: "A scheduled task was disabled", channel: "Security", triage: "" },
+      4702: { desc: "A scheduled task was updated", channel: "Security", triage: "Check TaskContent" },
+      4720: { desc: "A user account was created", channel: "Security", triage: "Check SubjectUserName and TargetUserName" },
+      4722: { desc: "A user account was enabled", channel: "Security", triage: "" },
+      4723: { desc: "An attempt was made to change an account's password", channel: "Security", triage: "" },
+      4724: { desc: "An attempt was made to reset an account's password", channel: "Security", triage: "" },
+      4725: { desc: "A user account was disabled", channel: "Security", triage: "" },
+      4726: { desc: "A user account was deleted", channel: "Security", triage: "" },
+      4728: { desc: "A member was added to a security-enabled global group", channel: "Security", triage: "" },
+      4729: { desc: "A member was removed from a security-enabled global group", channel: "Security", triage: "" },
+      4730: { desc: "A security-enabled global group was deleted", channel: "Security", triage: "" },
+      4731: { desc: "A security-enabled local group was created", channel: "Security", triage: "" },
+      4732: { desc: "A member was added to a security-enabled local group", channel: "Security", triage: "Check MemberName and TargetUserName (Administrators group?)" },
+      4733: { desc: "A member was removed from a security-enabled local group", channel: "Security", triage: "" },
+      4738: { desc: "A user account was changed", channel: "Security", triage: "" },
+      4740: { desc: "A user account was locked out", channel: "Security", triage: "Check CallerComputerName" },
+      4756: { desc: "A member was added to a security-enabled universal group", channel: "Security", triage: "" },
+      4768: { desc: "A Kerberos authentication ticket (TGT) was requested", channel: "Security", triage: "Check IpAddress and TicketEncryptionType" },
+      4769: { desc: "A Kerberos service ticket was requested", channel: "Security", triage: "Check ServiceName and TicketEncryptionType (0x17=RC4)" },
+      4771: { desc: "Kerberos pre-authentication failed", channel: "Security", triage: "Check FailureCode and IpAddress" },
+      4776: { desc: "The computer attempted to validate the credentials for an account (NTLM)", channel: "Security", triage: "Check Workstation and ErrorCode" },
+      4798: { desc: "A user's local group membership was enumerated", channel: "Security", triage: "" },
+      4799: { desc: "A security-enabled local group membership was enumerated", channel: "Security", triage: "" },
+      5140: { desc: "A network share object was accessed", channel: "Security", triage: "Check ShareName and IpAddress" },
+      5142: { desc: "A network share object was added", channel: "Security", triage: "" },
+      5145: { desc: "A network share object was checked to see whether client can be granted desired access", channel: "Security", triage: "" },
+      7034: { desc: "A service terminated unexpectedly", channel: "System", triage: "" },
+      7045: { desc: "A new service was installed in the system", channel: "System", triage: "Check ImagePath and ServiceType" },
+      1102: { desc: "The audit log was cleared", channel: "Security", triage: "Check SubjectUserName — high severity indicator" },
+      4656: { desc: "A handle to an object was requested", channel: "Security", triage: "" },
+      4657: { desc: "A registry value was modified", channel: "Security", triage: "Check ObjectName (registry path)" },
+      4670: { desc: "Permissions on an object were changed", channel: "Security", triage: "" },
+      4673: { desc: "A privileged service was called", channel: "Security", triage: "" },
+      4674: { desc: "An operation was attempted on a privileged object", channel: "Security", triage: "" },
+      4719: { desc: "System audit policy was changed", channel: "Security", triage: "High severity — potential defense evasion" },
+      4735: { desc: "A security-enabled local group was changed", channel: "Security", triage: "" },
+      4755: { desc: "A security-enabled universal group was changed", channel: "Security", triage: "" }
+    };
+
+    const FIELD_ANNOTATIONS = {
+      "LogonType": "2=Interactive, 3=Network, 4=Batch, 5=Service, 7=Unlock, 8=NetworkCleartext, 9=NewCredentials, 10=RemoteInteractive, 11=CachedInteractive",
+      "SubjectUserName": "The account that performed the action",
+      "SubjectDomainName": "Domain of the subject account",
+      "SubjectLogonId": "Logon session of the subject account (hex)",
+      "TargetUserName": "The target account",
+      "TargetDomainName": "Domain of the target account",
+      "TargetLogonId": "Logon session of the target (hex)",
+      "FailureReason": "Reason for logon failure",
+      "SubStatus": "Additional failure reason (hex): 0xC0000064=unknown user, 0xC000006A=wrong password, 0xC0000234=locked out",
+      "Status": "Logon failure status code (hex)",
+      "IpAddress": "Source IP address",
+      "IpPort": "Source port",
+      "WorkstationName": "Source workstation name",
+      "ProcessName": "Full path to the process executable",
+      "CommandLine": "Full command line used to start the process",
+      "ParentProcessName": "Name of the parent process",
+      "ParentProcessId": "PID of the parent process (hex)",
+      "NewProcessId": "PID of the new process (hex)",
+      "NewProcessName": "Full path of the new process executable",
+      "TokenElevationType": "%%1936=Default, %%1937=Full (UAC elevated), %%1938=Limited (UAC filtered)",
+      "ServiceName": "Name of the service",
+      "ServiceFileName": "Full path to the service executable",
+      "ServiceType": "0x1=KernelDriver, 0x2=FileSystemDriver, 0x10=Win32OwnProcess, 0x20=Win32ShareProcess",
+      "StartType": "2=Automatic, 3=Manual, 4=Disabled",
+      "ObjectName": "Full path to the object (file, registry key, etc.)",
+      "ObjectType": "Type of object (File, Key, Process, etc.)",
+      "AccessMask": "Requested access rights (hex)",
+      "TicketEncryptionType": "0x1=DES-CBC-CRC, 0x3=DES-CBC-MD5, 0x11=AES128, 0x12=AES256, 0x17=RC4 (weak)",
+      "TicketOptions": "Kerberos ticket option flags (hex)",
+      "ShareName": "UNC name of the network share",
+      "ShareLocalPath": "Local path of the share",
+      "PrivilegeList": "List of special privileges assigned",
+      "SidHistory": "SID history entries",
+      "MemberName": "DN of the added/removed account",
+      "CallerComputerName": "Computer initiating the action",
+      "PasswordLastSet": "When the password was last changed",
+      "AccountExpires": "Account expiration date",
+      "DisplayName": "Display name of the account",
+      "UserWorkstations": "Workstations this account can log on to"
+    };
+
+    const SAMPLE_XML = `<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing" Guid="{54849625-5478-4994-A5BA-3E3B0328C30D}"/>
+    <EventID>4625</EventID>
+    <Version>0</Version>
+    <Level>0</Level>
+    <Task>12544</Task>
+    <Opcode>0</Opcode>
+    <Keywords>0x8010000000000000</Keywords>
+    <TimeCreated SystemTime="2026-03-05T14:22:31.456789Z"/>
+    <EventRecordID>12345678</EventRecordID>
+    <Correlation/>
+    <Execution ProcessID="748" ThreadID="812"/>
+    <Channel>Security</Channel>
+    <Computer>DC01.corp.example.com</Computer>
+    <Security/>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserSid">S-1-5-18</Data>
+    <Data Name="SubjectUserName">-</Data>
+    <Data Name="SubjectDomainName">-</Data>
+    <Data Name="SubjectLogonId">0x0</Data>
+    <Data Name="TargetUserSid">S-1-0-0</Data>
+    <Data Name="TargetUserName">jsmith</Data>
+    <Data Name="TargetDomainName">CORP</Data>
+    <Data Name="Status">0xc000006d</Data>
+    <Data Name="FailureReason">%%2313</Data>
+    <Data Name="SubStatus">0xc000006a</Data>
+    <Data Name="LogonType">3</Data>
+    <Data Name="LogonProcessName">NtLmSsp</Data>
+    <Data Name="AuthenticationPackageName">NTLM</Data>
+    <Data Name="WorkstationName">DESKTOP-ABC123</Data>
+    <Data Name="TransmittedServices">-</Data>
+    <Data Name="LmPackageName">NTLM V2</Data>
+    <Data Name="KeyLength">128</Data>
+    <Data Name="ProcessId">0x0</Data>
+    <Data Name="ProcessName">-</Data>
+    <Data Name="IpAddress">192.168.1.55</Data>
+    <Data Name="IpPort">54321</Data>
+  </EventData>
+</Event>`;
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function isSid(val) {
+      return /^S-\d+-\d+(-\d+)*$/.test(val.trim());
+    }
+
+    function isHex(val) {
+      return /^0x[0-9a-fA-F]+$/.test(val.trim());
+    }
+
+    function isGuid(val) {
+      return /^\{?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}?$/.test(val.trim());
+    }
+
+    function normalizeGuid(val) {
+      val = val.trim().replace(/^\{/, '').replace(/\}$/, '').toUpperCase();
+      return '{' + val + '}';
+    }
+
+    function hexToDecimal(val) {
+      return parseInt(val, 16);
+    }
+
+    function formatTime(raw) {
+      if (!raw) return '';
+      try {
+        const d = new Date(raw);
+        return d.toLocaleString(undefined, { timeZone: 'UTC', timeZoneName: 'short' }) + ' (raw: ' + raw + ')';
+      } catch (e) {
+        return raw;
+      }
+    }
+
+    function getLevelBadge(level, keywords) {
+      // keywords takes precedence for Security events
+      const kw = BigInt ? (() => { try { return BigInt(keywords || '0'); } catch(e) { return 0n; } })() : 0;
+      const AUDIT_FAILURE = BigInt ? BigInt('0x8010000000000000') : null;
+      const AUDIT_SUCCESS = BigInt ? BigInt('0x8020000000000000') : null;
+
+      if (AUDIT_FAILURE && kw === AUDIT_FAILURE) return '<span class="badge badge-red">Audit Failure</span>';
+      if (AUDIT_SUCCESS && kw === AUDIT_SUCCESS) return '<span class="badge badge-green">Audit Success</span>';
+
+      const lvl = parseInt(level, 10);
+      if (lvl === 2) return '<span class="badge badge-red">Error</span>';
+      if (lvl === 3) return '<span class="badge badge-orange">Warning</span>';
+      if (lvl === 0 || lvl === 4) return '<span class="badge badge-blue">Information</span>';
+      return '<span class="badge badge-gray">Level ' + escapeHtml(String(level)) + '</span>';
+    }
+
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+      }).catch(() => {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+      });
+    }
+
+    // ── XML parsing ──────────────────────────────────────────────────────────
+
+    function getTagText(parent, localName) {
+      if (!parent) return '';
+      // Try with namespace, then without
+      let el = parent.getElementsByTagNameNS('*', localName)[0];
+      if (!el) el = parent.getElementsByTagName(localName)[0];
+      return el ? (el.textContent || '').trim() : '';
+    }
+
+    function getAttr(el, attr) {
+      if (!el) return '';
+      return (el.getAttribute(attr) || '').trim();
+    }
+
+    function parseEventElement(eventEl) {
+      const NS = 'http://schemas.microsoft.com/win/2004/08/events/event';
+
+      function getEl(parent, tag) {
+        let el = parent.getElementsByTagNameNS(NS, tag)[0];
+        if (!el) el = parent.getElementsByTagName(tag)[0];
+        return el || null;
+      }
+
+      const systemEl = getEl(eventEl, 'System');
+      const eventDataEl = getEl(eventEl, 'EventData');
+
+      // System fields
+      const providerEl = getEl(systemEl, 'Provider');
+      const timeEl = getEl(systemEl, 'TimeCreated');
+      const execEl = getEl(systemEl, 'Execution');
+      const secEl = getEl(systemEl, 'Security');
+
+      const system = {
+        providerName: getAttr(providerEl, 'Name'),
+        providerGuid: getAttr(providerEl, 'Guid'),
+        eventId: getTagText(systemEl, 'EventID'),
+        level: getTagText(systemEl, 'Level'),
+        task: getTagText(systemEl, 'Task'),
+        opcode: getTagText(systemEl, 'Opcode'),
+        keywords: getTagText(systemEl, 'Keywords'),
+        timeCreated: getAttr(timeEl, 'SystemTime'),
+        eventRecordId: getTagText(systemEl, 'EventRecordID'),
+        channel: getTagText(systemEl, 'Channel'),
+        computer: getTagText(systemEl, 'Computer'),
+        processId: getAttr(execEl, 'ProcessID'),
+        threadId: getAttr(execEl, 'ThreadID'),
+        userId: getAttr(secEl, 'UserID'),
+        version: getTagText(systemEl, 'Version'),
+      };
+
+      // EventData fields
+      const eventData = [];
+      if (eventDataEl) {
+        const dataEls = eventDataEl.getElementsByTagNameNS(NS, 'Data');
+        const allDataEls = dataEls.length ? dataEls : eventDataEl.getElementsByTagName('Data');
+        Array.from(allDataEls).forEach(d => {
+          const name = getAttr(d, 'Name') || '(unnamed)';
+          const value = (d.textContent || '').trim();
+          eventData.push({ name, value });
+        });
+      }
+
+      return { system, eventData };
+    }
+
+    function parseXml(raw) {
+      raw = raw.trim();
+
+      // Wrap bare EventData fragment
+      if (raw.startsWith('<EventData') && !raw.startsWith('<Event')) {
+        raw = '<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event"><System></System>' + raw + '</Event>';
+      }
+
+      // Wrap multiple Event elements in a root if needed
+      if (!raw.startsWith('<Event') && !raw.startsWith('<?xml')) {
+        raw = '<Root>' + raw + '</Root>';
+      }
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(raw, 'text/xml');
+
+      const parseErr = doc.querySelector('parsererror');
+      if (parseErr) {
+        throw new Error('XML parse error: ' + parseErr.textContent.split('\n')[0]);
+      }
+
+      // Collect all Event elements
+      let events = Array.from(doc.getElementsByTagNameNS('http://schemas.microsoft.com/win/2004/08/events/event', 'Event'));
+      if (!events.length) {
+        events = Array.from(doc.getElementsByTagName('Event'));
+      }
+
+      if (!events.length) {
+        throw new Error('No <Event> elements found in the pasted XML.');
+      }
+
+      return events.map(parseEventElement);
+    }
+
+    // ── Rendering ────────────────────────────────────────────────────────────
+
+    function renderValueCell(name, value) {
+      let html = '';
+      if (isSid(value)) {
+        html = '<span class="hex-val">' + escapeHtml(value) + '</span>'
+          + ' <button class="copy-inline" data-copy="' + escapeHtml(value) + '">Copy</button>';
+      } else if (isGuid(value)) {
+        const norm = normalizeGuid(value);
+        html = '<span class="hex-val">' + escapeHtml(norm) + '</span>';
+      } else if (isHex(value)) {
+        const dec = hexToDecimal(value);
+        html = '<span class="hex-val">' + escapeHtml(value) + '</span>'
+          + (isNaN(dec) ? '' : ' <span class="hex-dec">(' + dec + ')</span>');
+      } else {
+        html = escapeHtml(value);
+      }
+      return html;
+    }
+
+    function renderSystemPanel(sys) {
+      const eid = parseInt(sys.eventId, 10);
+      const eidInfo = EVENT_IDS[eid] || null;
+
+      let eidCell = '';
+      if (eidInfo) {
+        eidCell = '<a href="https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventID='
+          + escapeHtml(sys.eventId) + '" target="_blank" rel="noopener">' + escapeHtml(sys.eventId) + '</a>'
+          + ' &mdash; ' + escapeHtml(eidInfo.desc);
+      } else {
+        eidCell = '<a href="https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventID='
+          + escapeHtml(sys.eventId) + '" target="_blank" rel="noopener">' + escapeHtml(sys.eventId) + '</a>';
+      }
+
+      const levelBadge = getLevelBadge(sys.level, sys.keywords);
+      const timeFormatted = sys.timeCreated ? formatTime(sys.timeCreated) : '';
+
+      let triageHtml = '';
+      if (eidInfo && eidInfo.triage) {
+        triageHtml = '<div class="triage-note"><strong>Triage note:</strong> ' + escapeHtml(eidInfo.triage) + '</div>';
+      }
+
+      const rows = [
+        ['Provider', escapeHtml(sys.providerName) + (sys.providerGuid ? ' <span class="hex-dec">' + escapeHtml(normalizeGuid(sys.providerGuid)) + '</span>' : '')],
+        ['EventID', eidCell],
+        ['Level', levelBadge],
+        ['Keywords', escapeHtml(sys.keywords)],
+        ['Channel', escapeHtml(sys.channel)],
+        ['Computer', escapeHtml(sys.computer)],
+        ['TimeCreated', escapeHtml(timeFormatted)],
+        ['EventRecordID', escapeHtml(sys.eventRecordId)],
+        ['Execution', sys.processId ? 'PID: ' + escapeHtml(sys.processId) + (sys.threadId ? ', TID: ' + escapeHtml(sys.threadId) : '') : ''],
+        ['UserID / SID', sys.userId ? '<span class="hex-val">' + escapeHtml(sys.userId) + '</span>'
+          + ' <button class="copy-inline" data-copy="' + escapeHtml(sys.userId) + '">Copy</button>' : '<span class="hex-dec">(none)</span>'],
+        ['Version', escapeHtml(sys.version)],
+      ].filter(r => r[1] && r[1] !== '<span class="hex-dec">(none)</span>' || r[0] === 'UserID / SID');
+
+      let html = triageHtml + '<table><thead><tr><th>Field</th><th colspan="2">Value</th></tr></thead><tbody>';
+      rows.forEach(([field, val]) => {
+        html += '<tr><td class="field-name">' + escapeHtml(field) + '</td><td colspan="2">' + val + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      return html;
+    }
+
+    function renderEventDataPanel(eventData) {
+      if (!eventData.length) {
+        return '<p style="color:var(--annotation-text);font-style:italic;">No EventData fields found.</p>';
+      }
+      let html = '<table><thead><tr><th>Field Name</th><th>Value</th><th>Annotation</th></tr></thead><tbody>';
+      eventData.forEach(({ name, value }) => {
+        const annotation = FIELD_ANNOTATIONS[name] || '';
+        html += '<tr>'
+          + '<td class="field-name">' + escapeHtml(name) + '</td>'
+          + '<td class="field-value">' + renderValueCell(name, value) + '</td>'
+          + '<td class="field-annotation">' + escapeHtml(annotation) + '</td>'
+          + '</tr>';
+      });
+      html += '</tbody></table>';
+      return html;
+    }
+
+    function renderKqlPanel(sys, eventData) {
+      const eid = sys.eventId || 'UNKNOWN';
+      const channel = sys.channel || 'SecurityEvent';
+      const table = (channel === 'Security' || channel === 'Microsoft-Windows-Security-Auditing/Security') ? 'SecurityEvent' : 'Event';
+
+      const fieldNames = eventData.map(f => f.name).filter(n => n !== '(unnamed)');
+
+      let kql = table + '\n';
+      kql += '| where EventID == ' + eid + '\n';
+
+      if (eventData.length) {
+        kql += '// Uncomment and adjust the filters below as needed:\n';
+        eventData.forEach(({ name, value }) => {
+          if (name === '(unnamed)') return;
+          kql += '// | where EventData has "' + name + '=' + value + '"\n';
+        });
+      }
+
+      if (fieldNames.length) {
+        kql += '| project TimeGenerated, Computer, EventID';
+        fieldNames.forEach(n => { kql += ', ' + n; });
+        kql += '\n';
+      } else {
+        kql += '| project TimeGenerated, Computer, EventID\n';
+      }
+
+      kql += '| sort by TimeGenerated desc\n';
+
+      const panelId = 'kql-text-' + Math.random().toString(36).slice(2);
+      return '<div class="kql-output" id="' + panelId + '">' + escapeHtml(kql) + '</div>'
+        + '<div class="kql-actions">'
+        + '<button class="primary" data-kql-copy="' + panelId + '">Copy KQL</button>'
+        + '</div>';
+    }
+
+    function renderEvent(parsed, index) {
+      const { system: sys, eventData } = parsed;
+      const eventId = sys.eventId || '?';
+      const panelId = 'ev-' + index;
+
+      const systemHtml = renderSystemPanel(sys);
+      const eventDataHtml = renderEventDataPanel(eventData);
+      const kqlHtml = renderKqlPanel(sys, eventData);
+
+      return `<div class="event-panel" id="${panelId}" style="display:none;">
+  <div class="panel-tabs">
+    <button class="panel-tab active" data-panel="${panelId}-system">System Fields</button>
+    <button class="panel-tab" data-panel="${panelId}-eventdata">EventData</button>
+    <button class="panel-tab" data-panel="${panelId}-kql">KQL Generator</button>
+  </div>
+  <div class="panel active" id="${panelId}-system">${systemHtml}</div>
+  <div class="panel" id="${panelId}-eventdata">${eventDataHtml}</div>
+  <div class="panel" id="${panelId}-kql">${kqlHtml}</div>
+</div>`;
+    }
+
+    // ── Main orchestration ───────────────────────────────────────────────────
+
+    let parsedEvents = [];
+    let activeEventIndex = 0;
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.style.display = msg ? 'block' : 'none';
+    }
+
+    function activateEventTab(index) {
+      activeEventIndex = index;
+      document.querySelectorAll('.event-tab').forEach((t, i) => {
+        t.classList.toggle('active', i === index);
+      });
+      document.querySelectorAll('.event-panel').forEach((p, i) => {
+        p.style.display = i === index ? 'block' : 'none';
+      });
+    }
+
+    function doParse() {
+      showError('');
+      const raw = document.getElementById('xml-input').value.trim();
+      if (!raw) {
+        showError('Please paste some XML first.');
+        return;
+      }
+
+      let events;
+      try {
+        events = parseXml(raw);
+      } catch (e) {
+        showError(e.message);
+        return;
+      }
+
+      parsedEvents = events;
+
+      // Build event tabs
+      const tabsEl = document.getElementById('event-tabs');
+      const panelsEl = document.getElementById('event-panels');
+      tabsEl.innerHTML = '';
+      panelsEl.innerHTML = '';
+
+      events.forEach((ev, i) => {
+        const eid = ev.system.eventId || '?';
+        const tab = document.createElement('button');
+        tab.className = 'event-tab';
+        tab.textContent = events.length > 1 ? 'Event ' + (i + 1) + ' (ID ' + eid + ')' : 'Event ID ' + eid;
+        tab.addEventListener('click', () => activateEventTab(i));
+        tabsEl.appendChild(tab);
+
+        panelsEl.insertAdjacentHTML('beforeend', renderEvent(ev, i));
+      });
+
+      // Hide tab bar if single event
+      tabsEl.style.display = events.length > 1 ? 'flex' : 'none';
+
+      document.getElementById('output').style.display = 'block';
+      activateEventTab(0);
+      attachPanelTabListeners();
+      attachCopyListeners();
+    }
+
+    function attachPanelTabListeners() {
+      document.querySelectorAll('.panel-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.dataset.panel;
+          const container = btn.closest('.event-panel');
+          container.querySelectorAll('.panel-tab').forEach(b => b.classList.remove('active'));
+          container.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          const target = document.getElementById(targetId);
+          if (target) target.classList.add('active');
+        });
+      });
+    }
+
+    function attachCopyListeners() {
+      // Inline copy buttons (SIDs)
+      document.querySelectorAll('button[data-copy]').forEach(btn => {
+        btn.addEventListener('click', () => copyText(btn.dataset.copy, btn));
+      });
+
+      // KQL copy buttons
+      document.querySelectorAll('button[data-kql-copy]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const el = document.getElementById(btn.dataset.kqlCopy);
+          if (el) copyText(el.textContent, btn);
+        });
+      });
+    }
+
+    // ── UI wiring ────────────────────────────────────────────────────────────
+
+    document.getElementById('parse-btn').addEventListener('click', doParse);
+
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      document.getElementById('xml-input').value = '';
+      document.getElementById('output').style.display = 'none';
+      showError('');
+    });
+
+    document.getElementById('sample-btn').addEventListener('click', () => {
+      document.getElementById('xml-input').value = SAMPLE_XML;
+      document.getElementById('output').style.display = 'none';
+      showError('');
+    });
+
+    // Parse on Ctrl+Enter
+    document.getElementById('xml-input').addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') doParse();
+    });
+
+    // ── Dark mode ────────────────────────────────────────────────────────────
+
+    const themeToggle = document.getElementById('theme-toggle');
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '☀' : '🌙';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('evtx-theme', next);
+    });
+
+    // Load saved preference
+    const savedTheme = localStorage.getItem('evtx-theme');
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      applyTheme('dark');
+    }
+
+    // Pre-load sample on first visit
+    document.getElementById('xml-input').value = SAMPLE_XML;
+  </script>
+</body>
+</html>

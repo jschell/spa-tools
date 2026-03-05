@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KQL Formatter</title>
+  <meta name="description" content="Paste a KQL query and get it back cleanly formatted with consistent indentation and operator alignment.">
+  <style>
+    :root[data-theme="light"] {
+      --bg: #ffffff;
+      --surface: #f5f5f5;
+      --text: #1a1a1a;
+      --border: #e0e0e0;
+      --mono-bg: #f8f8f8;
+      --btn-primary-bg: #0066cc;
+      --btn-primary-text: #ffffff;
+      --btn-secondary-bg: #e8e8e8;
+      --btn-secondary-text: #1a1a1a;
+      --btn-secondary-hover: #d0d0d0;
+      --label: #555555;
+      --count: #888888;
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #1a1a1a;
+      --surface: #2a2a2a;
+      --text: #e8e8e8;
+      --border: #444444;
+      --mono-bg: #121212;
+      --btn-primary-bg: #3388ff;
+      --btn-primary-text: #ffffff;
+      --btn-secondary-bg: #3a3a3a;
+      --btn-secondary-text: #e8e8e8;
+      --btn-secondary-hover: #4a4a4a;
+      --label: #aaaaaa;
+      --count: #777777;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    a {
+      color: var(--btn-primary-bg);
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 0.25rem;
+    }
+
+    .theme-toggle {
+      background: var(--btn-secondary-bg);
+      color: var(--btn-secondary-text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      font-size: 1rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .theme-toggle:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    h1 {
+      margin: 0.25rem 0 0.4rem;
+      font-size: 1.6rem;
+    }
+
+    .description {
+      margin: 0 0 1.25rem;
+      color: var(--label);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: sans-serif;
+      transition: background 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--btn-primary-bg);
+      color: var(--btn-primary-text);
+      border-color: var(--btn-primary-bg);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.88;
+    }
+
+    .btn-secondary {
+      background: var(--btn-secondary-bg);
+      color: var(--btn-secondary-text);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .panels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .panel-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--label);
+    }
+
+    textarea, .output-area {
+      width: 100%;
+      min-height: 360px;
+      padding: 0.75rem;
+      font-family: 'Cascadia Code', 'Fira Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--mono-bg);
+      color: var(--text);
+      resize: vertical;
+      tab-size: 4;
+    }
+
+    textarea {
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--btn-primary-bg);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--btn-primary-bg) 25%, transparent);
+    }
+
+    .output-area {
+      white-space: pre;
+      overflow: auto;
+      cursor: text;
+      user-select: text;
+    }
+
+    .output-area.empty {
+      color: var(--count);
+      font-style: italic;
+      white-space: normal;
+    }
+
+    .char-count {
+      font-size: 0.75rem;
+      color: var(--count);
+      text-align: right;
+    }
+
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--label);
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <p style="margin:0"><a href="index.html">&larr; All tools</a></p>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">&#9728;</button>
+  </div>
+  <h1>KQL Formatter</h1>
+  <p class="description">Paste a KQL query and get it back cleanly formatted with consistent indentation and operator alignment.</p>
+
+  <div class="toolbar">
+    <button class="btn-primary" id="formatBtn">Format</button>
+    <button class="btn-secondary" id="copyBtn" disabled>Copy</button>
+    <button class="btn-secondary" id="clearBtn">Clear</button>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-label">Input</div>
+      <textarea id="input" placeholder="Paste your KQL query here..." spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+      <div class="char-count" id="inputCount">0 characters</div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Output</div>
+      <div class="output-area empty" id="output" tabindex="0" aria-label="Formatted KQL output">Formatted output will appear here.</div>
+      <div class="char-count" id="outputCount">0 characters</div>
+    </div>
+  </div>
+
+  <footer>
+    <p><a href="https://github.com/jschell/spa-tools/blob/main/kql-formatter.html">View source</a></p>
+  </footer>
+
+  <script>
+    // ─── DOM refs ───────────────────────────────────────────────────────────────
+
+    const inputEl      = document.getElementById('input');
+    const outputEl     = document.getElementById('output');
+    const inputCount   = document.getElementById('inputCount');
+    const outputCount  = document.getElementById('outputCount');
+    const formatBtn    = document.getElementById('formatBtn');
+    const copyBtn      = document.getElementById('copyBtn');
+    const clearBtn     = document.getElementById('clearBtn');
+    const themeToggle  = document.getElementById('themeToggle');
+
+    // ─── Theme ──────────────────────────────────────────────────────────────────
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '\u2600' : '\uD83C\uDF19';
+      themeToggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    }
+
+    (function initTheme() {
+      const saved = localStorage.getItem('kql-theme');
+      const preferred = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      applyTheme(preferred);
+    })();
+
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('kql-theme', next);
+      applyTheme(next);
+    });
+
+    // ─── Character counts ────────────────────────────────────────────────────────
+
+    function updateInputCount() {
+      const n = inputEl.value.length;
+      inputCount.textContent = n.toLocaleString() + ' character' + (n === 1 ? '' : 's');
+    }
+
+    function updateOutputCount(text) {
+      const n = text.length;
+      outputCount.textContent = n > 0 ? n.toLocaleString() + ' character' + (n === 1 ? '' : 's') : '0 characters';
+    }
+
+    inputEl.addEventListener('input', updateInputCount);
+
+    // ─── URL state ───────────────────────────────────────────────────────────────
+
+    (function loadFromUrl() {
+      const params = new URLSearchParams(location.search);
+      const q = params.get('q');
+      if (q) {
+        inputEl.value = q;
+        updateInputCount();
+      }
+    })();
+
+    function saveToUrl() {
+      const val = inputEl.value;
+      if (val) {
+        const params = new URLSearchParams({ q: val });
+        history.replaceState(null, '', '?' + params.toString());
+      } else {
+        history.replaceState(null, '', location.pathname);
+      }
+    }
+
+    // ─── KQL Formatter ──────────────────────────────────────────────────────────
+    //
+    // Rules derived from:
+    //   Microsoft Learn — Best practices for Kusto Query Language queries
+    //   Rogier Dijkman — KQL Coding Style Guide (January 2023)
+
+    // §11 Deprecated aliases — flagged in output, not auto-replaced
+    const DEPRECATED_ALIASES = [
+      { re: /\bpack\s*\(/gi,                  alias: 'pack',                replacement: 'bag_pack' },
+      { re: /\bbase64_decodestring\s*\(/gi,   alias: 'base64_decodestring', replacement: 'base64_decode_tostring' },
+      { re: /\bextractjson\s*\(/gi,           alias: 'extractjson',         replacement: 'parse_json' },
+      { re: /\btodynamic\s*\(/gi,             alias: 'todynamic',           replacement: 'parse_json' },
+    ];
+
+    // §12 Operator keywords to normalise to lowercase
+    const KW_RE = /\b(where|extend|summarize|project(?:-away|-rename)?|join|parse(?:-kv)?|order|sort|top|take|limit|distinct|count|union|lookup|mv-expand|mv-apply|evaluate|print|range|datatable|serialize|sample|getschema|invoke|scan|partition|make-series|render|let|by|on|asc|desc|and|or|not)\b/gi;
+
+    function formatKQL(raw) {
+      const trimmed = raw.trim();
+      if (!trimmed) return '';
+
+      const warnings = [];
+
+      // ── Stash string literals and comments ──────────────────────────────────
+      // This protects pipe characters and keywords inside strings/comments.
+      const placeholders = [];
+
+      function stash(text) {
+        const key = `\x00PH${placeholders.length}\x00`;
+        placeholders.push(text);
+        return key;
+      }
+
+      function restore(s) {
+        return s.replace(/\x00PH(\d+)\x00/g, (_, i) => placeholders[+i]);
+      }
+
+      let src = trimmed;
+      src = src.replace(/@"(?:[^"]|"")*"/g,  m => stash(m)); // verbatim strings
+      src = src.replace(/"(?:[^"\\]|\\.)*"/g, m => stash(m)); // double-quoted strings
+      src = src.replace(/'(?:[^'\\]|\\.)*'/g, m => stash(m)); // single-quoted strings
+      src = src.replace(/\/\/[^\n]*/g,         m => stash(m.trimEnd())); // line comments
+
+      // ── §11 Detect deprecated aliases ────────────────────────────────────────
+      for (const { re, alias, replacement } of DEPRECATED_ALIASES) {
+        re.lastIndex = 0;
+        if (re.test(src)) {
+          warnings.push(`\`${alias}()\` is deprecated — use \`${replacement}()\` instead`);
+        }
+      }
+
+      // ── §12 Normalise operator keywords to lowercase ────────────────────────
+      src = src.replace(KW_RE, m => m.toLowerCase());
+
+      // ── Split into semicolon-separated statements ────────────────────────────
+      const statements = splitOnSemicolons(src);
+      const fmtStmts = [];
+
+      for (const stmt of statements) {
+        const s = stmt.trim();
+        if (!s) continue;
+        const isLet = /^let\s+/i.test(s);
+        fmtStmts.push({ text: isLet ? formatLet(s) : formatBody(s), isLet });
+      }
+
+      // ── §4 Assemble: blank line between each let, blank line before query ──
+      const assembled = [];
+      for (let i = 0; i < fmtStmts.length; i++) {
+        if (i > 0 && fmtStmts[i - 1].isLet) assembled.push('');
+        assembled.push(fmtStmts[i].text);
+      }
+
+      let result = assembled.join('\n');
+
+      // ── Restore placeholders ─────────────────────────────────────────────────
+      result = restore(result);
+
+      // ── §13 Strip trailing whitespace per line ───────────────────────────────
+      result = result.split('\n').map(l => l.trimEnd()).join('\n').trimEnd();
+
+      // ── §11 Prepend deprecation warnings ─────────────────────────────────────
+      if (warnings.length) {
+        result = warnings.map(w => `// ⚠ ${w}`).join('\n') + '\n\n' + result;
+      }
+
+      return result;
+    }
+
+    // ── Depth-aware splitters ─────────────────────────────────────────────────
+
+    function splitAt(src, pred) {
+      const parts = [];
+      let depth = 0, start = 0;
+      for (let i = 0; i < src.length; i++) {
+        const ch = src[i];
+        if (ch === '(' || ch === '[' || ch === '{') depth++;
+        else if (ch === ')' || ch === ']' || ch === '}') depth = Math.max(0, depth - 1);
+        else if (depth === 0 && pred(src, i)) {
+          parts.push(src.slice(start, i));
+          start = i + 1;
+        }
+      }
+      parts.push(src.slice(start));
+      return parts;
+    }
+
+    function splitOnSemicolons(src) {
+      const raw = splitAt(src, (s, i) => s[i] === ';');
+      // Trim and drop empty tail entries
+      const parts = raw.map(p => p.trim()).filter(Boolean);
+      // splitAt keeps everything after last ';', including empty string — already handled
+      return parts;
+    }
+
+    function splitOnPipes(src) {
+      return splitAt(src, (s, i) => s[i] === '|');
+    }
+
+    function splitOnCommas(src) {
+      const parts = splitAt(src, (s, i) => s[i] === ',');
+      return parts.map(p => p.trim()).filter(Boolean);
+    }
+
+    // Split an expression on top-level `and` / `or`
+    // Returns [{ op: ''|'and'|'or', text: string }, ...]
+    // op on each entry is the keyword that *introduces* that predicate ('' for first).
+    function splitOnLogicalOps(expr) {
+      const parts = [];
+      let depth = 0, i = 0, start = 0, pendingOp = '';
+
+      while (i < expr.length) {
+        const ch = expr[i];
+        if (ch === '(' || ch === '[') { depth++; i++; continue; }
+        if (ch === ')' || ch === ']') { depth = Math.max(0, depth - 1); i++; continue; }
+
+        if (depth === 0) {
+          const rem = expr.slice(i);
+          const m = rem.match(/^(and|or)\b/i);
+          if (m) {
+            const text = expr.slice(start, i).trim();
+            if (text) parts.push({ op: pendingOp, text });
+            pendingOp = m[1].toLowerCase();
+            start = i + m[1].length;
+            while (start < expr.length && expr[start] === ' ') start++;
+            i = start;
+            continue;
+          }
+        }
+        i++;
+      }
+
+      const tail = expr.slice(start).trim();
+      if (tail) parts.push({ op: pendingOp, text: tail });
+
+      return parts;
+    }
+
+    // ── Operator spacing helpers ──────────────────────────────────────────────
+
+    // §2 Spaces around comparison operators: ==, !=, >=, <=, =~, !~, >, <
+    function addComparisonSpaces(s) {
+      // Multi-char first to avoid double-processing
+      s = s.replace(/[ \t]*(==|!=|>=|<=|=~|!~)[ \t]*/g, ' $1 ');
+      // Single > not part of >= or >>
+      s = s.replace(/[ \t]*(?<![<>!])>(?![>=])[ \t]*/g, ' > ');
+      // Single < not part of <= or <<
+      s = s.replace(/[ \t]*(?<![<>=!])<(?![<=])[ \t]*/g, ' < ');
+      return s;
+    }
+
+    // §2 Spaces around = in column/parameter assignments (not ==, !=, >=, <=, =~)
+    function addAssignmentSpaces(s) {
+      return s.replace(/[ \t]*(?<![=!<>~])=(?![=~>])[ \t]*/g, ' = ');
+    }
+
+    function norm(s) {
+      return s.replace(/[ \t]+/g, ' ').trim();
+    }
+
+    // ── §4 let formatter ──────────────────────────────────────────────────────
+
+    function formatLet(stmt) {
+      // let name = value
+      const m = stmt.match(/^let\s+(\w+)\s*=([\s\S]*)$/i);
+      if (!m) return stmt.trim() + ';';
+
+      const name = m[1];
+      const value = m[2].trim();
+
+      // Function form: let name = (params) { body }
+      // Match balanced parens then balanced braces
+      const funcM = value.match(/^\(([\s\S]*)\)\s*\{([\s\S]*)\}$/);
+      if (funcM) {
+        return formatLetFunction(name, funcM[1], funcM[2]);
+      }
+
+      // Tabular expression (contains top-level pipe)
+      if (hasPipes(value)) {
+        const bodyFmt = formatBody(value);
+        const lines = bodyFmt.split('\n');
+        if (lines.length > 1) {
+          const indented = [lines[0], ...lines.slice(1).map(l => '    ' + l)].join('\n');
+          return `let ${name} = ${indented};`;
+        }
+        return `let ${name} = ${bodyFmt};`;
+      }
+
+      // Scalar value
+      const formatted = norm(addAssignmentSpaces(addComparisonSpaces(value)));
+      return `let ${name} = ${formatted};`;
+    }
+
+    function formatLetFunction(name, params, body) {
+      // §4 K&R style: opening paren on same line, closing brace on own line
+      const paramItems = splitOnCommas(params).map(p => norm(addAssignmentSpaces(p)));
+      let paramStr;
+      if (paramItems.length <= 1) {
+        paramStr = paramItems.join('');
+      } else {
+        paramStr = '\n    ' + paramItems[0] + '\n    , ' + paramItems.slice(1).join('\n    , ') + '\n';
+      }
+
+      const bodyFmt = formatBody(body.trim());
+      const indentedBody = bodyFmt.split('\n').map(l => '    ' + l).join('\n');
+
+      return `let ${name} = (${paramStr}) {\n${indentedBody}\n};`;
+    }
+
+    function hasPipes(s) {
+      let depth = 0;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (ch === '(' || ch === '[' || ch === '{') depth++;
+        else if (ch === ')' || ch === ']' || ch === '}') depth = Math.max(0, depth - 1);
+        else if (ch === '|' && depth === 0) return true;
+      }
+      return false;
+    }
+
+    // ── §1 Query body (pipe chain) formatter ─────────────────────────────────
+
+    function formatBody(stmt) {
+      const segments = splitOnPipes(stmt);
+      if (segments.length === 0) return stmt.trim();
+
+      const table = norm(segments[0].trim());
+      if (segments.length === 1) return table;
+
+      const pipeLines = segments.slice(1).map(seg => '    | ' + formatSegment(seg.trim()));
+      return [table, ...pipeLines].join('\n');
+    }
+
+    // ── Segment dispatcher ────────────────────────────────────────────────────
+
+    function formatSegment(seg) {
+      if (!seg) return '';
+      const kwM = seg.match(/^([\w][\w-]*)\b/i);
+      if (!kwM) return norm(seg);
+
+      switch (kwM[1].toLowerCase()) {
+        case 'where':          return formatWhere(seg);
+        case 'extend':
+        case 'summarize':
+        case 'project':
+        case 'project-away':
+        case 'project-rename': return formatColumnList(seg);
+        case 'join':           return formatJoin(seg);
+        case 'parse-kv':       return formatParseKv(seg);
+        default:               return norm(addComparisonSpaces(seg));
+      }
+    }
+
+    // ── §6 where formatter ────────────────────────────────────────────────────
+
+    function formatWhere(seg) {
+      const rest = seg.replace(/^where\s+/i, '').trim();
+      const parts = splitOnLogicalOps(rest);
+
+      if (parts.length === 1) {
+        return 'where ' + norm(addComparisonSpaces(parts[0].text));
+      }
+
+      // §6 + §[Decision]: and/or at START of continuation lines, 4-space indent
+      return parts.map((part, i) => {
+        const text = norm(addComparisonSpaces(part.text));
+        return i === 0 ? 'where ' + text : '    ' + part.op + ' ' + text;
+      }).join('\n');
+    }
+
+    // ── §3 Column-list formatter (extend / summarize / project / project-away / project-rename)
+
+    function formatColumnList(seg) {
+      const m = seg.match(/^([\w-]+)\s+([\s\S]*)$/i);
+      if (!m) return seg;
+
+      const kw = m[1].toLowerCase();
+      const rest = m[2].trim();
+
+      const items = splitOnCommas(rest)
+        .map(s => norm(addAssignmentSpaces(addComparisonSpaces(s))))
+        .filter(Boolean);
+
+      if (items.length === 0) return kw;
+
+      // §3 Single-column exception: stay on same line
+      if (items.length === 1) return `${kw} ${items[0]}`;
+
+      // §3 Multiple columns: keyword on own line, leading-comma style, 4-space indent
+      // §3 Alignment: align = signs when items have assignments
+      const aligned = alignAssignments(items);
+
+      return [
+        kw,
+        '    ' + aligned[0],
+        ...aligned.slice(1).map(item => '    , ' + item)
+      ].join('\n');
+    }
+
+    // §3 Align = signs within a column block
+    function alignAssignments(items) {
+      const parsed = items.map(item => {
+        // Match "lhs = rhs" where lhs has no internal = at depth 0
+        const eqIdx = findAssignmentEq(item);
+        if (eqIdx === -1) return { lhs: item, rhs: null };
+        return { lhs: item.slice(0, eqIdx).trimEnd(), rhs: item.slice(eqIdx + 1).trimStart() };
+      });
+
+      // Only align if all items have assignments
+      const allHaveEq = parsed.every(p => p.rhs !== null);
+      if (!allHaveEq) return items;
+
+      const maxLhs = Math.max(...parsed.map(p => p.lhs.length));
+      return parsed.map(p => p.lhs.padEnd(maxLhs) + ' = ' + p.rhs);
+    }
+
+    // Find position of the assignment = in an already-spaced item like "Name = expr"
+    function findAssignmentEq(s) {
+      let depth = 0;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (ch === '(' || ch === '[') depth++;
+        else if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
+        else if (ch === '=' && depth === 0) {
+          // Must be surrounded by spaces (i.e. it's a formatted assignment =)
+          if (s[i - 1] === ' ' && s[i + 1] === ' ') return i;
+        }
+      }
+      return -1;
+    }
+
+    // ── §7 join formatter ─────────────────────────────────────────────────────
+
+    function formatJoin(seg) {
+      // join [kind=word] ( subquery ) on keys
+      const m = seg.match(/^join(\s+kind\s*=\s*\w+)?\s*\(([\s\S]*)\)\s*on\s+([\s\S]*)$/i);
+      if (!m) return norm(seg);
+
+      const kind    = m[1] ? ' ' + norm(m[1]) : '';
+      const inner   = m[2].trim();
+      const onClause = norm(m[3].trim());
+
+      const innerFmt = formatBody(inner).split('\n').map(l => '    ' + l).join('\n');
+
+      return [`join${kind} (`, innerFmt, `) on ${onClause}`].join('\n');
+    }
+
+    // ── §8 parse-kv formatter ─────────────────────────────────────────────────
+
+    function formatParseKv(seg) {
+      // parse-kv col as ( fields ) with ( opts )
+      const m = seg.match(/^parse-kv\s+(\S+)\s+as\s*\(([\s\S]*?)\)\s*with\s*\(([\s\S]*)\)$/i);
+      if (!m) return norm(seg);
+
+      const col    = m[1];
+      const fields = splitOnCommas(m[2]).map(norm).filter(Boolean);
+      const opts   = splitOnCommas(m[3]).map(s => norm(addAssignmentSpaces(s))).filter(Boolean);
+
+      const blockLines = (arr) =>
+        arr.length <= 1
+          ? arr.join('')
+          : arr[0] + '\n    , ' + arr.slice(1).join('\n    , ');
+
+      return [
+        `parse-kv ${col} as (`,
+        '    ' + blockLines(fields),
+        ') with (',
+        '    ' + blockLines(opts),
+        ')'
+      ].join('\n');
+    }
+
+    // ─── UI wiring ───────────────────────────────────────────────────────────────
+
+    let lastFormatted = '';
+
+    function runFormat() {
+      const raw = inputEl.value;
+      saveToUrl();
+
+      if (!raw.trim()) {
+        showOutput('', true);
+        return;
+      }
+
+      try {
+        const result = formatKQL(raw);
+        lastFormatted = result;
+        showOutput(result, false);
+      } catch (err) {
+        showOutput('Error: ' + err.message, true);
+        lastFormatted = '';
+      }
+    }
+
+    function showOutput(text, isEmpty) {
+      if (isEmpty || !text) {
+        outputEl.textContent = text || 'Formatted output will appear here.';
+        outputEl.classList.add('empty');
+        copyBtn.disabled = true;
+        updateOutputCount('');
+      } else {
+        outputEl.textContent = text;
+        outputEl.classList.remove('empty');
+        copyBtn.disabled = false;
+        updateOutputCount(text);
+      }
+    }
+
+    formatBtn.addEventListener('click', runFormat);
+
+    // Format on Ctrl+Enter / Cmd+Enter
+    inputEl.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runFormat();
+      }
+    });
+
+    copyBtn.addEventListener('click', () => {
+      if (!lastFormatted) return;
+      navigator.clipboard.writeText(lastFormatted).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = lastFormatted;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+      });
+    });
+
+    clearBtn.addEventListener('click', () => {
+      inputEl.value = '';
+      lastFormatted = '';
+      showOutput('', true);
+      updateInputCount();
+      history.replaceState(null, '', location.pathname);
+      inputEl.focus();
+    });
+
+    updateInputCount();
+    updateOutputCount('');
+
+    if (inputEl.value.trim()) {
+      runFormat();
+    }
+  </script>
+</body>
+</html>

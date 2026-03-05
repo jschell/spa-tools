@@ -1,0 +1,5 @@
+Log Format Inspector parses raw log lines from CEF, LEEF, Syslog (RFC 3164 and RFC 5424), JSON, W3C, and generic key=value formats and presents the fields in an annotated table. Paste a log line into the input box and the tool automatically detects the format, decodes the structure, and displays each field with its mapped name and value type.
+
+For CEF and LEEF formats, the tool maps terse extension field names (like `src`, `dst`, `dpt`) to their full descriptions from the ArcSight specification. Syslog priority bytes are decoded into human-readable facility and severity names. Structured data blocks in RFC 5424 messages are expanded into individual key-value rows. IP addresses are flagged when they fall within private, loopback, or link-local ranges; timestamps are normalized to ISO 8601 UTC alongside the original value; and severity integers are shown with their text label.
+
+If the pasted input contains multiple lines, each non-empty line is parsed independently and shown as numbered tabs. All parsing runs entirely in the browser — no log data is transmitted anywhere.
