@@ -139,9 +139,64 @@
       flex-shrink: 0;
     }
     footer a { color: var(--accent-b); }
+    /* ── Known limitations disclosure ──────────────────────────────────────── */
+    .limits-bar {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+      flex-shrink: 0;
+    }
+    .limits-bar summary {
+      padding: 0.28rem 1rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      user-select: none;
+      list-style: none;
+    }
+    .limits-bar summary::-webkit-details-marker { display: none; }
+    .limits-bar summary::before { content: '▶\00a0'; font-size: 0.65rem; vertical-align: middle; }
+    details[open].limits-bar summary::before { content: '▼\00a0'; }
+    .limits-bar summary:hover { color: var(--text); }
+    .limits-body {
+      padding: 0.6rem 1.5rem 0.75rem 2rem;
+      max-height: 38vh;
+      overflow-y: auto;
+      border-top: 1px solid var(--border);
+      columns: 2 280px;
+      column-gap: 2rem;
+    }
+    .limits-body h4 {
+      margin: 0.5rem 0 0.2rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      break-after: avoid;
+    }
+    .limits-body h4:first-child { margin-top: 0; }
+    .limits-body ul {
+      margin: 0 0 0.35rem;
+      padding-left: 1.1rem;
+      break-inside: avoid;
+    }
+    .limits-body li { margin: 0.1rem 0; color: var(--text); }
+    .limits-body code {
+      font-family: ui-monospace, monospace;
+      font-size: 0.9em;
+      background: var(--hover-bg);
+      padding: 0 0.25em;
+      border-radius: 3px;
+    }
+    .limits-note {
+      margin: 0.5rem 0 0;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
     @media (max-width: 600px) {
       .sidebar { display: none; }
       .editor-wrap { height: 120px; }
+      .limits-body { columns: 1; }
     }
   </style>
 </head>
@@ -154,6 +209,51 @@
 </header>
 
 <div id="error-bar"></div>
+
+<details class="limits-bar">
+  <summary>Known limitations vs real KQL</summary>
+  <div class="limits-body">
+
+    <h4>Unsupported tabular operators</h4>
+    <ul>
+      <li><code>parse</code> / <code>parse-where</code> / <code>parse-regex</code></li>
+      <li><code>mv-apply</code></li>
+      <li><code>make-series</code></li>
+      <li><code>evaluate</code> (and all plugins: <code>bag_unpack</code>, <code>pivot</code>, etc.)</li>
+      <li><code>render</code> — no chart output</li>
+      <li><code>fork</code> / <code>facet</code></li>
+      <li><code>datatable</code> / <code>print</code></li>
+      <li><code>sample</code> / <code>sample-distinct</code></li>
+      <li><code>lookup</code> / <code>scan</code> / <code>partition</code> / <code>invoke</code></li>
+    </ul>
+
+    <h4>String &amp; filter operators</h4>
+    <ul>
+      <li><code>has</code> uses substring match, not KQL word-boundary semantics</li>
+      <li><code>matches regex</code> — autocomplete only, not transpiled</li>
+      <li><code>in~</code> / <code>!in~</code> — case-insensitive variants not supported</li>
+      <li><code>has_any()</code> / <code>has_all()</code> — not implemented</li>
+      <li><code>has_cs</code> / <code>contains_cs</code> / <code>startswith_cs</code> / <code>endswith_cs</code> — autocomplete only</li>
+      <li><code>between</code> — keyword only, not transpiled</li>
+    </ul>
+
+    <h4>Expressions &amp; types</h4>
+    <ul>
+      <li><code>case()</code> — autocomplete only, not transpiled</li>
+      <li><code>iff()</code> / <code>iif()</code> with comma-containing sub-expressions breaks due to regex parsing</li>
+      <li>Dynamic type access: <code>d["key"]</code> / <code>d.key</code> notation not supported</li>
+      <li><code>let</code> function definitions (<code>let f = (x:int) { … }</code>) not supported</li>
+    </ul>
+
+    <h4>Input &amp; workspace</h4>
+    <ul>
+      <li>CSV only — no TSV, JSON Lines, Parquet, or Excel</li>
+      <li>One file per session; no persistent multi-table workspace</li>
+    </ul>
+
+    <p class="limits-note">Operators listed in autocomplete but not transpiled will throw an "Unsupported operator" error at run time.</p>
+  </div>
+</details>
 
 <div class="toolbar">
   <button class="btn-run" id="run-btn" onclick="runQuery()" disabled>&#9654; Run</button>
