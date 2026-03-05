@@ -462,29 +462,186 @@ function kqlCond(cond) {
     });
 }
 
+/** Parse KQL timespan literals like 1d, 2h30m, 0:30:00 → DuckDB INTERVAL expression */
+function parseKqlTimespan(s) {
+  s = s.trim().replace(/^['"]|['"]$/g, '');
+  const parts = [];
+  const re = /(\d+(?:\.\d+)?)\s*(d(?:ays?)?|h(?:(?:ou)?rs?)?|ms|m(?:in(?:utes?)?)?|s(?:ec(?:onds?)?)?|ticks?|us|µs)/gi;
+  let m;
+  while ((m = re.exec(s)) !== null) {
+    const n = m[1];
+    const u = m[2].toLowerCase();
+    let unit;
+    if      (u.startsWith('d'))              unit = 'DAY';
+    else if (u.startsWith('h'))              unit = 'HOUR';
+    else if (u === 'ms')                     unit = 'MILLISECOND';
+    else if (u.startsWith('m'))              unit = 'MINUTE';
+    else if (u.startsWith('s'))              unit = 'SECOND';
+    else if (u === 'us' || u === 'µs')       unit = 'MICROSECOND';
+    else if (u.startsWith('tick'))           unit = 'MICROSECOND'; // 1 tick ≈ 0.1µs, approximate
+    else                                     unit = 'SECOND';
+    parts.push(`INTERVAL '${n}' ${unit}`);
+  }
+  if (!parts.length) {
+    const hms = s.match(/^(\d+):(\d+):(\d+(?:\.\d+)?)$/);
+    if (hms) {
+      if (+hms[1]) parts.push(`INTERVAL '${hms[1]}' HOUR`);
+      if (+hms[2]) parts.push(`INTERVAL '${hms[2]}' MINUTE`);
+      if (+hms[3]) parts.push(`INTERVAL '${hms[3]}' SECOND`);
+    }
+  }
+  return parts.length ? parts.join(' + ') : `INTERVAL '${s}' SECOND`;
+}
+
 /** aggregate function names */
 function kqlAgg(expr) {
   return expr
-    .replace(/\bcount\(\s*\)/gi, 'count(*)')
-    .replace(/\bdcount\(([^)]+)\)/gi,  'count(DISTINCT $1)')
-    .replace(/\bsum\(([^)]+)\)/gi,     'sum($1)')
-    .replace(/\bavg\(([^)]+)\)/gi,     'avg($1)')
-    .replace(/\bmin\(([^)]+)\)/gi,     'min($1)')
-    .replace(/\bmax\(([^)]+)\)/gi,     'max($1)');
+    // Basic counts
+    .replace(/\bcount\(\s*\)/gi,                                    'count(*)')
+    .replace(/\bdcountif\(([^,]+),\s*([^)]+)\)/gi,                  'count(DISTINCT $1) FILTER (WHERE $2)')
+    .replace(/\bdcount\(([^)]+)\)/gi,                               'count(DISTINCT $1)')
+    .replace(/\bcountif\(([^)]+)\)/gi,                              'count(*) FILTER (WHERE $1)')
+    // Conditional aggs (if-variants before plain)
+    .replace(/\bsumif\(([^,]+),\s*([^)]+)\)/gi,                     'sum($1) FILTER (WHERE $2)')
+    .replace(/\bavgif\(([^,]+),\s*([^)]+)\)/gi,                     'avg($1) FILTER (WHERE $2)')
+    .replace(/\bminif\(([^,]+),\s*([^)]+)\)/gi,                     'min($1) FILTER (WHERE $2)')
+    .replace(/\bmaxif\(([^,]+),\s*([^)]+)\)/gi,                     'max($1) FILTER (WHERE $2)')
+    // Plain aggs
+    .replace(/\bsum\(([^)]+)\)/gi,                                  'sum($1)')
+    .replace(/\bavg\(([^)]+)\)/gi,                                  'avg($1)')
+    .replace(/\bmin\(([^)]+)\)/gi,                                  'min($1)')
+    .replace(/\bmax\(([^)]+)\)/gi,                                  'max($1)')
+    // Statistical (p-variants before plain)
+    .replace(/\bstdevp\(([^)]+)\)/gi,                               'stddev_pop($1)')
+    .replace(/\bstdev\(([^)]+)\)/gi,                                'stddev_samp($1)')
+    .replace(/\bvariancepif\(([^,]+),\s*([^)]+)\)/gi,               'var_pop($1) FILTER (WHERE $2)')
+    .replace(/\bvarianceif\(([^,]+),\s*([^)]+)\)/gi,                'var_samp($1) FILTER (WHERE $2)')
+    .replace(/\bvariancep\(([^)]+)\)/gi,                            'var_pop($1)')
+    .replace(/\bvariance\(([^)]+)\)/gi,                             'var_samp($1)')
+    // Percentile: KQL percentile(col, p) → DuckDB percentile_cont(p/100.0) WITHIN GROUP (ORDER BY col)
+    .replace(/\bpercentile\(([^,]+),\s*([^)]+)\)/gi,                'percentile_cont($2/100.0) WITHIN GROUP (ORDER BY $1)')
+    // Row selectors — KQL arg_max(maximize_col, return_col), DuckDB arg_max(val, key) swapped
+    .replace(/\barg_max\(([^,]+),\s*([^)]+)\)/gi,                   'arg_max($2, $1)')
+    .replace(/\barg_min\(([^,]+),\s*([^)]+)\)/gi,                   'arg_min($2, $1)')
+    .replace(/\btake_anyif\(([^,]+),\s*([^)]+)\)/gi,                'any_value($1) FILTER (WHERE $2)')
+    .replace(/\btake_any\(([^)]+)\)/gi,                             'any_value($1)')
+    // Collections
+    .replace(/\bmake_set_if\(([^,]+),\s*([^)]+)\)/gi,               'array_agg(DISTINCT $1) FILTER (WHERE $2)')
+    .replace(/\bmake_set\(([^)]+)\)/gi,                             'array_agg(DISTINCT $1)')
+    .replace(/\bmake_list_if\(([^,]+),\s*([^)]+)\)/gi,              'list($1) FILTER (WHERE $2)')
+    .replace(/\bmake_list\(([^)]+)\)/gi,                            'list($1)');
 }
 
 /** scalar expressions */
 function kqlExpr(expr) {
   return kqlAgg(expr)
-    .replace(/\btostring\(([^)]+)\)/gi,  'CAST($1 AS VARCHAR)')
-    .replace(/\btoint\(([^)]+)\)/gi,     'CAST($1 AS INTEGER)')
-    .replace(/\btodouble\(([^)]+)\)/gi,  'CAST($1 AS DOUBLE)')
-    .replace(/\btolong\(([^)]+)\)/gi,    'CAST($1 AS BIGINT)')
-    .replace(/\bnow\(\)/gi,              'now()')
+    // ── Type conversions ─────────────────────────────────────────────────────
+    .replace(/\btostring\(([^)]+)\)/gi,   'CAST($1 AS VARCHAR)')
+    .replace(/\btoint\(([^)]+)\)/gi,      'CAST($1 AS INTEGER)')
+    .replace(/\btolong\(([^)]+)\)/gi,     'CAST($1 AS BIGINT)')
+    .replace(/\btodouble\(([^)]+)\)/gi,   'CAST($1 AS DOUBLE)')
+    .replace(/\btoreal\(([^)]+)\)/gi,     'CAST($1 AS DOUBLE)')
+    .replace(/\btobool\(([^)]+)\)/gi,     'CAST($1 AS BOOLEAN)')
+    .replace(/\btodatetime\(([^)]+)\)/gi, 'CAST($1 AS TIMESTAMP)')
+    .replace(/\btodecimal\(([^)]+)\)/gi,  'CAST($1 AS DECIMAL)')
+    .replace(/\bgettype\(([^)]+)\)/gi,    'typeof($1)')
+    // ── Conditional ──────────────────────────────────────────────────────────
+    // iff(cond, t, f) — simple three-arg (args must not contain nested commas)
+    .replace(/\biff\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi, 'IIF($1, $2, $3)')
+    .replace(/\bcoalesce\(/gi,                            'coalesce(')
+    .replace(/\bisnotnull\(([^)]+)\)/gi,   '($1 IS NOT NULL)')
+    .replace(/\bisnull\(([^)]+)\)/gi,      '($1 IS NULL)')
+    .replace(/\bisnotempty\(([^)]+)\)/gi,  "($1 IS NOT NULL AND $1 <> '')")
+    .replace(/\bisempty\(([^)]+)\)/gi,     "($1 IS NULL OR $1 = '')")
+    // ── Unixtime → datetime ──────────────────────────────────────────────────
+    .replace(/\bunixtime_microseconds_todatetime\(([^)]+)\)/gi, 'to_timestamp(($1) / 1e6)')
     .replace(/\bunixtime_seconds_todatetime\(([^)]+)\)/gi,      'to_timestamp($1)')
     .replace(/\bunixtime_milliseconds_todatetime\(([^)]+)\)/gi, 'epoch_ms(CAST($1 AS BIGINT))')
     .replace(/\bunixtime_nanoseconds_todatetime\(([^)]+)\)/gi,  'to_timestamp(($1) / 1e9)')
-    .replace(/\bbin\(([^,]+),\s*([^)]+)\)/gi, (_, col, span) => `floor(CAST(${col.trim()} AS DOUBLE)/${span.trim()})*${span.trim()}`);
+    // ── DateTime helpers ─────────────────────────────────────────────────────
+    .replace(/\bnow\(\)/gi,                                     'now()')
+    .replace(/\bago\(([^)]+)\)/gi,          (_, ts) => `(now() - ${parseKqlTimespan(ts)})`)
+    .replace(/\bdatetime_diff\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi, 'date_diff($1, $3, $2)') // arg order swapped
+    .replace(/\bdatetime_part\(([^,]+),\s*([^)]+)\)/gi,        'date_part($1, $2)')
+    .replace(/\bstartofday\(([^)]+)\)/gi,   "date_trunc('day', $1)")
+    .replace(/\bstartofweek\(([^)]+)\)/gi,  "date_trunc('week', $1)")
+    .replace(/\bstartofmonth\(([^)]+)\)/gi, "date_trunc('month', $1)")
+    .replace(/\bstartofyear\(([^)]+)\)/gi,  "date_trunc('year', $1)")
+    .replace(/\bendofday\(([^)]+)\)/gi,     "(date_trunc('day', $1) + INTERVAL '1' DAY - INTERVAL '1' MICROSECOND)")
+    .replace(/\bendofmonth\(([^)]+)\)/gi,   "(date_trunc('month', $1) + INTERVAL '1' MONTH - INTERVAL '1' MICROSECOND)")
+    .replace(/\bendofyear\(([^)]+)\)/gi,    "(date_trunc('year', $1) + INTERVAL '1' YEAR - INTERVAL '1' MICROSECOND)")
+    .replace(/\bdayofmonth\(([^)]+)\)/gi,   'day($1)')
+    .replace(/\bdayofweek\(([^)]+)\)/gi,    'CAST(extract(DOW FROM $1) AS INTEGER)')
+    .replace(/\bdayofyear\(([^)]+)\)/gi,    'CAST(extract(DOY FROM $1) AS INTEGER)')
+    .replace(/\bmonthofyear\(([^)]+)\)/gi,  'month($1)')
+    .replace(/\bhourofday\(([^)]+)\)/gi,    'hour($1)')
+    .replace(/\bgetyear\(([^)]+)\)/gi,      'year($1)')
+    .replace(/\bweekofyear\(([^)]+)\)/gi,   'CAST(extract(WEEK FROM $1) AS INTEGER)')
+    // ── String ───────────────────────────────────────────────────────────────
+    .replace(/\bstrlen\(([^)]+)\)/gi,                                       'length($1)')
+    .replace(/\btolower\(([^)]+)\)/gi,                                      'lower($1)')
+    .replace(/\btoupper\(([^)]+)\)/gi,                                      'upper($1)')
+    .replace(/\btrim_start\(([^)]+)\)/gi,                                   'ltrim($1)')
+    .replace(/\btrim_end\(([^)]+)\)/gi,                                     'rtrim($1)')
+    .replace(/\btrim\(([^)]+)\)/gi,                                         'trim($1)')
+    // substring: KQL is 0-indexed, DuckDB is 1-indexed → offset start by +1
+    .replace(/\bsubstring\(([^,]+),\s*([^,)]+),\s*([^)]+)\)/gi,
+      (_, s, st, ln) => `substring(${s.trim()}, (${st.trim()})+1, ${ln.trim()})`)
+    .replace(/\bsubstring\(([^,]+),\s*([^)]+)\)/gi,
+      (_, s, st) => `substring(${s.trim()}, (${st.trim()})+1)`)
+    // indexof: KQL is 0-indexed, DuckDB strpos is 1-indexed → subtract 1
+    .replace(/\bindexof\(([^,]+),\s*([^)]+)\)/gi,                          '(strpos($1, $2) - 1)')
+    .replace(/\breplace_regex\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi,         'regexp_replace($1, $2, $3)')
+    .replace(/\breplace_string\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi,        'replace($1, $2, $3)')
+    .replace(/\bextract\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi,               'regexp_extract($3, $1, $2)') // KQL: extract(regex, group, text)
+    .replace(/\bstrcat_delim\(([^,]+),\s*/gi,                              'concat_ws($1, ')
+    .replace(/\bstrcat\(/gi,                                                'concat(')
+    .replace(/\bsplit\(([^,]+),\s*([^)]+)\)/gi,                            'string_split($1, $2)')
+    .replace(/\bbase64_encode_tostring\(([^)]+)\)/gi,                      'base64(CAST($1 AS BLOB))')
+    .replace(/\bbase64_decode_tostring\(([^)]+)\)/gi,                      'CAST(from_base64($1) AS VARCHAR)')
+    .replace(/\bparse_json\(([^)]+)\)/gi,                                  'TRY_CAST($1 AS JSON)')
+    .replace(/\burl_encode\(([^)]+)\)/gi,                                  'url_encode($1)')
+    .replace(/\burl_decode\(([^)]+)\)/gi,                                  'url_decode($1)')
+    // ── Math ─────────────────────────────────────────────────────────────────
+    .replace(/\babs\(([^)]+)\)/gi,                                         'abs($1)')
+    .replace(/\bround\(([^,)]+),\s*([^)]+)\)/gi,                           'round($1, $2)')
+    .replace(/\bround\(([^)]+)\)/gi,                                       'round($1, 0)')
+    .replace(/\bceiling\(([^)]+)\)/gi,                                     'ceil($1)')
+    .replace(/\bfloor\(([^)]+)\)/gi,                                       'floor($1)')
+    .replace(/\bsqrt\(([^)]+)\)/gi,                                        'sqrt($1)')
+    .replace(/\bpow\(([^,]+),\s*([^)]+)\)/gi,                              'pow($1, $2)')
+    .replace(/\bexp10\(([^)]+)\)/gi,                                       'pow(10, $1)')
+    .replace(/\bexp2\(([^)]+)\)/gi,                                        'pow(2, $1)')
+    .replace(/\bexp\(([^)]+)\)/gi,                                         'exp($1)')
+    .replace(/\blog2\(([^)]+)\)/gi,                                        'log2($1)')
+    .replace(/\blog10\(([^)]+)\)/gi,                                       'log10($1)')
+    .replace(/\blog\(([^)]+)\)/gi,                                         'ln($1)')  // ⚠ KQL log() = natural log; DuckDB log() = log10
+    .replace(/\basin\(([^)]+)\)/gi,                                        'asin($1)')
+    .replace(/\bacos\(([^)]+)\)/gi,                                        'acos($1)')
+    .replace(/\batan2\(([^,]+),\s*([^)]+)\)/gi,                            'atan2($1, $2)')
+    .replace(/\batan\(([^)]+)\)/gi,                                        'atan($1)')
+    .replace(/\bsin\(([^)]+)\)/gi,                                         'sin($1)')
+    .replace(/\bcos\(([^)]+)\)/gi,                                         'cos($1)')
+    .replace(/\btan\(([^)]+)\)/gi,                                         'tan($1)')
+    .replace(/\bdegrees\(([^)]+)\)/gi,                                     'degrees($1)')
+    .replace(/\bradians\(([^)]+)\)/gi,                                     'radians($1)')
+    .replace(/\bpi\(\)/gi,                                                 'pi()')
+    .replace(/\brand\(\)/gi,                                               'random()')
+    .replace(/\bsign\(([^)]+)\)/gi,                                        'sign($1)')
+    .replace(/\bisfinite\(([^)]+)\)/gi,                                    'isfinite($1)')
+    .replace(/\bisinf\(([^)]+)\)/gi,                                       'isinf($1)')
+    .replace(/\bisnan\(([^)]+)\)/gi,                                       'isnan($1)')
+    .replace(/\bnot\(([^)]+)\)/gi,                                         'NOT ($1)')
+    // ── Window scalar ────────────────────────────────────────────────────────
+    .replace(/\brow_number\(\)/gi,                                         'row_number() OVER ()')
+    .replace(/\brow_cumsum\(([^)]+)\)/gi,                                  'sum($1) OVER (ROWS UNBOUNDED PRECEDING)')
+    .replace(/\bprev\(([^,)]+)(?:,\s*(\d+))?\)/gi,  (_, c, n) => `lag(${c.trim()}, ${n||1}) OVER ()`)
+    .replace(/\bnext\(([^,)]+)(?:,\s*(\d+))?\)/gi,  (_, c, n) => `lead(${c.trim()}, ${n||1}) OVER ()`)
+    // ── Rounding/bin ─────────────────────────────────────────────────────────
+    .replace(/\bbin_at\(([^,]+),\s*([^,]+),\s*([^)]+)\)/gi,
+      (_, val, size, fp) => `(floor((${val.trim()} - ${fp.trim()}) / ${size.trim()}) * ${size.trim()} + ${fp.trim()})`)
+    .replace(/\bbin\(([^,]+),\s*([^)]+)\)/gi,
+      (_, col, span) => `floor(CAST(${col.trim()} AS DOUBLE)/${span.trim()})*${span.trim()}`);
 }
 
 /** Parse "extend A = expr, B = expr" → SQL projection */
@@ -613,8 +770,34 @@ function transpile(kql) {
         ctes.push(`${curr} AS (SELECT * FROM ${prev} ORDER BY ${orderCols})`);
         break;
       }
+      case 'project-rename': {
+        const renames = new Map();
+        args.split(',').forEach(r => {
+          r = r.trim();
+          const eq = r.indexOf('=');
+          if (eq === -1) throw new Error('project-rename: missing = in: ' + r);
+          renames.set(r.slice(eq+1).trim().toLowerCase(), { oldName: r.slice(eq+1).trim(), newName: r.slice(0,eq).trim() });
+        });
+        const cols = currentCols.map(c => {
+          const ren = renames.get(c.name.toLowerCase());
+          return ren ? `"${ren.oldName}" AS "${ren.newName}"` : `"${c.name}"`;
+        }).join(', ');
+        ctes.push(`${curr} AS (SELECT ${cols} FROM ${prev})`);
+        break;
+      }
+      case 'serialize': {
+        // serialize is a no-op in SQL — just marks row set as ordered for window functions
+        ctes.push(`${curr} AS (SELECT * FROM ${prev})`);
+        break;
+      }
+      case 'union': {
+        // | union OtherTable  or  | union (subquery)
+        const target = args.trim().replace(/^\(|\)$/g, '');
+        ctes.push(`${curr} AS (SELECT * FROM ${prev} UNION ALL SELECT * FROM "${target}")`);
+        break;
+      }
       default:
-        throw new Error(`Unsupported operator: ${op} — supported: where, project, take, extend, summarize, count, distinct, order/sort, top`);
+        throw new Error(`Unsupported operator: ${op} — supported: where, project, project-rename, project-away, take, extend, summarize, count, distinct, order/sort, top, serialize, union`);
     }
   }
 
