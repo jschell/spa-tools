@@ -69,7 +69,7 @@ def get_git_date(path: Path) -> str:
 
 def get_tools() -> list[dict]:
     tools = []
-    for path in sorted(REPO_ROOT.glob("*.html")):
+    for path in REPO_ROOT.glob("*.html"):
         if path.name in EXCLUDE:
             continue
         try:
@@ -89,6 +89,7 @@ def get_tools() -> list[dict]:
                 "last_modified": get_git_date(path),
             }
         )
+    tools.sort(key=lambda t: t["title"].lower())
     return tools
 
 
