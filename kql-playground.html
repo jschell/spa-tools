@@ -1498,22 +1498,43 @@ function exportCSV() {
 }
 
 // ── Load example CSV ─────────────────────────────────────────────────────────
-// Example data: https://github.com/rod-trent/kql-treasure-hunt
-const EXAMPLE_URL = 'https://raw.githubusercontent.com/rod-trent/kql-treasure-hunt/refs/heads/main/SystemAlerts.csv';
-const EXAMPLE_CACHE_KEY = 'kql-example-SystemAlerts';
+// Example datasets from: https://github.com/rod-trent/kql-treasure-hunt
+const EXAMPLES = [
+  {
+    file: 'SystemAlerts.csv',
+    url:  'https://raw.githubusercontent.com/rod-trent/kql-treasure-hunt/refs/heads/main/SystemAlerts.csv',
+    table: 'SystemAlerts',
+  },
+  {
+    file: 'CrewLogs.csv',
+    url:  'https://raw.githubusercontent.com/rod-trent/kql-treasure-hunt/refs/heads/main/CrewLogs.csv',
+    table: 'CrewLogs',
+  },
+  {
+    file: 'CommSignals.csv',
+    url:  'https://raw.githubusercontent.com/rod-trent/kql-treasure-hunt/refs/heads/main/CommSignals.csv',
+    table: 'CommSignals',
+  },
+];
+let exampleIndex = parseInt(localStorage.getItem('kql-example-index') || '0', 10) % EXAMPLES.length;
+// Show which dataset loads on first click
+document.getElementById('example-btn').textContent = 'Load: ' + EXAMPLES[exampleIndex].table;
 
 async function loadExample() {
   const btn = document.getElementById('example-btn');
   btn.disabled = true;
 
-  let csv = localStorage.getItem(EXAMPLE_CACHE_KEY);
+  const ex = EXAMPLES[exampleIndex];
+  const cacheKey = 'kql-example-' + ex.table;
+
+  let csv = localStorage.getItem(cacheKey);
   if (!csv) {
     btn.textContent = 'Fetching…';
     try {
-      const resp = await fetch(EXAMPLE_URL);
+      const resp = await fetch(ex.url);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       csv = await resp.text();
-      localStorage.setItem(EXAMPLE_CACHE_KEY, csv);
+      localStorage.setItem(cacheKey, csv);
     } catch (e) {
       showError('Failed to load example: ' + e.message);
       btn.textContent = 'Load Example';
@@ -1522,19 +1543,22 @@ async function loadExample() {
     }
   }
 
-  const file = new File([csv], 'SystemAlerts.csv', { type: 'text/csv' });
+  const file = new File([csv], ex.file, { type: 'text/csv' });
   await loadFile(file);
 
-  // Override the default starter query with a comment showing the data source
+  // Seed the editor with a comment citing the source
   if (editor) {
     editor.setValue(
       '// Example: https://github.com/rod-trent/kql-treasure-hunt\n' +
-      'SystemAlerts | take 100'
+      ex.table + ' | take 100'
     );
     editor.setPosition({ lineNumber: 2, column: 1000 });
   }
 
-  btn.textContent = 'Load Example';
+  // Advance to the next example for the next click
+  exampleIndex = (exampleIndex + 1) % EXAMPLES.length;
+  localStorage.setItem('kql-example-index', exampleIndex);
+  btn.textContent = 'Load: ' + EXAMPLES[exampleIndex].table;
   btn.disabled = false;
 }
 
