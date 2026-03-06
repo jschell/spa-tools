@@ -258,6 +258,7 @@
 <div class="toolbar">
   <button class="btn-run" id="run-btn" onclick="runQuery()" disabled>&#9654; Run</button>
   <button class="btn-sec" onclick="clearResults()">Clear</button>
+  <button class="btn-sec" id="example-btn" onclick="loadExample()">Load Example</button>
   <button class="btn-sec" id="ps-btn" onclick="copyAsPowershell()">PS Export</button>
   <button class="btn-sec" id="csv-btn" onclick="exportCSV()">Export CSV</button>
   <span id="status" class="loading">Loading</span>
@@ -525,13 +526,12 @@ function registerCompletions() {
   const operators = [
     'where','project','project-away','project-rename','extend','summarize','by',
     'order','sort','asc','desc','take','limit','top','count','distinct',
-    'join','on','let','as','render','serialize','mv-expand','parse',
+    'join','on','let','as','serialize','mv-expand',
   ].map(k => ({ label: k, kind: KW, insertText: k }));
 
   // Logical / filter keywords (used inside expressions)
   const logicals = [
-    'and','or','not','in','between','contains','!contains','startswith','endswith',
-    'has','!has','has_cs','contains_cs','matches regex',
+    'and','or','not','in','contains','!contains','startswith','endswith','has',
   ].map(k => ({ label: k, kind: OP, insertText: k }));
 
   // Scalar functions — snippet with $0 cursor inside parens
@@ -542,7 +542,6 @@ function registerCompletions() {
     ['datetime','datetime($0)'],
     ['iif','iif($1, $2, $3)'],
     ['iff','iff($1, $2, $3)'],
-    ['case','case($1, $2, $3)'],
     ['isempty','isempty($0)'],
     ['isnotempty','isnotempty($0)'],
     ['isnull','isnull($0)'],
@@ -592,16 +591,6 @@ function registerCompletions() {
     ['dayofmonth','dayofmonth($0)'],
     ['dayofyear','dayofyear($0)'],
     ['weekofyear','weekofyear($0)'],
-    ['array_length','array_length($0)'],
-    ['array_concat','array_concat($1, $2)'],
-    ['array_slice','array_slice($1, $2, $3)'],
-    ['set_union','set_union($1, $2)'],
-    ['set_intersect','set_intersect($1, $2)'],
-    ['set_difference','set_difference($1, $2)'],
-    ['bag_keys','bag_keys($0)'],
-    ['pack','pack($1, $2)'],
-    ['pack_array','pack_array($0)'],
-    ['zip','zip($1, $2)'],
     ['gettype','gettype($0)'],
     ['abs','abs($0)'],
     ['ceiling','ceiling($0)'],
@@ -1476,6 +1465,47 @@ function exportCSV() {
   a.download = 'kql-results.csv';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+// ── Load example CSV ─────────────────────────────────────────────────────────
+// Example data: https://github.com/rod-trent/kql-treasure-hunt
+const EXAMPLE_URL = 'https://raw.githubusercontent.com/rod-trent/kql-treasure-hunt/refs/heads/main/SystemAlerts.csv';
+const EXAMPLE_CACHE_KEY = 'kql-example-SystemAlerts';
+
+async function loadExample() {
+  const btn = document.getElementById('example-btn');
+  btn.disabled = true;
+
+  let csv = localStorage.getItem(EXAMPLE_CACHE_KEY);
+  if (!csv) {
+    btn.textContent = 'Fetching…';
+    try {
+      const resp = await fetch(EXAMPLE_URL);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      csv = await resp.text();
+      localStorage.setItem(EXAMPLE_CACHE_KEY, csv);
+    } catch (e) {
+      showError('Failed to load example: ' + e.message);
+      btn.textContent = 'Load Example';
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  const file = new File([csv], 'SystemAlerts.csv', { type: 'text/csv' });
+  await loadFile(file);
+
+  // Override the default starter query with a comment showing the data source
+  if (editor) {
+    editor.setValue(
+      '// Example: https://github.com/rod-trent/kql-treasure-hunt\n' +
+      'SystemAlerts | take 100'
+    );
+    editor.setPosition({ lineNumber: 2, column: 1000 });
+  }
+
+  btn.textContent = 'Load Example';
+  btn.disabled = false;
 }
 
 // ── Drop zone setup ──────────────────────────────────────────────────────────
