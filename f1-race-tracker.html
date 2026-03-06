@@ -53,6 +53,7 @@
     .speed-btn.active { background:#333; color:var(--text-primary); border-color:#555; }
     .track-badge { font-size:.65rem; font-weight:800; letter-spacing:.06em;
                    padding:.15rem .5rem; border-radius:.3rem; line-height:1.4; }
+    .sess-link:hover { background:var(--bg-surface2); }
   </style>
 </head>
 <body class="min-h-screen p-3">
@@ -99,14 +100,14 @@
 <!-- ── IDLE PANEL (shown when no active session) ── -->
 <div id="idle-panel" style="display:none" class="rounded-lg p-6 mb-3 text-center"
      style="background:var(--bg-surface)">
-  <p class="text-xs uppercase tracking-widest mb-3" style="color:var(--text-muted)">Next Race</p>
+  <p id="idle-race-label" class="text-xs uppercase tracking-widest mb-3" style="color:var(--text-muted)">Next Race</p>
   <h2 id="next-race-name" class="text-xl font-bold mb-1">—</h2>
   <p id="next-race-circuit" class="text-sm mb-1" style="color:var(--text-muted)">—</p>
   <p id="next-race-date"    class="text-sm mb-3" style="color:var(--text-muted)">—</p>
   <p id="countdown" class="text-4xl font-bold tabular-nums mb-4"
      style="color:var(--green); letter-spacing:.05em">—</p>
 
-  <div id="weekend-schedule" style="display:none" class="mb-4 text-left text-sm" style="max-width:320px;margin:0 auto"></div>
+  <div id="weekend-schedule" style="display:none" class="mb-4 text-left text-sm" style="max-width:380px;margin:0 auto"></div>
 
   <div id="last-race-block" style="display:none">
     <p class="text-xs uppercase tracking-widest mb-2" style="color:var(--text-muted)">
@@ -919,41 +920,73 @@ async function _loadIdleData() {
                          .sort((a, b) => b.date_end.localeCompare(a.date_end));
     }
 
-    if (future.length) {
-      const n = future[0];
-      _nextRaceDate = new Date(n.date_start);
-      document.getElementById('next-race-name').textContent    = (n.country_name || '') + ' Grand Prix';
-      document.getElementById('next-race-circuit').textContent = n.circuit_short_name || n.location || '';
-      document.getElementById('next-race-date').textContent    = fmtLocal(n.date_start);
+    const lastRace = past[0] || null;
+    const nextRace = future[0] || null;
+    const msSinceLast = lastRace ? (now - new Date(lastRace.date_end)) : Infinity;
+    const within72h   = msSinceLast < 72 * 3600 * 1000;
+
+    // ── Header: post-race window or next race countdown
+    if (within72h && lastRace) {
+      document.getElementById('idle-race-label').textContent   = 'Race Weekend';
+      document.getElementById('next-race-name').textContent    = (lastRace.country_name || '') + ' Grand Prix';
+      document.getElementById('next-race-circuit').textContent = lastRace.circuit_short_name || lastRace.location || '';
+      document.getElementById('next-race-date').textContent    = 'Weekend complete — click any session below to review';
+      document.getElementById('countdown').style.display       = 'none';
+    } else if (nextRace) {
+      document.getElementById('idle-race-label').textContent   = 'Next Race';
+      document.getElementById('next-race-name').textContent    = (nextRace.country_name || '') + ' Grand Prix';
+      document.getElementById('next-race-circuit').textContent = nextRace.circuit_short_name || nextRace.location || '';
+      document.getElementById('next-race-date').textContent    = fmtLocal(nextRace.date_start);
+      _nextRaceDate = new Date(nextRace.date_start);
       clearInterval(_countdownTimer);
       _countdownTimer = setInterval(_updateCountdown, 1000);
       _updateCountdown();
-
-      // Fetch all sessions for this race weekend and render a schedule table
-      if (n.meeting_key) {
-        apiFetch('sessions', { meeting_key: n.meeting_key })
-          .then(weekend => {
-            // Sort chronologically by actual start time
-            const sorted = weekend.slice().sort((a, b) => a.date_start.localeCompare(b.date_start));
-            const el = document.getElementById('weekend-schedule');
-            el.innerHTML = `<table style="width:100%;border-collapse:collapse;max-width:320px;margin:0 auto">` +
-              sorted.map(s => {
-                const label = s.session_type === 'Practice 1' ? 'FP1'
-                            : s.session_type === 'Practice 2' ? 'FP2'
-                            : s.session_type === 'Practice 3' ? 'FP3'
-                            : s.session_type;
-                const past = new Date(s.date_end) < new Date();
-                return `<tr style="opacity:${past ? '0.45' : '1'}">
-                  <td style="padding:2px 8px 2px 0;color:var(--text-muted);white-space:nowrap">${escapeHtml(label)}</td>
-                  <td style="padding:2px 0;white-space:nowrap">${fmtLocal(s.date_start)}</td>
-                </tr>`;
-              }).join('') + `</table>`;
-            el.style.display = '';
-          })
-          .catch(() => {});
-      }
     }
 
+    // ── Weekend schedule: show all sessions for the relevant meeting
+    const meetingKey = within72h ? lastRace?.meeting_key : nextRace?.meeting_key;
+    if (meetingKey) {
+      try {
+        const weekend = await apiFetch('sessions', { meeting_key: meetingKey });
+        const sorted  = weekend.slice().sort((a, b) => a.date_start.localeCompare(b.date_start));
+        const el = document.getElementById('weekend-schedule');
+        el.innerHTML = `<table style="width:100%;border-collapse:collapse;max-width:380px;margin:0 auto">` +
+          sorted.map(s => {
+            const label  = s.session_type === 'Practice 1' ? 'FP1'
+                         : s.session_type === 'Practice 2' ? 'FP2'
+                         : s.session_type === 'Practice 3' ? 'FP3'
+                         : s.session_type;
+            const isPast = new Date(s.date_end)   < now;
+            const isLive = new Date(s.date_start) <= now && new Date(s.date_end) >= now;
+            const key    = s.session_key;
+            if (isPast) {
+              return `<tr class="sess-link" style="cursor:pointer" onclick="loadSessionFromIdle(${key})">
+                <td style="padding:4px 10px 4px 4px;white-space:nowrap;font-weight:600">${escapeHtml(label)}</td>
+                <td style="padding:4px 0;white-space:nowrap;color:var(--text-muted)">${fmtLocal(s.date_start)}</td>
+                <td style="padding:4px 0 4px 10px;white-space:nowrap;font-family:monospace;font-size:0.7rem;color:var(--text-muted)">#${key}</td>
+                <td style="padding:4px 0 4px 10px;white-space:nowrap;color:var(--green)">▶ View</td>
+              </tr>`;
+            } else if (isLive) {
+              return `<tr>
+                <td style="padding:4px 10px 4px 4px;white-space:nowrap;font-weight:600;color:var(--green)">${escapeHtml(label)}</td>
+                <td style="padding:4px 0;white-space:nowrap">${fmtLocal(s.date_start)}</td>
+                <td style="padding:4px 0 4px 10px;font-family:monospace;font-size:0.7rem;color:var(--text-muted)">#${key}</td>
+                <td style="padding:4px 0 4px 10px;white-space:nowrap;color:var(--green);font-weight:700">● LIVE</td>
+              </tr>`;
+            } else {
+              return `<tr style="opacity:0.45">
+                <td style="padding:4px 10px 4px 4px;white-space:nowrap">${escapeHtml(label)}</td>
+                <td style="padding:4px 0;white-space:nowrap">${fmtLocal(s.date_start)}</td>
+                <td style="padding:4px 0 4px 10px"></td>
+                <td style="padding:4px 0 4px 10px"></td>
+              </tr>`;
+            }
+          }).join('') + `</table>`;
+        el.style.display = '';
+      } catch (_) {}
+    }
+
+    // ── Last race podium
     if (past.length) {
       const lastKey = past[0].session_key;
       const lastDrv = await apiFetch('drivers', { session_key: lastKey });
@@ -978,6 +1011,27 @@ async function _loadIdleData() {
     }
   } catch (err) {
     document.getElementById('next-race-name').textContent = 'Could not load schedule';
+  }
+}
+
+// ── Load a session selected from the idle panel ───────────────
+async function loadSessionFromIdle(sessionKey) {
+  clearInterval(_idleInterval);
+  clearInterval(_countdownTimer);
+  rs.session.key = sessionKey;
+  persistUrl();
+  showMain();
+  await loadAllForSession(sessionKey);
+  const meta = await apiFetch('sessions', { session_key: sessionKey }).catch(() => []);
+  if (meta.length) {
+    const dateEnd  = new Date(meta[0].date_end).getTime();
+    const minsAgo  = (Date.now() - dateEnd) / 60000;
+    if (dateEnd > Date.now()) transitionTo('LIVE');
+    else if (minsAgo < 30)   transitionTo('FINISHED');
+    else                     { rs.session.status = 'FINISHED'; renderAll(); }
+  } else {
+    rs.session.status = 'FINISHED';
+    renderAll();
   }
 }
 
