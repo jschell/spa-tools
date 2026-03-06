@@ -10,15 +10,35 @@
   <script>tailwind.config = { darkMode: 'class' };</script>
   <style>
     :root {
+      /* Light mode (default) */
+      --bg-primary:  #F2F3F5;
+      --bg-surface:  #FFFFFF;
+      --bg-surface2: #EAECF0;
+      --text-primary:#111111;
+      --text-muted:  #888888;
+      --border:      #DEDFE3;
+      --chip-bg:     #E8E8E8;
+      --chip-color:  #555555;
+      --green:  #00D964;
+      --red:    #E8002D;
+      --yellow: #FFD700;
+      --blue:   #0067FF;
+      --pos1:   #B8860B;
+      --pos2:   #707070;
+      --pos3:   #A0522D;
+    }
+    html.dark {
       --bg-primary:  #0F0F0F;
       --bg-surface:  #1A1A1A;
       --bg-surface2: #242424;
       --text-primary:#F0F0F0;
       --text-muted:  #6B6B6B;
-      --green:  #00D964;
-      --red:    #E8002D;
-      --yellow: #FFD700;
-      --blue:   #0067FF;
+      --border:      #333333;
+      --chip-bg:     #333333;
+      --chip-color:  #AAAAAA;
+      --pos1:   #FFD700;
+      --pos2:   #C0C0C0;
+      --pos3:   #CD7F32;
     }
     html { background: var(--bg-primary); color: var(--text-primary); }
     body { font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; }
@@ -31,11 +51,11 @@
     .ty-HARD        { background:#E8E8E8; color:#000; }
     .ty-INTERMEDIATE{ background:#39B54A; color:#fff; }
     .ty-WET         { background:#0067FF; color:#fff; }
-    .ty-UNKNOWN,.ty-{ background:#444;    color:#aaa; }
+    .ty-UNKNOWN,.ty-{ background:var(--chip-bg); color:var(--chip-color); }
 
-    .pos-1 { color:#FFD700; font-weight:800; }
-    .pos-2 { color:#C0C0C0; font-weight:700; }
-    .pos-3 { color:#CD7F32; font-weight:700; }
+    .pos-1 { color:var(--pos1); font-weight:800; }
+    .pos-2 { color:var(--pos2); font-weight:700; }
+    .pos-3 { color:var(--pos3); font-weight:700; }
 
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
     .live-dot { animation: blink 1.8s ease-in-out infinite; }
@@ -49,8 +69,8 @@
 
     input[type=range] { accent-color: var(--green); width:100%; }
     .speed-btn { font-size:.7rem; padding:.15rem .5rem; border-radius:.25rem;
-                 border:1px solid #333; background:transparent; color:var(--text-muted); cursor:pointer; }
-    .speed-btn.active { background:#333; color:var(--text-primary); border-color:#555; }
+                 border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; }
+    .speed-btn.active { background:var(--chip-bg); color:var(--text-primary); border-color:var(--border); }
     .track-badge { font-size:.65rem; font-weight:800; letter-spacing:.06em;
                    padding:.15rem .5rem; border-radius:.3rem; line-height:1.4; }
     .sess-link:hover { background:var(--bg-surface2); }
@@ -74,6 +94,10 @@
   </div>
   <span id="lap-label" class="text-sm" style="color:var(--text-muted)"></span>
   <span class="flex-1"></span>
+  <button id="replay-btn" onclick="startReplayFromBtn()" style="display:none"
+          class="speed-btn">▶ Replay</button>
+  <button id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark"
+          style="padding:.15rem .5rem;border-radius:.25rem;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:.875rem;line-height:1;">☽</button>
   <span id="updated-label" class="text-xs" style="color:var(--text-muted)"></span>
 </header>
 
@@ -128,7 +152,7 @@
   <!-- Timing Tower -->
   <section class="flex-1 rounded-lg overflow-hidden" style="background:var(--bg-surface)">
     <div class="flex items-center justify-between px-3 py-2"
-         style="border-bottom:1px solid #2a2a2a">
+         style="border-bottom:1px solid var(--border)">
       <span class="text-xs font-bold tracking-widest uppercase"
             style="color:var(--text-muted)">Timing Tower</span>
       <button id="copy-btn" onclick="copyStandings()" class="speed-btn">Copy</button>
@@ -151,7 +175,7 @@
 
   <!-- Race Control -->
   <aside class="w-full lg:w-72 rounded-lg overflow-hidden" style="background:var(--bg-surface)">
-    <div class="px-3 py-2 flex items-center justify-between" style="border-bottom:1px solid #2a2a2a">
+    <div class="px-3 py-2 flex items-center justify-between" style="border-bottom:1px solid var(--border)">
       <span class="text-xs font-bold tracking-widest uppercase"
             style="color:var(--text-muted)">Race Control</span>
       <div class="flex gap-1">
@@ -539,6 +563,8 @@ function renderStatusIndicator() {
   const badge = document.getElementById('status-badge');
   badge.textContent = label;
   badge.style.color = color;
+  const replayBtn = document.getElementById('replay-btn');
+  if (replayBtn) replayBtn.style.display = rs.session.status === 'FINISHED' ? '' : 'none';
 }
 
 function renderHeader() {
@@ -650,7 +676,7 @@ function renderTimingTower() {
     const bg  = i % 2 ? 'var(--bg-surface2)' : 'var(--bg-surface)';
     const dim = (d.status === 'OUT' || d.status === 'DNF') ? 'opacity:.45;' : '';
     const statusLbl = (d.status === 'OUT' || d.status === 'DNF')
-      ? `<span class="text-xs px-1 rounded" style="background:#333;color:var(--red)">${d.status}</span>` : '';
+      ? `<span class="text-xs px-1 rounded" style="background:var(--chip-bg);color:var(--red)">${d.status}</span>` : '';
     const dp = effPos(d);
     return `
       <div class="grid items-center px-2 py-1.5 text-sm"
@@ -703,7 +729,7 @@ function renderRaceControl() {
 
   feed.innerHTML = msgs.map(m => {
     const badge = m.category
-      ? `<span class="rounded px-1" style="background:#333;color:#aaa">${escapeHtml(m.category)}</span> ` : '';
+      ? `<span class="rounded px-1" style="background:var(--chip-bg);color:var(--chip-color)">${escapeHtml(m.category)}</span> ` : '';
     return `
       <div class="rounded px-2 py-1.5 ${rcBorderClass(m)}" style="background:var(--bg-surface2)">
         <div class="mb-0.5" style="color:var(--text-muted)">${escapeHtml(m.date ? fmt24(m.date, false) : '')}</div>
@@ -1247,8 +1273,37 @@ document.getElementById('replay-scrubber').addEventListener('input', e => {
   seekReplay(parseInt(e.target.value) / 1000);
 });
 
+// ── Theme toggle ──────────────────────────────────────────────
+function toggleTheme() {
+  const isDark = document.documentElement.classList.toggle('dark');
+  document.getElementById('theme-btn').textContent = isDark ? '☀' : '☽';
+  try { localStorage.setItem('f1_theme', isDark ? 'dark' : 'light'); } catch(_) {}
+}
+
+function initTheme() {
+  let theme = 'light';
+  try { theme = localStorage.getItem('f1_theme') || 'light'; } catch(_) {}
+  if (theme === 'dark') {
+    document.documentElement.classList.add('dark');
+    document.getElementById('theme-btn').textContent = '☀';
+  }
+}
+
+// ── Replay from header button ─────────────────────────────────
+function startReplayFromBtn() {
+  if (!rs.session.key) return;
+  // Reset state for a fresh replay
+  rs.drivers = {}; rs.stints = {}; rs.raceControl = []; rs.weather = {};
+  rs.lapMax = 0; rs.lastUpdated = {};
+  Object.assign(replay, { raw:{}, ptr:{}, driversRaw:[], datelessStints:[],
+    t0:0, durationMs:0, elapsedMs:0, speed:16, ticker:null });
+  transitionTo('REPLAY');
+  startReplay(rs.session.key, 16);
+}
+
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
+  initTheme();
   readUrlParams();
 
   if (rs.session.status === 'REPLAY' && _replayKey) {
