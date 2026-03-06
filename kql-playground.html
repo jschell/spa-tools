@@ -45,6 +45,7 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      height: 100svh; /* iOS Safari: size to viewport excluding browser chrome */
       overflow: hidden;
     }
     header {
@@ -80,6 +81,7 @@
     .btn-run:disabled { background: var(--hover-bg); color: var(--text-muted); cursor: default; filter: none; }
     .btn-sec  { background: var(--hover-bg); color: var(--text); border: 1px solid var(--border); }
     .btn-sec:hover { filter: brightness(0.94); }
+    #tab-btn { display: none; }
     #status { font-size: 0.78rem; color: var(--text-muted); margin-left: 0.25rem; }
     #status.loading::after { content: ''; display: inline-block; width: 0.6em; animation: dots 1.2s steps(3,end) infinite; }
     @keyframes dots { 0%,100%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
@@ -195,8 +197,18 @@
     }
     @media (max-width: 600px) {
       .sidebar { display: none; }
-      .editor-wrap { height: 120px; }
       .limits-body { columns: 1; }
+      /* Toolbar: tighter buttons, row-count doesn't eat a whole wrapped line */
+      button { padding: 0.28rem 0.5rem; font-size: 0.76rem; }
+      .toolbar { row-gap: 0.25rem; }
+      #row-count { flex: 0; }
+      /* Tab toggle: show the switcher button */
+      #tab-btn { display: inline-block; }
+      /* Only one pane visible at a time on narrow viewports */
+      .workspace[data-tab="editor"] .editor-wrap { height: auto; flex: 1; }
+      .workspace[data-tab="editor"] .results-wrap { display: none; }
+      .workspace[data-tab="results"] .editor-wrap { display: none; }
+      /* results-wrap keeps its base flex: 1 */
     }
   </style>
 </head>
@@ -258,6 +270,7 @@
 <div class="toolbar">
   <button class="btn-run" id="run-btn" onclick="runQuery()" disabled>&#9654; Run</button>
   <button class="btn-sec" onclick="clearResults()">Clear</button>
+  <button class="btn-sec" id="tab-btn" onclick="toggleTab()">Results ▼</button>
   <button class="btn-sec" id="example-btn" onclick="loadExample()">Load Example</button>
   <button class="btn-sec" id="ps-btn" onclick="copyAsPowershell()">PS Export</button>
   <button class="btn-sec" id="csv-btn" onclick="exportCSV()">Export CSV</button>
@@ -273,7 +286,7 @@
     <h3>Columns</h3>
     <ul class="col-list" id="col-list"></ul>
   </div>
-  <div class="workspace">
+  <div class="workspace" data-tab="editor">
     <div class="editor-wrap">
       <div id="editor"></div>
     </div>
@@ -342,6 +355,22 @@ function showError(msg) {
   const bar = document.getElementById('error-bar');
   bar.textContent = msg;
   bar.style.display = msg ? 'block' : 'none';
+}
+
+// ── Mobile tab toggle ─────────────────────────────────────────────────────────
+function setTab(tab) {
+  const ws = document.querySelector('.workspace');
+  if (!ws) return;
+  ws.dataset.tab = tab;
+  const btn = document.getElementById('tab-btn');
+  if (btn) btn.textContent = tab === 'editor' ? 'Results ▼' : 'Query ▲';
+  // Monaco's automaticLayout uses ResizeObserver; nudge it after the display change
+  if (tab === 'editor' && editor) setTimeout(() => editor.layout(), 50);
+}
+
+function toggleTab() {
+  const ws = document.querySelector('.workspace');
+  setTab(ws && ws.dataset.tab === 'editor' ? 'results' : 'editor');
 }
 
 // ── DuckDB init ──────────────────────────────────────────────────────────────
@@ -1342,6 +1371,7 @@ async function runQuery() {
     lastArrow = result;
     renderTable(result);
     setStatus('Done');
+    if (window.innerWidth <= 600) setTab('results');
   } catch (e) {
     showError('DuckDB error: ' + e.message + '\n\nGenerated SQL:\n' + sql);
     setStatus('Error');
@@ -1468,22 +1498,43 @@ function exportCSV() {
 }
 
 // ── Load example CSV ─────────────────────────────────────────────────────────
-// Example data: https://github.com/rod-trent/kql-treasure-hunt
-const EXAMPLE_URL = 'https://raw.githubusercontent.com/rod-trent/kql-treasure-hunt/refs/heads/main/SystemAlerts.csv';
-const EXAMPLE_CACHE_KEY = 'kql-example-SystemAlerts';
+// Example datasets from: https://github.com/rod-trent/kql-treasure-hunt
+const EXAMPLES = [
+  {
+    file: 'SystemAlerts.csv',
+    url:  'https://raw.githubusercontent.com/rod-trent/kql-treasure-hunt/refs/heads/main/SystemAlerts.csv',
+    table: 'SystemAlerts',
+  },
+  {
+    file: 'CrewLogs.csv',
+    url:  'https://raw.githubusercontent.com/rod-trent/kql-treasure-hunt/refs/heads/main/CrewLogs.csv',
+    table: 'CrewLogs',
+  },
+  {
+    file: 'CommSignals.csv',
+    url:  'https://raw.githubusercontent.com/rod-trent/kql-treasure-hunt/refs/heads/main/CommSignals.csv',
+    table: 'CommSignals',
+  },
+];
+let exampleIndex = parseInt(localStorage.getItem('kql-example-index') || '0', 10) % EXAMPLES.length;
+// Show which dataset loads on first click
+document.getElementById('example-btn').textContent = 'Load: ' + EXAMPLES[exampleIndex].table;
 
 async function loadExample() {
   const btn = document.getElementById('example-btn');
   btn.disabled = true;
 
-  let csv = localStorage.getItem(EXAMPLE_CACHE_KEY);
+  const ex = EXAMPLES[exampleIndex];
+  const cacheKey = 'kql-example-' + ex.table;
+
+  let csv = localStorage.getItem(cacheKey);
   if (!csv) {
     btn.textContent = 'Fetching…';
     try {
-      const resp = await fetch(EXAMPLE_URL);
+      const resp = await fetch(ex.url);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       csv = await resp.text();
-      localStorage.setItem(EXAMPLE_CACHE_KEY, csv);
+      localStorage.setItem(cacheKey, csv);
     } catch (e) {
       showError('Failed to load example: ' + e.message);
       btn.textContent = 'Load Example';
@@ -1492,19 +1543,22 @@ async function loadExample() {
     }
   }
 
-  const file = new File([csv], 'SystemAlerts.csv', { type: 'text/csv' });
+  const file = new File([csv], ex.file, { type: 'text/csv' });
   await loadFile(file);
 
-  // Override the default starter query with a comment showing the data source
+  // Seed the editor with a comment citing the source
   if (editor) {
     editor.setValue(
       '// Example: https://github.com/rod-trent/kql-treasure-hunt\n' +
-      'SystemAlerts | take 100'
+      ex.table + ' | take 100'
     );
     editor.setPosition({ lineNumber: 2, column: 1000 });
   }
 
-  btn.textContent = 'Load Example';
+  // Advance to the next example for the next click
+  exampleIndex = (exampleIndex + 1) % EXAMPLES.length;
+  localStorage.setItem('kql-example-index', exampleIndex);
+  btn.textContent = 'Load: ' + EXAMPLES[exampleIndex].table;
   btn.disabled = false;
 }
 
@@ -1535,6 +1589,15 @@ function setupDropZone() {
 setupDropZone();
 initDuckDB();
 initMonaco();
+
+// Shrink body to match visible viewport when the soft keyboard opens on mobile.
+// Without this, the fixed-height flex layout can overflow beneath the keyboard.
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    if (window.innerWidth > 600) return;
+    document.body.style.height = window.visualViewport.height + 'px';
+  });
+}
 </script>
 </body>
 </html>
