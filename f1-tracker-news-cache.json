@@ -1,5 +1,29 @@
 [
   {
+    "title": "OFFICIAL GRID: Who starts where in Japan",
+    "link": "https://www.formula1.com/en/latest/article/official-grid-who-starts-where-for-the-japanese-grand-prix.6b4ys9RVRgRCcfXsQEOl1Q",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "The full official starting order for Sunday's 2026 Japanese Grand Prix in Suzuka.",
+    "imageUrl": null
+  },
+  {
+    "title": "LIVE COVERAGE: Follow the action from the Japanese GP",
+    "link": "https://www.formula1.com/en/latest/article/live-coverage-formula-1-aramco-japanese-grand-prix-2026.7ou2fj9YWzy1Ux5lXOZzf9",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Live coverage of Sunday's Formula 1 Aramco Japanese Grand Prix 2026 at Suzuka.",
+    "imageUrl": null
+  },
+  {
+    "title": "Betting mistakes to avoid during Japanese Grand Prix",
+    "link": "https://www.formula1.com/en/latest/article/betting-mistakes-to-avoid-when-watching-the-japanese-grand-prix.VIlnUKzVMChQKZAmONaia",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Safer gambling is important, so we look at how you can avoid wasting money during the Suzuka race.",
+    "imageUrl": null
+  },
+  {
     "title": "Our final Japanese Grand Prix betting predictions",
     "link": "https://www.formula1.com/en/latest/article/our-final-japanese-grand-prix-betting-predictions-before-lights-out-in.5ZSJkzZatt3iVcXcloUTWk",
     "source": "Formula 1",
@@ -53,30 +77,6 @@
     "source": "Formula 1",
     "pubDate": "",
     "summary": "The drivers and teams report back on all the action from final practice and Qualifying at Suzuka ahead of the 2026 Japanese Grand Prix.",
-    "imageUrl": null
-  },
-  {
-    "title": "Watch Qualifying from Round 2 of the F1 Sim Racing World Championship",
-    "link": "https://www.formula1.com/en/latest/article/livestream-watch-qualifying-from-round-2-of-the-2026-f1-sim-racing-world.2MXAiJLLRYGvSSg9VLyuAL",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "It’s time for Round 2 of the 2026 F1 Sim Racing World Championship, with the sim racers preparing to go head-to-head at the Japanese Grand Prix.",
-    "imageUrl": null
-  },
-  {
-    "title": "Ride onboard with Antonelli for his superb pole lap in Japan",
-    "link": "https://www.formula1.com/en/latest/article/watch-ride-onboard-with-antonelli-for-his-superb-pole-lap-in-japan.6HlF0OG6Djv9GpakCtWw6i",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Kimi Antonelli took a commanding pole position for the Japanese Grand Prix as Mercedes locked out the front row once again.",
-    "imageUrl": null
-  },
-  {
-    "title": "What are the strategy options for the Japanese Grand Prix?",
-    "link": "https://www.formula1.com/en/latest/article/strategy-guide-what-are-the-tactical-options-for-the-japanese-grand-prix-at.63iAmMT3bGAEAhdJiKltrD",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Matt Youson takes a look at the different pit stop and tyre options that are available to the teams on race day at Suzuka.",
     "imageUrl": null
   },
   {
@@ -448,14 +448,6 @@
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/0892/live/e16baa60-f8ea-11ef-9e61-71ee71f26eb1.png"
   },
   {
-    "title": "'Get out' - Verstappen expels journalist from news conference",
-    "link": "https://www.bbc.com/sport/formula1/articles/cwy3pggg4zjo?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-03-26 10:49:41",
-    "summary": "Max Verstappen ejects a journalist from his news conference at the Japanese Grand Prix over a row that dates back to Abu Dhabi last year.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/d1be/live/718aba30-28fd-11f1-be8b-2136d1c912ba.jpg"
-  },
-  {
     "title": "Bahrain and Saudi Arabia cancellations helpful for F1 teams - Bird",
     "link": "https://www.bbc.com/sport/formula1/videos/cwyg4eedjg9o?at_medium=RSS&at_campaign=rss",
     "source": "BBC Sport",
@@ -478,5 +470,13 @@
     "pubDate": "2026-03-15 16:37:16",
     "summary": "On the latest episode of The Chequered Flag podcast, Sam Bird believes Lewis Hamilton's spark \"is back\" again after the British driver finished in third at the Chinese Grand Prix.",
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/b143/live/b9443990-2098-11f1-b048-c9424b2cf5fd.jpg"
+  },
+  {
+    "title": "'The tide is turning back towards Hamilton' - Priestley",
+    "link": "https://www.bbc.com/sport/formula1/videos/ckg1p159ezpo?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-03-08 13:02:01",
+    "summary": "The Chequered Podcast's Harry Benjamin, Jennie Gow and Marc Priestly discuss Lewis Hamilton's strong performance in the Australian Grand Prix, plus his 'upbeat, positive' mood over race weekend.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/82ea/live/91a2c8b0-1aea-11f1-9120-a910fc22c6ac.jpg"
   }
 ]
