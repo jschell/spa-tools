@@ -1,5 +1,45 @@
 [
   {
+    "title": "Vasseur identifies where Ferrari have ‘room for improvement’",
+    "link": "https://www.formula1.com/en/latest/article/vasseur-identifies-where-ferrari-have-room-for-improvement-after-japan.6LLhKIo4mZtBr6pJwlwVGG",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Team Principal Fred Vasseur has offered up his thoughts on the Japanese Grand Prix following Ferrari’s third successive podium finish.",
+    "imageUrl": null
+  },
+  {
+    "title": "McLaren ‘surprised’ themselves with Japan pace – Stella",
+    "link": "https://www.formula1.com/en/latest/article/mclaren-surprised-themselves-with-japan-pace-as-stella-hails-positive-day.zLAeK0FyiqKEAwJSiQbEg",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "McLaren might be reigning World Champions, but they have had a torrid start to the 2026 season which included neither car starting the second Grand Prix due to electrical issues. But when they finally lined up with both cars on the grid in Japan, the papaya team “surprised” themselves with their pace, as they took the fight to Mercedes in style.",
+    "imageUrl": null
+  },
+  {
+    "title": "Wolff reflects on Russell's issues during Japanese GP",
+    "link": "https://www.formula1.com/en/latest/article/the-race-went-against-him-wolff-reflects-on-russells-issues-during-japanese.5pNQ97bFbKDLDvC4RlOQMN",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Mercedes Team Principal Toto Wolff believes \"the race went against\" George Russell during the Japanese Grand Prix and has revealed the issues that meant he could only finish fourth.",
+    "imageUrl": null
+  },
+  {
+    "title": "The two key questions after Antonelli's Japanese GP triumph",
+    "link": "https://www.formula1.com/en/latest/article/monday-morning-debrief-the-two-key-questions-after-antonellis-japanese-grand.NsjkW2UHbilFYd5s0Vzdj",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Kimi Antonelli secured his second successive Grand Prix victory in Suzuka, having taken his maiden win two weeks prior in China.",
+    "imageUrl": null
+  },
+  {
+    "title": "Bearman reacts to 50G crash during Japanese Grand Prix",
+    "link": "https://www.formula1.com/en/latest/article/bearman-reacts-to-50g-crash-during-japanese-grand-prix.7hiNVcluoZHH9AuiQGbQIO",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Ollie Bearman crashed heavily during the Japanese Grand Prix, with the Safety Car having to be deployed.",
+    "imageUrl": null
+  },
+  {
     "title": "How bettors won backing Antonelli to win in Japan",
     "link": "https://www.formula1.com/en/latest/article/how-f1-fans-won-backing-kimi-antonelli-using-in-play-betting-markets-in.4qzBBz5Ny4otXh96KEZIwa",
     "source": "Formula 1",
@@ -40,46 +80,6 @@
     "imageUrl": null
   },
   {
-    "title": "Catch Qualifying from Round 3 of the F1 Sim Racing World Championship",
-    "link": "https://www.formula1.com/en/latest/article/livestream-catch-qualifying-from-round-3-of-the-2026-f1-sim-racing-world.6jHPyIJSS5negY1AdEvl9f",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "A busy three-day event at the 2026 F1 Sim Racing World Championship reaches its conclusion today as the sim racers ready themselves for Round 3, the Bahrain Grand Prix.",
-    "imageUrl": null
-  },
-  {
-    "title": "What the teams said – Race day in Japan",
-    "link": "https://www.formula1.com/en/latest/article/what-the-teams-said-race-day-in-japan-2026.7ljwEx0ZL2qA0lytKAwXLI",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "The drivers and teams report back on all the action from at Suzuka for the of the 2026 Japanese Grand Prix.",
-    "imageUrl": null
-  },
-  {
-    "title": "Verstappen admits Red Bull are in the ‘midfield battle’",
-    "link": "https://www.formula1.com/en/latest/article/verstappen-admits-red-bull-are-in-the-midfield-battle-after-incredibly-tough.3KbArfIDhC9LnHBif1Xp83",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Max Verstappen was limited to P8 in the Japanese Grand Prix following further struggles with his Red Bull car.",
-    "imageUrl": null
-  },
-  {
-    "title": "Leclerc laments Safety Car timing after P3 finish in Japan",
-    "link": "https://www.formula1.com/en/latest/article/we-got-a-little-unlucky-leclerc-laments-safety-car-timing-after-p3-finish-in.35dalwAfMJJxnnOnBZyvIC",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Charles Leclerc believes \"we got a little unlucky\" during the Japanese Grand Prix due to an ill-timed Safety Car, with the Ferrari driver salvaging third place.",
-    "imageUrl": null
-  },
-  {
-    "title": "Norris motivated by ‘good signs’ from Japan top-five finish",
-    "link": "https://www.formula1.com/en/latest/article/norris-motivated-by-good-signs-for-mclaren-after-top-five-finish-in-japan.5LIpKLtHMOsrjzi6GTOEyx",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "McLaren enjoyed their highest scoring round of the season as Oscar Piastri and Lando Norris finished second and fifth respectively in Japan.",
-    "imageUrl": null
-  },
-  {
     "title": "George Russell has a ‘steely’ side that could emerge against Kimi Antonelli, says Jolyon Palmer",
     "link": "https://www.motorsport.com/f1/news/george-russell-has-a-steely-side-that-could-emerge-against-kimi-antonelli-says-jolyon-palmer/10807654/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
     "source": "Motorsport.com",
@@ -93,6 +93,14 @@
     "source": "Motorsport.com",
     "pubDate": "2026-03-30 10:09:41",
     "summary": "The \"constant change\" at Aston Martin has come under the scrutiny of former F1 TV presenter Will Buxton, who claimed that it is 'not doing the culture of the team any good'.<br>In 2024, Andy Cowell joined the Silverstone outfit as Group CEO before he replaced Mike Krack in the role of team principal in January 2025. Cowell's tenure in the team chief position lasted less than a year. Adrian Newey ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/aston-martins-constant-change-criticised-as-damaging-team-culture-amid-2026-f1-struggles/10809751/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
+    "imageUrl": null
+  },
+  {
+    "title": "‘Stop beating yourself up,’ Haas tells Bearman after 50G Japanese GP crash",
+    "link": "https://www.autosport.com/f1/news/stop-beating-yourself-up-haas-tells-oliver-bearman-after-50g-suzuka-crash/10809755/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-03-30 10:00:03",
+    "summary": "Haas team principal Ayao Komatsu has pleaded with Oliver Bearman not to ‘beat himself up’, following his Formula 1 driver’s frightening crash in the Japanese Grand Prix.<br>After qualifying a lowly 18th and making an earlier pitstop than most, Bearman was approaching 17th-placed Franco Colapinto’s Alpine with a 28mph speed difference coming into Spoon, which came as a surprise to ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/stop-beating-yourself-up-haas-tells-oliver-bearman-after-50g-suzuka-crash/10809755/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
@@ -445,14 +453,6 @@
     "source": "Autosport",
     "pubDate": "2026-03-28 07:20:08",
     "summary": "Kimi Antonelli grabbed his second career Formula 1 pole position at the Japanese Grand Prix, also his second in a row, as Max Verstappen was eliminated in Q2.<br>Antonelli enforced his dominance on Mercedes team-mate George Russell so far this weekend, with the Italian youngster quicker than his elder in the last two free practice sessions as well as Q2 – by six tenths – and Q3 – by ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/f1-japanese-gp-kimi-antonelli-on-pole-max-verstappen-out-in-q2/10808842/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "F1 Japanese GP: Mercedes takes 1-2 as Antonelli fastest in FP3",
-    "link": "https://www.autosport.com/f1/news/mercedes-takes-1-2-as-antonelli-fastest-in-japan-f1-fp3/10808798/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-03-28 03:58:30",
-    "summary": "Mercedes F1 driver Kimi Antonelli has headed team-mate George Russell in final practice at the Japanese Grand Prix.<br>Russell was unable to top Antonelli's final quarter lap in the W17 as Mercedes heads to qualifying as the clear favourites, leading FP3 by a huge margin over its Ferrari and McLaren challengers.<br>The first proper push laps saw the Ferraris take an early lead before Antonelli ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/mercedes-takes-1-2-as-antonelli-fastest-in-japan-f1-fp3/10808798/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
