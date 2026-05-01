@@ -80,6 +80,22 @@
     "imageUrl": null
   },
   {
+    "title": "How to follow Miami Grand Prix on the BBC",
+    "link": "https://www.bbc.com/sport/formula1/articles/c2d8w4k5pd0o?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-05-01 22:35:57",
+    "summary": "All the key BBC coverage details for the Miami Grand Prix, the second sprint event of the season, which takes place from 1-3 May.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/2699/live/f9b4ab40-45aa-11f1-92e1-b7b01c1a1baf.jpg"
+  },
+  {
+    "title": "Norris on Miami sprint pole as McLaren return to form",
+    "link": "https://www.bbc.com/sport/formula1/articles/ce8pdm1rr6vo?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-05-01 22:33:01",
+    "summary": "McLaren's Lando Norris becomes the first driver to beat a Mercedes in qualifying this year with sprint pole at the Miami Grand Prix.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/1c51/live/3d5563d0-45a6-11f1-8f01-030759c40642.jpg"
+  },
+  {
     "title": "Domenicali: F1 is far from finished with US expansion",
     "link": "https://www.autosport.com/f1/news/stefano-domenicali-says-f1-is-far-from-finished-with-us-expansion-beginning-of-our-journey/10817102/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
     "source": "Autosport",
@@ -88,12 +104,12 @@
     "imageUrl": null
   },
   {
-    "title": "Norris on Miami sprint pole as McLaren return to form",
-    "link": "https://www.bbc.com/sport/formula1/articles/ce8pdm1rr6vo?at_medium=RSS&at_campaign=rss",
+    "title": "Andrew Benson Q&amp;A: Send us your questions",
+    "link": "https://www.bbc.com/sport/formula1/articles/ckg3y15zje8o?at_medium=RSS&at_campaign=rss",
     "source": "BBC Sport",
-    "pubDate": "2026-05-01 21:36:48",
-    "summary": "McLaren's Lando Norris becomes the first driver to beat a Mercedes in qualifying this year with sprint pole at the Miami Grand Prix.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/3231/live/55deef30-45a5-11f1-8f01-030759c40642.jpg"
+    "pubDate": "2026-05-01 21:40:33",
+    "summary": "Our F1 correspondent Andrew Benson is doing a weekly Q&amp;A this season, so get your questions in now.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/0892/live/e16baa60-f8ea-11ef-9e61-71ee71f26eb1.png"
   },
   {
     "title": "Norris breaks Mercedes streak with Miami Sprint pole",
@@ -424,14 +440,6 @@
     "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt7d1336951a0a92bc/69f3712449f6ce3fe3746a6b/Miami_Grand_Prix_2.jpg?environment=live"
   },
   {
-    "title": "How to follow Miami Grand Prix on the BBC",
-    "link": "https://www.bbc.com/sport/formula1/articles/c2d8w4k5pd0o?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-04-30 13:59:18",
-    "summary": "All the key BBC coverage details for the Miami Grand Prix, the second sprint event of the season, which takes place from 1-3 May.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/6165/live/9f25d210-44a3-11f1-9b4f-919a6264e39f.jpg"
-  },
-  {
     "title": "Can you name every location to have hosted a US F1 race?",
     "link": "https://www.bbc.com/sport/formula1/articles/cre1zgj4xr3o?at_medium=RSS&at_campaign=rss",
     "source": "BBC Sport",
@@ -462,13 +470,5 @@
     "pubDate": "2026-03-29 11:38:18",
     "summary": "On the latest episode of The Chequered Flag Podcast, 1996 F1 world champion Damon Hill thinks that if Max Verstappen is not enjoying the sport any more following regulation changes then perhaps he needs to take a break.",
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/815c/live/b4883ca0-2b63-11f1-a79a-77e93010d956.jpg"
-  },
-  {
-    "title": "Antonelli celebrations 'lovely to see' - Benson",
-    "link": "https://www.bbc.com/sport/formula1/videos/c743pgr0wy1o?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-03-15 16:54:15",
-    "summary": "On the latest episode of the The Chequered Flag Podcast, pundits Andrew Benson and Sam Bird say Kimi Antonelli's Chinese Grand Prix win at 19 years old \"is as big as it comes\" for a young driver, after the Italian was moved to tears following his win.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/79f5/live/38c3c070-2088-11f1-9120-a910fc22c6ac.jpg"
   }
 ]
