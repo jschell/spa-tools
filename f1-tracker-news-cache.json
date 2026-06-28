@@ -1,5 +1,29 @@
 [
   {
+    "title": "Verstappen's best result yet in 2026 gets your vote",
+    "link": "https://www.formula1.com/en/latest/article/driver-of-the-day-verstappens-best-result-yet-in-2026-gets-your-vote.7CKHyajqAAwJkK6wFPkSpG",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "He ended Qualifying in the wall, but ended the race on the podium. A characteristically gutsy drive from Max Verstappen included some thrilling wheel-to-wheel racing with his old adversary Lewis Hamilton and culminated with a season-best second place at Red Bull’s home race.",
+    "imageUrl": null
+  },
+  {
+    "title": "Verstappen reflects on Austrian GP performance",
+    "link": "https://www.formula1.com/en/latest/article/verstappen-reflects-on-extremely-positive-austrian-grand-prix-after-taking-red-bulls-best-result-of-2026-season.bkRo37kOGdE3WwD0gj5tN",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Max Verstappen reflected on an \"extremely positive\" Austrian Grand Prix, as the Dutchman finished on the heels of race winner George Russell in Sunday's race.",
+    "imageUrl": null
+  },
+  {
+    "title": "Antonelli frustrated to join ‘the party too late’ in Austria",
+    "link": "https://www.formula1.com/en/latest/article/its-a-shame-i-joined-the-party-too-late-antonelli-rues-early-mistakes-in-drive-to-p3-in-austrian-gp.5fmWV5RFZD8jCsMHKdUVTw",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Kimi Antonelli maintained his lead in the standings with a P3 finish at the Austrian Grand Prix.",
+    "imageUrl": null
+  },
+  {
     "title": "Russell ‘reminded myself I can do it’ with Austrian GP win",
     "link": "https://www.formula1.com/en/latest/article/ive-reminded-myself-i-can-do-it-russell-hails-incredible-austrian-gp-win-as-he-recovers-lost-ground-in-title-race.4Hb6KKpu2gBEcRhzSlXdRA",
     "source": "Formula 1",
@@ -40,7 +64,7 @@
     "imageUrl": null
   },
   {
-    "title": "LIVE COVERAGE: Russell takes victory for Mercedes in Austria",
+    "title": "AS IT HAPPENED: Russell takes victory for Mercedes in Austria",
     "link": "https://www.formula1.com/en/latest/article/live-coverage-formula-1-lenovo-austrian-grand-prix-2026.5s63cNP8vpuEGeOxjOEsy7",
     "source": "Formula 1",
     "pubDate": "",
@@ -53,30 +77,6 @@
     "source": "Formula 1",
     "pubDate": "",
     "summary": "Toto Wolff has made it clear that Mercedes “don’t want to change things” when it comes to their driver line-up, brushing off any further links to Red Bull’s Max Verstappen.",
-    "imageUrl": null
-  },
-  {
-    "title": "Why F1 teams are operating at a level never seen before",
-    "link": "https://www.formula1.com/en/latest/article/why-the-2026-development-race-shows-f1-teams-are-operating-at-a-level-never-seen-before.3z4PkgtUazOWrJ8ESuzsmo",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "The 2026 development race will continue to be a significant factor in determining the F1 pecking order, with McLaren's Andrea Stella believing F1 is operating at a level that has never been seen before.",
-    "imageUrl": null
-  },
-  {
-    "title": "Our final Austrian Grand Prix betting predictions made",
-    "link": "https://www.formula1.com/en/latest/article/our-final-betting-predictions-made-before-lights-out-at-the-austrian-grand-prix.AX8mqvNSvuXYHZfyxtrzk",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "George Russell starts on pole at the Red Bull Ring on Sunday, with our betting experts bringing you the latest betting odds and predictions.",
-    "imageUrl": null
-  },
-  {
-    "title": "Bet Builder picks for Austria after Russell takes pole",
-    "link": "https://www.formula1.com/en/latest/article/bet-builder-picks-for-the-austrian-grand-prix-after-george-russell-secures-pole-position.4P4hIdbDtdByff6rFOMnRP",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Our expert betting writers have selected a four-leg Bet Builder, including a podium finish, points finish and group bet.",
     "imageUrl": null
   },
   {
@@ -448,6 +448,14 @@
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/5ecb/live/6ef16ea0-70af-11f1-88b6-991d05fc2cf9.jpg"
   },
   {
+    "title": "FIA proposal to end presidency term limits approved",
+    "link": "https://www.bbc.co.uk/sport/formula1/articles/ckg8kz8jpz0o?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-06-25 12:58:30",
+    "summary": "Formula 1's governing body the FIA passes a proposal to end term limits for its president by a majority of more than 90%.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/c42f/live/bc81c9e0-7090-11f1-86cf-0fd142c2b6fb.jpg"
+  },
+  {
     "title": "Ferrari have lacked confidence but Hamilton generates belief - Benson",
     "link": "https://www.bbc.co.uk/sport/formula1/videos/cy5vn0peyn3o?at_medium=RSS&at_campaign=rss",
     "source": "BBC Sport",
@@ -470,13 +478,5 @@
     "pubDate": "2026-05-25 12:07:57",
     "summary": "On The Chequered Flag podcast, former McLaren mechanic Marc Priestley and F1 journalist Rebecca Clancey discuss the rivalry between Mercedes team-mates Kimi Antonelli and George Russell in their bid to top the drivers' championship.",
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/9047/live/76ad92b0-582f-11f1-b682-cf91850925ea.jpg"
-  },
-  {
-    "title": "Why it 'clicked' for Hamilton and Ferrari in Canada",
-    "link": "https://www.bbc.co.uk/sport/formula1/videos/c2022w7w35vo?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-05-25 12:02:05",
-    "summary": "On the Chequered Flag podcast, former McLaren mechanic Marc Priestley and F1 journalist Rebecca Clancy discuss Lewis Hamilton's drive at the Canadian Grand Prix in Quebec.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/b346/live/00bfc0f0-582f-11f1-89a3-d1f559421220.jpg"
   }
 ]
