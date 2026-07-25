@@ -1,5 +1,37 @@
 [
   {
+    "title": "Russell explains ‘water pistol’ mishap in Hungary Qualifying",
+    "link": "https://www.formula1.com/en/latest/article/russell-explains-water-pistol-mishap-in-qualifying-for-the-hungarian-grand-prix.6Q0Vpgw5BpeNNFJicUhaPc",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Mercedes’ George Russell has shared the issues he faced during Q3 at the Hungaroring.",
+    "imageUrl": null
+  },
+  {
+    "title": "Leclerc left searching for answers after Hungary Qualifying",
+    "link": "https://www.formula1.com/en/latest/article/leclerc-left-searching-for-answers-after-hungary-qualifying-as-he-admits-pace-was-never-at-hamiltons-level.3PayhHdUokbgxmlIjN7reu",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "",
+    "imageUrl": null
+  },
+  {
+    "title": "Hamilton loses P2 after Qualifying incident in Hungary",
+    "link": "https://www.formula1.com/en/latest/article/hamilton-loses-p2-following-qualifying-incident-at-the-hungarian-grand-prix.1svitW7uI3dLQv3ud7Heg6",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Lewis Hamilton has been handed a grid penalty after initially qualifying P2 at the Hungaroring.",
+    "imageUrl": null
+  },
+  {
+    "title": "Verstappen downbeat after ‘really tough’ Qualifying",
+    "link": "https://www.formula1.com/en/latest/article/i-cant-make-anything-out-of-it-verstappen-downbeat-after-really-tough-qualifying-in-hungary.4LR9qMUOPjdsz3nzchYjHr",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Max Verstappen did not have a straightforward Qualifying session at the Hungarian Grand Prix, with the Red Bull driver stating that his problems got \"worse and worse\" with each lap.",
+    "imageUrl": null
+  },
+  {
     "title": "Norris ‘pleasantly surprised’ to claim Hungary pole",
     "link": "https://www.formula1.com/en/latest/article/norris-pleasantly-surprised-to-beat-very-quick-ferrari-drivers-to-hungarian-gp-pole.6YPCL7Vkk8SmT6imvLI0nc",
     "source": "Formula 1",
@@ -24,7 +56,7 @@
     "imageUrl": null
   },
   {
-    "title": "LIVE COVERAGE: All the action from Qualifying in Hungary",
+    "title": "AS IT HAPPENED: All the action from Qualifying in Hungary",
     "link": "https://www.formula1.com/en/latest/article/live-coverage-qualifying-in-hungary-2026.49d4FO7ZJAxJ1M18O2zfLG",
     "source": "Formula 1",
     "pubDate": "",
@@ -48,35 +80,83 @@
     "imageUrl": null
   },
   {
-    "title": "Norris edges out Hamilton and Antonelli during FP3 in Hungary",
-    "link": "https://www.formula1.com/en/latest/article/fp3-norris-edges-out-hamilton-and-antonelli-during-tight-final-practice-session-in-hungary.7EE5f5Y4pJR4TvgXJU7t5L",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "McLaren driver Lando Norris set the pace during Saturday’s third practice session for the Hungarian Grand Prix, leading the way from Ferrari rival Lewis Hamilton and the Mercedes of Kimi Antonelli.",
+    "title": "\"It's our mistake\" Ferrari takes blame for Lewis Hamilton penalty in F1 Hungarian GP qualifying",
+    "link": "https://www.motorsport.com/f1/news/its-our-mistake-ferrari-takes-blame-for-lewis-hamilton-penalty-in-f1-hungarian-gp-qualifying/10841872/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+    "source": "Motorsport.com",
+    "pubDate": "2026-07-25 17:27:00",
+    "summary": "Lewis Hamilton's Ferrari team has accepted responsibility for him being hit with a three-place grid drop for the Formula 1 Hungarian Grand Prix after accidentally blocking Oscar Piastri at the beginning of the McLaren driver's final push lap.<br>It's a double blow for Hamilton, who parked in the number one spot in parc ferme, unaware that he had been relieved of pole position by Piastri's ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/its-our-mistake-ferrari-takes-blame-for-lewis-hamilton-penalty-in-f1-hungarian-gp-qualifying/10841872/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "Nael wins Budapest F3 Sprint Race as title fight levelled",
-    "link": "https://www.formula1.com/en/latest/article/f3-nael-wins-budapest-sprint-with-ugochukwu-and-slater-now-tied-in-championship-fight.11FHR7FsyBaO2MGJkhePFz",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Theophile Nael impressively went from sixth on the grid to the top step at the Budapest Sprint Race.",
+    "title": "How to follow Hungarian Grand Prix on the BBC",
+    "link": "https://www.bbc.co.uk/sport/formula1/articles/cq56233yy4po?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-07-25 17:16:43",
+    "summary": "All the key BBC coverage details for the Hungarian Grand Prix at the Hunugaroring, from 24-26 July.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/312c/live/15dc1ba0-884a-11f1-a7ab-8b30adf0800a.jpg"
+  },
+  {
+    "title": "Hamilton slapped with grid drop for impeding Piastri in F1 Hungarian GP qualifying",
+    "link": "https://www.autosport.com/f1/news/hamilton-slapped-with-grid-drop-for-impeding-piastri-in-f1-hungarian-gp-qualifying/10841865/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-07-25 17:05:29",
+    "summary": "Ferrari's Lewis Hamilton has been handed a three-place grid drop for impeding McLaren driver Oscar Piastri in Formula 1 Hungarian Grand Prix qualifying.<br>Towards the end of the final Q3 shootout, Hamilton was driving slowly on the main straight while Piastri was approaching behind him on a flying lap.<br>Unaware the Australian was approaching, Hamilton stuck to the racing line, forcing Piastri ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/hamilton-slapped-with-grid-drop-for-impeding-piastri-in-f1-hungarian-gp-qualifying/10841865/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "AS IT HAPPENED: Follow FP3 for the Hungarian Grand Prix",
-    "link": "https://www.formula1.com/en/latest/article/live-coverage-third-practice-in-hungary-2026.4d0l4oW1KUNCoSmskkhvWn",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Live coverage of the final practice session for the 2026 Hungarian Grand Prix in Budapest.",
+    "title": "F1 Hungarian GP: Sunday schedule, weather forecast and how to watch",
+    "link": "https://www.motorsport.com/f1/news/f1-hungarian-gp-sunday-schedule-weather-forecast-and-how-to-watch/10841811/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+    "source": "Motorsport.com",
+    "pubDate": "2026-07-25 17:00:03",
+    "summary": "Formula 1 heads into Sunday at the Hungaroring with Lando Norris on pole after ending Mercedes’ unbeaten run in grand prix qualifying this season.<br>The McLaren driver beat Lewis Hamilton by just 0.012s in a tense final qualifying run, with Charles Leclerc third and championship leader Kimi Antonelli fourth. Hamilton is also set to face the stewards for allegedly impeding Oscar Piastri, while ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/f1-hungarian-gp-sunday-schedule-weather-forecast-and-how-to-watch/10841811/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "Alonso describes ‘much better’ feeling from new Aston Martin",
-    "link": "https://www.formula1.com/en/latest/article/alonso-describes-much-better-feeling-from-upgraded-aston-martin-with-more-potential-to-unlock.3ZmFForUhyqv0HGZLB4PNl",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Fernando Alonso cut a positive figure after sampling Aston Martin’s major updates for the first time during Friday practice in Hungary, describing the revised AMR26 as “much better” overall.",
+    "title": "Norris takes pole as Hamilton given grid penalty",
+    "link": "https://www.bbc.co.uk/sport/formula1/articles/c4gv02vyzv4o?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-07-25 16:58:35",
+    "summary": "McLaren's Lando Norris takes his first grand prix pole position of 2026 in Hungary, as Lewis Hamilton is penalised for impeding Oscar Piastri.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/c03d/live/1a83e4b0-883d-11f1-a9d5-2325bced2146.jpg"
+  },
+  {
+    "title": "Russell to undergo Mercedes engine change but avoids F1 Hungarian GP grid drop",
+    "link": "https://www.autosport.com/f1/news/george-russell-to-undergo-mercedes-engine-change-but-avoids-f1-hungarian-gp-grid-drop/10841859/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-07-25 16:58:06",
+    "summary": "Mercedes driver George Russell will take a fresh V6 engine for the Hungarian GP following a water leak in qualifying, but will keep his seventh place on the grid.<br>Russell qualified a distant seventh at the Hungaroring after both he and team-mate Kimi Antonelli looked adrift in qualifying, with Mercedes struggling to keep its tyre temperatures under control.<br>Russell's second lap was ruined ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/george-russell-to-undergo-mercedes-engine-change-but-avoids-f1-hungarian-gp-grid-drop/10841859/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
+    "imageUrl": null
+  },
+  {
+    "title": "George Russell to undergo Mercedes engine change, but avoids F1 Hungarian GP grid drop",
+    "link": "https://www.motorsport.com/f1/news/toto-wolff-expects-george-russell-engine-change-hungary-f1-pitlane-start-looms/10841840/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+    "source": "Motorsport.com",
+    "pubDate": "2026-07-25 16:56:35",
+    "summary": "Mercedes driver George Russell will take a fresh V6 engine for the Hungarian GP following a water leak in qualifying, but will keep his seventh place on the grid.<br>Russell qualified a distant seventh at the Hungaroring after both he and team-mate Kimi Antonelli looked adrift in qualifying, with Mercedes struggling to keep its tyre temperatures under control.<br>Russell's second lap was ruined ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/toto-wolff-expects-george-russell-engine-change-hungary-f1-pitlane-start-looms/10841840/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
+    "imageUrl": null
+  },
+  {
+    "title": "Lewis Hamilton slapped with grid drop for impeding Oscar Piastri in F1 Hungarian GP qualifying",
+    "link": "https://www.motorsport.com/f1/news/hamilton-gets-grid-penalty-in-hungary/10841856/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+    "source": "Motorsport.com",
+    "pubDate": "2026-07-25 16:55:26",
+    "summary": "Ferrari's Lewis Hamilton has been handed a three-place grid drop for impeding McLaren driver Oscar Piastri in Formula 1 Hungarian Grand Prix qualifying.<br>Towards the end of the final Q3 shootout, Hamilton was driving slowly on the main straight while Piastri was approaching behind him on a flying lap.<br>Unaware the Australian was approaching, Hamilton stuck to the racing line, forcing Piastri ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/hamilton-gets-grid-penalty-in-hungary/10841856/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
+    "imageUrl": null
+  },
+  {
+    "title": "Verstappen on latest Red Bull woes: \"Desperate? I'm already past that stage\"",
+    "link": "https://www.autosport.com/f1/news/max-verstappen-sees-mysterious-issues-at-red-bull-desperate-im-already-past-that-stage/10841844/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-07-25 16:46:41",
+    "summary": "Qualifying at the Hungaroring turned out to be a disappointing affair for Red Bull. Ahead of the weekend, team principal Laurent Mekies hoped that the energy-rich circuit near Budapest would suit the RB22 slightly better, but reality proved far more difficult than expected.<br>Verstappen will start Sunday's race from sixth on the grid, while team-mate Isack Hadjar will line up one row further back ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/max-verstappen-sees-mysterious-issues-at-red-bull-desperate-im-already-past-that-stage/10841844/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
+    "imageUrl": null
+  },
+  {
+    "title": "Max Verstappen sees mysterious issues at Red Bull: \"Desperate? I'm already past that stage\"",
+    "link": "https://www.motorsport.com/f1/news/max-verstappen-sees-mysterious-issues-at-red-bull-desperate-im-already-past-that-stage/10841835/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+    "source": "Motorsport.com",
+    "pubDate": "2026-07-25 16:43:50",
+    "summary": "Qualifying at the Hungaroring turned out to be a disappointing affair for Red Bull. Ahead of the weekend, team principal Laurent Mekies hoped that the energy-rich circuit near Budapest would suit the RB22 slightly better, but reality proved far more difficult than expected.<br>Verstappen will start Sunday's race from sixth on the grid, while team-mate Isack Hadjar will line up one row further back ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/max-verstappen-sees-mysterious-issues-at-red-bull-desperate-im-already-past-that-stage/10841835/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
@@ -88,6 +168,14 @@
     "imageUrl": null
   },
   {
+    "title": "Alonso explains how the impact of Aston Martin’s upgrades go further than Hungarian GP qualifying breakthrough",
+    "link": "https://www.autosport.com/f1/news/fernando-alonso-f1-hungarian-gp-an-important-lift-for-aston-martin/10841814/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-07-25 16:17:46",
+    "summary": "Fernando Alonso reckons qualifying at the Hungarian Grand Prix was an “important” boost for the Aston Martin Formula 1 team after his first Q2 appearance in grand prix qualifying in the 2026 campaign.<br>The two-time F1 world champion took 16th at the Hungaroring to end Aston Martin’s run of five consecutive qualifying sessions occupying the back row, with a deficit of around two ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/fernando-alonso-f1-hungarian-gp-an-important-lift-for-aston-martin/10841814/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
+    "imageUrl": null
+  },
+  {
     "title": "Fernando Alonso: F1 Hungarian GP an \"important\" lift for Aston Martin",
     "link": "https://www.motorsport.com/f1/news/fernando-alonso-f1-hungarian-gp-an-important-lift-for-aston-martin/10841803/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
     "source": "Motorsport.com",
@@ -96,12 +184,20 @@
     "imageUrl": null
   },
   {
-    "title": "Norris beats Hamilton to Hungary pole",
-    "link": "https://www.bbc.co.uk/sport/formula1/articles/c4gv02vyzv4o?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-07-25 15:56:15",
-    "summary": "McLaren's Lando Norris takes his first grand prix pole position of 2026, beating Lewis Hamilton with the final lap of the session in Hungary.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/c03d/live/1a83e4b0-883d-11f1-a9d5-2325bced2146.jpg"
+    "title": "Antonelli risks grid drop as stewards launch Hungarian GP qualifying investigation",
+    "link": "https://www.autosport.com/f1/news/antonelli-risks-grid-drop-as-stewards-launch-hungarian-gp-qualifying-investigation/10841800/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-07-25 15:58:39",
+    "summary": "Mercedes driver Kimi Antonelli is set to be investigated by the FIA stewards for a suspected yellow flag rule infringement in qualifying for the Formula 1 Hungarian Grand Prix.<br>Antonelli took fourth on the grid at the Hungaroring as Mercedes was beaten by both McLaren's polesitter Lando Norris and the two Ferraris.<br>But the championship leader is at risk of starting further down after ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/antonelli-risks-grid-drop-as-stewards-launch-hungarian-gp-qualifying-investigation/10841800/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
+    "imageUrl": null
+  },
+  {
+    "title": "Hamilton under investigation by stewards over impeding Piastri in Hungarian GP qualifying",
+    "link": "https://www.autosport.com/f1/news/lewis-hamilton-under-investigation-by-hungarian-gp-stewards-over-impeding/10841788/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-07-25 15:53:30",
+    "summary": "The FIA stewards have summoned Lewis Hamilton regarding an incident involving the Ferrari driver and McLaren’s Oscar Piastri in Q3 at Formula 1’s Hungarian Grand Prix.<br>Piastri lay fifth following his first run in Q3 and failed to improve on his last attempt after finding a slow Hamilton on the racing line in Turn 1, now known as Piquet Corner.<br>“Fuck me, man,” the Australian grumbled ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/lewis-hamilton-under-investigation-by-hungarian-gp-stewards-over-impeding/10841788/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
+    "imageUrl": null
   },
   {
     "title": "Kimi Antonelli risks grid drop as stewards launch Hungary F1 qualifying investigation",
@@ -124,23 +220,15 @@
     "link": "https://www.motorsport.com/f1/news/the-starting-grid-for-the-2026-f1-hungarian-grand-prix/10841785/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
     "source": "Motorsport.com",
     "pubDate": "2026-07-25 15:42:00",
-    "summary": "\n<br><br><br><br><br>1<br><br><br><br> Lando Norris(McLaren)<br><br> <br> <br><br><br> <br> <br> <br> <br> <br>2<br><br><br> <br> <br> <br><br> <br><br> Lewis Hamilton(Ferrari)<br><br><br><br><br>3<br><br><br><br> Charles Leclerc(Ferrari)<br><br> <br> <br><br><br> <br> <br> <br> <br> <br>4<br><br><br> <br> <br> <br><br> <br><br> Kimi ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/the-starting-grid-for-the-2026-f1-hungarian-grand-prix/10841785/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
+    "summary": "\n<br><br><br><br><br>1<br><br><br><br> Lando Norris(McLaren)<br><br> <br> <br><br><br> <br> <br> <br> <br> <br>2<br><br><br> <br> <br> <br><br> <br><br> Charles Leclerc(Ferrari)<br><br><br><br><br>3<br><br><br><br> Kimi Antonelli(Mercedes)<br><br> <br> <br><br><br> <br> <br> <br> <br> <br>4<br><br><br> <br> <br> <br><br> <br><br> Oscar ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/the-starting-grid-for-the-2026-f1-hungarian-grand-prix/10841785/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "F1 Hungarian GP: Lando Norris pips Lewis Hamilton to nail biting pole position",
-    "link": "https://www.motorsport.com/f1/news/f1-hungarian-gp-qualifying-results/10841752/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-    "source": "Motorsport.com",
-    "pubDate": "2026-07-25 15:15:40",
-    "summary": "Reigning world champion Lando Norris claimed his first pole of the 2026 season at the Hungarian Grand Prix, beating Lewis Hamilton as Mercedes suffered its first Formula 1 grand prix qualifying loss of the year.<br>Norris romped to a 1m17.207s lap in the final moments of qualifying to overcome Hamilton and take his first pole since last year's Las Vegas Grand Prix.<br>As track temperatures ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/f1-hungarian-gp-qualifying-results/10841752/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "Martin Brundle predicts strong George Russell comeback amid Kimi Antonelli threat",
-    "link": "https://www.motorsport.com/f1/news/martin-brundle-predicts-strong-george-russell-comeback-amid-kimi-antonelli-threat/10841728/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-    "source": "Motorsport.com",
-    "pubDate": "2026-07-25 13:37:37",
-    "summary": "Sky Sports F1 commentator and former driver Martin Brundle has firmly backed George Russell to bounce back from his recent run of misfortune, even as he faces intense pressure from his team-mate.<br>Brundle weighed in on Russell's ongoing on-track challenges, noting that the current Formula 1 machinery remains difficult to understand. <br>\"They’re quirky cars to fully understand. It’s George ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/martin-brundle-predicts-strong-george-russell-comeback-amid-kimi-antonelli-threat/10841728/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
+    "title": "F1 Hungarian GP: Norris trumps Hamilton to pole by 0.012s, Verstappen spins",
+    "link": "https://www.autosport.com/f1/news/f1-hungarian-gp-norris-trumps-hamilton-to-pole-by-0012s-verstappen-spins/10841754/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-07-25 15:19:00",
+    "summary": "Reigning Formula 1 world champion Lando Norris claimed his first pole of the 2026 season at the Hungarian Grand Prix, beating Lewis Hamilton by 0.012s, as Mercedes suffered its first grand prix qualifying loss of the year.<br>Norris romped to a 1m17.207s lap in the final moments of qualifying to overcome Hamilton and take his first pole since last year's Las Vegas GP.<br>As track temperatures ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/f1-hungarian-gp-norris-trumps-hamilton-to-pole-by-0012s-verstappen-spins/10841754/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
@@ -173,14 +261,6 @@
     "source": "RacingNews365",
     "pubDate": "2026-07-25 12:55:00",
     "summary": "Follow live with all the action as the grid is set in qualifying for the 2026 F1 Hungarian Grand Prix in Budapest.",
-    "imageUrl": null
-  },
-  {
-    "title": "Former F1 driver warns Kimi Antonelli's rivals: \"Within his comfort zone\"",
-    "link": "https://www.motorsport.com/f1/news/former-f1-driver-warns-kimi-antonellis-rivals-within-his-comfort-zone/10841245/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-    "source": "Motorsport.com",
-    "pubDate": "2026-07-25 12:43:42",
-    "summary": "Former Formula 1 driver Juan Pablo Montoya believes championship leader Kimi Antonelli is operating entirely within his \"comfort zone\", questioning who can realistically challenge the Mercedes teenager following his commanding Belgian Grand Prix win.<br>Antonelli secured his sixth career win at Spa-Francorchamps, fending off Ferrari's Charles Leclerc. The victory has given the Italian a 45-point ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/former-f1-driver-warns-kimi-antonellis-rivals-within-his-comfort-zone/10841245/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
@@ -224,14 +304,6 @@
     "imageUrl": null
   },
   {
-    "title": "F1 Hungarian GP: Lando Norris edges Lewis Hamilton in final Hungaroring practice",
-    "link": "https://www.motorsport.com/f1/news/f1-hungarian-gp-fp3-report-/10841679/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-    "source": "Motorsport.com",
-    "pubDate": "2026-07-25 11:39:35",
-    "summary": "McLaren driver Lando Norris has led a three-team fight to top FP3 at Formula 1's Hungarian Grand Prix, setting up an intriguing qualifying session in Budapest.<br>Norris' late 1m18.939s flyer was just over a tenth quicker than Lewis Hamilton and Mercedes' championship leader Kimi Antonelli on the twisty Hungaroring.<br>FP3's opening phase was quiet as drivers kept their powder dry for qualifying ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/f1-hungarian-gp-fp3-report-/10841679/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
     "title": "Lando Norris ruins Ferrari control with tenacious FP3 display",
     "link": "https://racingnews365.com/lando-norris-ruins-ferrari-control-with-tenacious-fp3-display",
     "source": "RacingNews365",
@@ -261,14 +333,6 @@
     "source": "RacingNews365",
     "pubDate": "2026-07-25 10:58:00",
     "summary": "Sergio Perez's FP3 in Budapest lasted just one corner before a bizarre failure at the rear of his Cadillac.",
-    "imageUrl": null
-  },
-  {
-    "title": "The ingenious three-link mechanism behind McLaren's pivoting rear wing",
-    "link": "https://www.motorsport.com/f1/news/McLarens-ingenious-pivoting-rear-wing/10841641/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-    "source": "Motorsport.com",
-    "pubDate": "2026-07-25 10:25:55",
-    "summary": "After setting it aside in Austria to further refine the concept, McLaren has finally debuted its version of the pivoting Formula 1 rear wing. It is an experimental prototype intended primarily for data collection, with the final version expected to arrive in the second half of the season. But McLaren’s idea for the pivoting wing is far more complex than it might initially ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/McLarens-ingenious-pivoting-rear-wing/10841641/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
@@ -304,36 +368,12 @@
     "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt04ada2a790cdff2d/6a63a0034e3105e6ac75fd66/GettyImages-2287453730.jpg?environment=live"
   },
   {
-    "title": "How to follow Hungarian Grand Prix on the BBC",
-    "link": "https://www.bbc.co.uk/sport/formula1/articles/cq56233yy4po?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-07-24 16:30:53",
-    "summary": "All the key BBC coverage details for the Hungarian Grand Prix at the Hunugaroring, from 24-26 July.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/4ac8/live/71ae2a50-877c-11f1-b430-afa19a42b819.jpg"
-  },
-  {
-    "title": "F1 Hungarian GP: Hamilton leads Ferrari 1-2 in FP2, Colapinto crashes for Alpine",
-    "link": "https://www.autosport.com/f1/news/f1-hungarian-gp-hamilton-leads-ferrari-1-2-in-fp2-colapinto-crashes-for-alpine/10841461/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-07-24 16:14:04",
-    "summary": "Lewis Hamilton has ended Formula 1’s Hungarian Grand Prix second practice session on top, pipping Ferrari stablemate Charles Leclerc at a slippery Hungaroring circuit.<br>George Russell reported a \"dreadful\" rear balance, Kimi Antonelli suffered rear locking, Charles Leclerc locked up the front in Turn 1, while Pierre Gasly was convinced something was wrong with his car, such was its ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/f1-hungarian-gp-hamilton-leads-ferrari-1-2-in-fp2-colapinto-crashes-for-alpine/10841461/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
     "title": "Hamilton leads dominant Ferrari 1-2 in second Hungarian GP practice",
     "link": "https://racer.com/2026/07/24/hamilton-leads-dominant-ferrari-1-2-in-second-hungarian-gp-practice",
     "source": "RACER",
     "pubDate": "2026-07-24 16:06:31",
     "summary": "Lewis Hamilton bested Ferrari teammate Charles Leclerc to top spot in the second practice session at the Hungarian Grand Prix despite both drivers having their first flying laps interrupted by red flags.",
     "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt44330670f94a7cbc/6a638e8a932d2f2c4f9539d0/GettyImages-2287477953.jpg?environment=live"
-  },
-  {
-    "title": "Newey: Major Hungarian GP upgrade \"just the first part\" of new Aston Martin F1 car",
-    "link": "https://www.autosport.com/f1/news/newey-major-hungarian-gp-upgrade-just-the-first-part-of-new-aston-martin-f1-car/10841445/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-07-24 15:16:52",
-    "summary": "During Friday's technical viewing in the Hungaroring pitlane, all eyes were on the revised Aston Martin AMR26 Formula 1 car. After what Adrian Newey has described as a \"nightmare\" and a \"disastrous start to the season\", the team's upgrade package for the Hungarian Grand Prix was eagerly anticipated.<br>According to the official FIA documents, the new package consists of 16 upgrades, including a ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/newey-major-hungarian-gp-upgrade-just-the-first-part-of-new-aston-martin-f1-car/10841445/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
   },
   {
     "title": "Newey sees signs new Aston Martin will put an end to ‘complete nightmare’ start",
@@ -352,28 +392,12 @@
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/0892/live/e16baa60-f8ea-11ef-9e61-71ee71f26eb1.png"
   },
   {
-    "title": "Why fans don't get true picture of driver performance with 2026 F1 rules - but it is fixable, according to Haas boss",
-    "link": "https://www.autosport.com/f1/news/why-fans-dont-get-true-picture-of-driver-performance-with-2026-f1-rules-but-it-is-fixable-according/10841393/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-07-24 13:14:55",
-    "summary": "Technical changes implemented ahead of this year's Miami Grand Prix mollified some of the complaints about Formula 1's new format, but these have resurfaced after two successive events at 'energy-starved' venues.<br>A key question is whether the many layers of technology are harming the spectacle by interfering with the work of the drivers, and muddying the picture for fans.<br>Although ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/why-fans-dont-get-true-picture-of-driver-performance-with-2026-f1-rules-but-it-is-fixable-according/10841393/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
     "title": "Leclerc fastest before hitting trouble in opening Hungarian GP practice",
     "link": "https://racer.com/2026/07/24/leclerc-fastest-before-hitting-trouble-in-opening-hungarian-gp-practice",
     "source": "RACER",
     "pubDate": "2026-07-24 12:51:59",
     "summary": "Charles Leclerc dominated opening practice at the Hungarian Grand Prix but retired from the session early with an apparent gearbox problem.",
     "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt6deaf11332645438/6a6362c498a7f14dac344620/HN_ksbsW0AATazS.jpeg?environment=live"
-  },
-  {
-    "title": "F1 Hungarian GP: Leclerc tops FP1, Stroll suffers suspected suspension failure with upgraded Aston Martin",
-    "link": "https://www.autosport.com/f1/news/f1-hungarian-gp-fp1-report-/10841359/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-07-24 12:45:57",
-    "summary": "Ferrari driver Charles Leclerc topped opening practice at Formula 1's Hungarian Grand Prix, his early benchmark proving over four tenths quicker than Red Bull's Max Verstappen and team-mate Lewis Hamilton.<br>Leclerc headed Hamilton in the opening stages of practice as Ferrari adorned its 'Macarena' wing with an eye-catching three-piece winglet on top of its actuator, an optional piece for the ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/f1-hungarian-gp-fp1-report-/10841359/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
   },
   {
     "title": "Technical updates: 2026 Hungarian Grand Prix",
@@ -384,36 +408,12 @@
     "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blte7d7f2fde43044a0/6a6353d2422fa80957086095/HN_adTIXEAAuGez.jpeg?environment=live"
   },
   {
-    "title": "Malaysia weighs up F1 2026 round as rescheduled Bahrain GP plan fades",
-    "link": "https://www.autosport.com/f1/news/malaysia-weighs-up-f1-2026-round-as-rescheduled-bahrain-gp-plan-fades/10841345/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-07-24 11:34:16",
-    "summary": "The Malaysian government is conducting a feasibility study into organising a last-minute Formula 1 grand prix as the Middle Eastern conflict continues to throw plans into disarray.<br>The US-Israeli war on Iran prevented F1 from running its early-season rounds in Bahrain and Saudi Arabia, though there were hopes that last month's ceasefire would pave the way for normality to return - and with it a ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/malaysia-weighs-up-f1-2026-round-as-rescheduled-bahrain-gp-plan-fades/10841345/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "‘If you're not ready to adapt, you're not good enough’ - Norris addresses changing driving styles in F1 2026",
-    "link": "https://www.autosport.com/f1/news/you-have-to-do-it-lando-norris-admits-f1-drivers-are-paid-millions-to-adapt-to-2026-f1-cars/10841286/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-07-24 08:32:33",
-    "summary": "Drivers have been vocal about how the complex energy deployment needs of the 2026 generation of Formula 1 cars have impacted how they have to be driven, with the reliance on energy harvesting causing a big mental shift in how to approach faster corners.<br>Mercedes driver George Russell is one driver who has struggled to gel with his machinery this year, which has come more naturally to his ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/you-have-to-do-it-lando-norris-admits-f1-drivers-are-paid-millions-to-adapt-to-2026-f1-cars/10841286/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
     "title": "F1: Chequered Flag",
     "link": "https://www.bbc.co.uk/sounds/play/p0p0kxgg?at_medium=RSS&at_campaign=rss",
     "source": "BBC Sport",
     "pubDate": "2026-07-23 22:11:00",
     "summary": "Straight from Belgium, we’re in Hungary for the last race before the summer break.",
     "imageUrl": "https://ichef.bbci.co.uk/images/ic/240x135/p0n5q1dv.jpg"
-  },
-  {
-    "title": "\"You're not allowed to make a difference\" – Verstappen says the fastest F1 drivers are penalised",
-    "link": "https://www.autosport.com/f1/news/max-verstappen-at-first-they-said-i-was-complaining-now-more-people-see-what-f1-2026-is-like/10841206/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-07-23 17:03:14",
-    "summary": "Following the race weekend at Spa-Francorchamps, and particularly Oscar Piastri's strong comments, one topic dominates media day in Budapest: energy management, more specifically the self-learning aspects of the 2026 power unit.<br>Piastri called it \"crap\" that drivers can be caught out by forward-thinking algorithms which adapt based on what they learn over time. It means that extremely small ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/max-verstappen-at-first-they-said-i-was-complaining-now-more-people-see-what-f1-2026-is-like/10841206/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
   },
   {
     "title": "COTA expands USGP weekend with ‘Grand PrixView Thursday’",
