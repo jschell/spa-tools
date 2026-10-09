@@ -1,5 +1,29 @@
 [
   {
+    "title": "LIVE COVERAGE: Sprint Qualifying at the Singapore GP",
+    "link": "https://www.formula1.com/en/latest/article/live-coverage-sprint-qualifying-in-singapore-2026.6RlXLHK9XVhWiiRCs1dCli",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Live coverage of the Sprint Qualifying session at the 2026 Singapore Grand Prix.",
+    "imageUrl": null
+  },
+  {
+    "title": "Russell beats Leclerc and Norris in sole Singapore GP practice",
+    "link": "https://www.formula1.com/en/latest/article/fp1-russell-beats-leclerc-and-norris-to-top-spot-in-sole-practice-ahead-of-singapore-gp.6gZxy1UbfI5R8VLWXUBwZu",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "George Russell finished fastest in Free Practice 1 ahead of the Singapore Grand Prix, the Mercedes driver beating Charles Leclerc and Lando Norris to the top spot.",
+    "imageUrl": null
+  },
+  {
+    "title": "AS IT HAPPENED: FP1 for the Singapore Grand Prix",
+    "link": "https://www.formula1.com/en/latest/article/live-coverage-first-practice-in-singapore-2026.4H4grIbGCd0WQkdW3OAT5m",
+    "source": "Formula 1",
+    "pubDate": "",
+    "summary": "Live coverage of the first Formula 1 practice session for the 2026 Singapore Grand Prix.",
+    "imageUrl": null
+  },
+  {
     "title": "Why Singapore Sprint weekend is such a challenge for drivers",
     "link": "https://www.formula1.com/en/latest/article/why-the-singapore-sprint-weekend-poses-such-a-challenge-for-f1-drivers.1HULPy5kY1DflwuzvlFFPB",
     "source": "Formula 1",
@@ -56,75 +80,131 @@
     "imageUrl": null
   },
   {
-    "title": "Russell promises ‘all-out attack’ in Singapore amid penalty",
-    "link": "https://www.formula1.com/en/latest/article/russell-promises-all-out-attack-from-back-of-singapore-grid-amid-engine-penalty.1Owe717iaaEqDioJZqUyaJ",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "George Russell has promised an “all-out attack” in the Singapore Grand Prix as he prepares to line up at the back of the grid thanks to an engine-related penalty.",
+    "title": "FIA reveals \"human error\" caused latest software glitch in Singapore sprint qualifying",
+    "link": "https://www.autosport.com/f1/news/human-error-caused-singapore-gp-sprint-qualifying-glitch/10863502/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-10-09 14:44:34",
+    "summary": "The FIA has confirmed the existence of a second error during sprint qualifying for the Singapore GP, on top of a glitch in the timing and scoring system which caused some drivers' times to not be displayed.<br>SQ1 was halted by a red flag when Sergio Perez hit the barrier at Turn 5, then extracted his car and made his way back to the pits, losing his damaged front wing in the process. This forced ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/human-error-caused-singapore-gp-sprint-qualifying-glitch/10863502/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "Norris ‘hopeful’ recent car issue will be cured in Singapore",
-    "link": "https://www.formula1.com/en/latest/article/norris-hopeful-recent-straight-line-speed-issue-will-be-cured-in-singapore-as-he-admits-mclaren-need-to-do-a-better-job.7GhQrU0cCJGpY9v8lxyTkp",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "Lando Norris has offered an honest assessment of McLaren’s last two race weekends, stating that he and the team have “underperformed” and “need to do a better job” moving forward.",
+    "title": "FOM and FIA issues combine to disrupt Sprint qualifying in Singapore",
+    "link": "https://racer.com/2026/10/09/fom-and-fia-issues-combine-to-disrupt-sprint-qualifying-in-singapore",
+    "source": "RACER",
+    "pubDate": "2026-10-09 14:44:23",
+    "summary": "Sergio Perez crashed during SQ1 and left debris on track as he returned to the pits, leading to a red flag. Once the session restarted, Overtake Mode was activated and deactivated at one stage in the final six minutes, while the Formula One Management-controlled official timing system also suffered an issue that resulted in some lap times not initially registered at the end of the session.",
+    "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt1841a9a00aa907df/6ac9000475da615d863d2c4f/GettyImages-2299371204.jpg?environment=live"
+  },
+  {
+    "title": "Verstappen on sprint pole after another settings issue",
+    "link": "https://www.bbc.co.uk/sport/formula1/articles/ck62y7jz1qqro?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-10-09 14:35:41",
+    "summary": "Red Bull's Max Verstappen beats Mercedes driver George Russell to sprint pole at the Singapore Grand Prix.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/98e4/live/d4af98b0-c3e9-11f1-badc-154546719036.jpg"
+  },
+  {
+    "title": "Verstappen edges Russell for Singapore Sprint pole but penalty threat looms",
+    "link": "https://racer.com/2026/10/09/verstappen-edges-russell-for-singapore-sprint-pole-but-penalty-threat-looms",
+    "source": "RACER",
+    "pubDate": "2026-10-09 13:57:40",
+    "summary": "Max Verstappen bested George Russell for pole position for the Singapore Grand Prix Sprint in a tightly contested shootout for top spot, pending a stewards’ review of an alleged yellow flag violation.",
+    "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt73bd0074e056870e/6ac8f6732b0ddfbda78703d0/GettyImages-2299344142.jpg?environment=live"
+  },
+  {
+    "title": "F1 Singapore GP: Verstappen storms to sprint pole with Antonelli only seventh",
+    "link": "https://www.autosport.com/f1/news/f1-singapore-gp-verstappen-takes-sprint-pole/10863448/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-10-09 13:47:20",
+    "summary": "Max Verstappen topped sprint qualifying for Formula 1’s Singapore Grand Prix, where he will be joined on the front row by George Russell.<br>This is the first time Verstappen has come first in a qualifying session of any sort at Marina Bay Street Circuit.<br>Meanwhile, championship leader Kimi Antonelli will start Saturday’s sprint race from seventh, having been outpaced by the Ferraris and ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/f1-singapore-gp-verstappen-takes-sprint-pole/10863448/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "Verstappen answers your questions in our exclusive Q&amp;A",
-    "link": "https://www.formula1.com/en/latest/article/standout-races-favourite-hobbies-life-goals-and-more-max-verstappen-answers-your-questions-in-our-exclusive-reader-q-and-a.leLmjaR58k3DUJCjt231Q",
-    "source": "Formula 1",
-    "pubDate": "",
-    "summary": "This weekend, Max Verstappen will celebrate his 250th Grand Prix on the streets of Singapore, bringing another milestone in the Dutchman’s trophy-filled F1 career that began just over a decade ago.",
+    "title": "Mercedes critics think I'm Satan - Wolff",
+    "link": "https://www.bbc.co.uk/sport/formula1/articles/cmje5x0enkxqo?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-10-09 13:24:12",
+    "summary": "Mercedes Formula 1 boss Toto Wolff rejects accusations of team of bias against George Russell, calling critics \"brainless\".",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/dc98/live/71cbc180-c3e2-11f1-badc-154546719036.jpg"
+  },
+  {
+    "title": "Is Antonelli favoured by Mercedes? Wolff responds to latest claims",
+    "link": "https://www.autosport.com/f1/news/toto-wolff-hits-back-at-brainless-george-russell-conspiracy-theory/10863399/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-10-09 11:46:49",
+    "summary": "Mercedes Formula 1 team principal Toto Wolff says people who suggest Kimi Antonelli is being favoured over George Russell are “brainless” and should stick to ‘watching Teletubbies’.<br>Conspiracy theories stemmed from Russell’s engine failure in Malaysia, which forced the Briton into an early power unit change and grid penalty, as it was previously hoped he would benefit from the ADUO ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/toto-wolff-hits-back-at-brainless-george-russell-conspiracy-theory/10863399/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "LIVE: 2026 F1 Singapore Grand Prix - Marina Bay Free Practice",
-    "link": "https://racingnews365.com/live-2026-f1-singapore-grand-prix-marina-bay-free-practice",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-09 07:25:00",
-    "summary": "Follow all the action live as the 2026 F1 Singapore Grand Prix weekend kicks off with Free Practice at the Marina Bay Street Circuit.",
+    "title": "\"It should be banned\" - F1 drivers still divided over cooling vests",
+    "link": "https://www.autosport.com/f1/news/it-should-be-banned-f1-drivers-still-divided-over-cooling-vests/10863347/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-10-09 10:42:19",
+    "summary": "F1 drivers are split over the use and importance of cooling vests as the series is set for its fourth \"heat hazard\" race of 2026.<br>Driver comfort in hot climates has been a point of conversation since the 2023 Qatar Grand Prix, when several drivers experienced heat exhaustion symptoms. In response, the FIA and all F1 teams commissioned extensive research, ending up with a standard cooling vest ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/it-should-be-banned-f1-drivers-still-divided-over-cooling-vests/10863347/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "Ferrari buck F1 top-team trend as rivals take advantage in Singapore",
-    "link": "https://racingnews365.com/ferrari-buck-f1-top-team-trend-as-rivals-take-advantage-in-singapore",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-09 06:45:00",
-    "summary": "McLaren, Mercedes and Red Bull have all brought upgrades to the Singapore Grand Prix, with Ferrari conspicuously the outlier at the Marina Bay Street Circuit.",
+    "title": "‘Old’ Mercedes serves Russell well in Singapore GP practice",
+    "link": "https://racer.com/2026/10/09/-old-mercedes-serves-russell-well-in-singapore-gp-practice",
+    "source": "RACER",
+    "pubDate": "2026-10-09 10:31:31",
+    "summary": "George Russell topped the sole practice session of the Singapore Grand Prix ahead of Charles Leclerc and Lando Norris.",
+    "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt7055dbb7e72b7ecc/6ac8c3df066194759007df18/GettyImages-2299339139.jpg?environment=live"
+  },
+  {
+    "title": "Russell refuses to blame “bad luck” for massive deficit to Antonelli",
+    "link": "https://www.motorsport.com/f1/news/russell-refuses-to-blame-bad-luck-for-his-massive-deficit-to-antonelli/10863254/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+    "source": "Motorsport.com",
+    "pubDate": "2026-10-09 10:13:09",
+    "summary": "The 2026 Formula 1 season has been an absolute nightmare for Mercedes AMG Petronas F1 Team driver George Russell. Coming off a devastating mechanical failure that robbed him of a guaranteed podium finish at the relocated Bahrain Grand Prix in Malaysia, the 28-year-old British driver is currently trailing his team-mate Andrea Kimi Antonelli by a massive 84 points in the drivers' ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/russell-refuses-to-blame-bad-luck-for-his-massive-deficit-to-antonelli/10863254/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "Kimi Antonelli reveals 'heat stroke' deterrent to using F1 safety device",
-    "link": "https://racingnews365.com/kimi-antonelli-reveals-heat-stroke-deterrent-to-using-f1-safety-device",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-09 06:00:00",
-    "summary": "The championship-leading Mercedes driver suffered two bad incidents in 2025.",
+    "title": "Isack Hadjar reveals surprising reaction after first lap with Red Bull’s own F1 engine",
+    "link": "https://www.motorsport.com/f1/news/isack-hadjar-reveals-surprising-reaction-after-first-lap-with-red-bulls-own-f1-engine/10863284/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+    "source": "Motorsport.com",
+    "pubDate": "2026-10-09 10:04:36",
+    "summary": "The victory in Malaysia was not only Red Bull's first triumph of the 2026 Formula 1 season, but also the first win with its own power unit. Former key figures Christian Horner, Helmut Marko, and above all, Dietrich Mateschitz deserve credit for the success, with Horner stressing that five years ago, the Powertrains project was still just “a hole in the ground”.Red Bull's internal combustion ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/isack-hadjar-reveals-surprising-reaction-after-first-lap-with-red-bulls-own-f1-engine/10863284/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "Max Verstappen eyes Singapore 'extreme' as Red Bull prepare for latest test",
-    "link": "https://racingnews365.com/max-verstappen-eyes-singapore-extreme-as-red-bull-prepare-for-latest-test",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-09 05:15:00",
-    "summary": "Max Verstappen has never won the Singapore GP, doing so this weekend would perhaps represent Red Bull's biggest 2026 milestone yet.",
+    "title": "Russell fastest from Leclerc in Singapore practice",
+    "link": "https://www.bbc.co.uk/sport/formula1/articles/cm0e0w5ele7wo?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-10-09 09:45:25",
+    "summary": "Mercedes driver George Russell leads Ferrari's Charles Leclerc in practice at the Singapore Grand Prix.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/954a/live/be31b110-c3c4-11f1-8fc5-335d62f6730b.jpg"
+  },
+  {
+    "title": "F1 Singapore GP: George Russell on top, Max Verstappen sets impressive lap",
+    "link": "https://www.motorsport.com/f1/news/f1-singapore-gp-fp1-report/10863286/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+    "source": "Motorsport.com",
+    "pubDate": "2026-10-09 09:43:53",
+    "summary": "George Russell finished fastest in the only free practice session of Formula 1’s Singapore Grand Prix, but Max Verstappen was half a second quicker than anyone on medium tyres.<br>This was the only non-competitive running on the sprint Singapore weekend, albeit held in unrepresentative conditions – 53C track temperature – with regards to both upcoming qualifying sessions and the main race ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/f1-singapore-gp-fp1-report/10863286/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "Lewis Hamilton airs unusual 'Whoop' fear in unique F1 challenge",
-    "link": "https://racingnews365.com/lewis-hamilton-airs-unusual-whoop-fear-in-unique-f1-challenge",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-09 04:30:00",
-    "summary": "It is a very unusual schedule that all in F1 have to adhere to.",
+    "title": "F1 Singapore GP: Russell tops FP1 with Verstappen also impressing",
+    "link": "https://www.autosport.com/f1/news/f1-singapore-gp-russell-tops-fp1/10863304/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+    "source": "Autosport",
+    "pubDate": "2026-10-09 09:42:25",
+    "summary": "George Russell came fastest in the only free practice outing of Formula 1’s Singapore Grand Prix, but Max Verstappen was half a second quicker than anyone on medium tyres.<br>This was the only non-competitive running on the sprint Singapore weekend, albeit held in unrepresentative conditions – 53C track temperature – with regards to both upcoming qualifying sessions and the main race, which ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/f1-singapore-gp-russell-tops-fp1/10863304/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
-    "title": "Start time of 2026 F1 Singapore Grand Prix Sprint Qualifying today",
-    "link": "https://racingnews365.com/start-time-of-2026-f1-singapore-grand-prix-sprint-qualifying-today",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-09 04:00:00",
-    "summary": "Find out when Sprint Qualifying starts today at Marina Bay in preparation for the 2026 F1 Singapore Grand Prix Sprint.",
+    "title": "Technical updates: 2026 Singapore Grand Prix",
+    "link": "https://racer.com/2026/10/09/technical-updates-2026-singapore-grand-prix",
+    "source": "RACER",
+    "pubDate": "2026-10-09 09:06:39",
+    "summary": "Mercedes, McLaren and Red Bull are the only three teams to bring any new components to this weekend’s Singapore Grand Prix.",
+    "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt9ee90599886c1b7e/6ac8cc482b0ddf1e048702b8/GettyImages-2299346123.jpg?environment=live"
+  },
+  {
+    "title": "James Vowles explains request for review of F1 cost cap",
+    "link": "https://www.motorsport.com/f1/news/vowles-explains-request-for-review-of-f1-cost-cap/10863259/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+    "source": "Motorsport.com",
+    "pubDate": "2026-10-09 08:07:48",
+    "summary": "Williams team principal James Vowles has clarified his suggestions that Formula 1's cost cap should be revisited, stating that rules on capital expenditure continue to lock in a competitive advantage for the top teams.<br>On joining Williams ahead of 2023, Vowles was one of those who lobbied for extended capital expenditure breaks for the lower-ranked teams in the championship under the old ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/vowles-explains-request-for-review-of-f1-cost-cap/10863259/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
@@ -133,14 +213,6 @@
     "source": "Motorsport.com",
     "pubDate": "2026-10-08 23:25:08",
     "summary": "Formula 1 broadcaster Will Buxton has raised concerns over Mercedes' latest upgrade package, claiming team boss Toto Wolff suspects their major floor and sidepod changes may have cost them as much as half a second in lap time.<br>The Brackley outfit introduced major upgrades at the Bahrain Grand Prix in Malaysia. The upgrades, which resulted in modifications to almost every body surface, were ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/will-buxton-raises-alarm-over-mercedes-f1-upgrades-ahead-of-singapore-gp/10863178/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "Oscar Piastri makes bold claim about soaring Red Bull in F1 fight with Mercedes",
-    "link": "https://racingnews365.com/oscar-piastri-makes-bold-claim-about-soaring-red-bull-in-f1-fight-with-mercedes",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-08 21:00:00",
-    "summary": "Red Bull certainly appears to have taken giant strides over the last couple of races.",
     "imageUrl": null
   },
   {
@@ -160,14 +232,6 @@
     "imageUrl": null
   },
   {
-    "title": "Ferrari issue hilarious 'statement' as George Russell confirms bad news – RacingNews365 Review",
-    "link": "https://racingnews365.com/ferrari-issue-hilarious-statement-as-george-russell-confirms-bad-news-racingnews365-review",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-08 20:00:00",
-    "summary": "Check out the biggest stories of the day with the RacingNews365 Review!",
-    "imageUrl": null
-  },
-  {
     "title": "F1 Singapore GP: Friday schedule, weather forecast and how to watch",
     "link": "https://www.motorsport.com/f1/news/f1-singapore-gp-friday-schedule-weather-forecast-and-how-to-watch/10863120/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
     "source": "Motorsport.com",
@@ -184,20 +248,12 @@
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/5c0b/live/198c3cd0-c35a-11f1-bc2e-018d645d8d21.jpg"
   },
   {
-    "title": "Liam Lawson delivers 'pretty fast' combo verdict on Red Bull and Racing Bulls",
-    "link": "https://racingnews365.com/liam-lawson-delivers-pretty-fast-combo-verdict-on-red-bull-and-racing-bulls",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-08 18:10:00",
-    "summary": "Now, if only this were possible. It would be pretty awesome to see.",
-    "imageUrl": null
-  },
-  {
-    "title": "Carlos Sainz raises health concern amid Singapore haze crisis",
-    "link": "https://racingnews365.com/carlos-sainz-raises-health-concern-amid-singapore-haze-crisis",
-    "source": "RacingNews365",
-    "pubDate": "2026-10-08 17:30:00",
-    "summary": "Singapore's air pollution has apparently been ranked the worst in the world this week.",
-    "imageUrl": null
+    "title": "F1: Chequered Flag",
+    "link": "https://www.bbc.co.uk/sounds/play/p0pfrs29?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-10-08 17:50:00",
+    "summary": "Software bugs, Russell’s penalty &amp; a sprint weekend dominate the build-up in Singapore.",
+    "imageUrl": "https://ichef.bbci.co.uk/images/ic/240x135/p0n5q1dv.jpg"
   },
   {
     "title": "Guenther Steiner calls out Ferrari for refusing to admit F1 strategy mistakes",
@@ -208,27 +264,19 @@
     "imageUrl": null
   },
   {
+    "title": "Andrew Benson Q&amp;A: Send us your questions",
+    "link": "https://www.bbc.co.uk/sport/formula1/articles/ckg3y15zje8o?at_medium=RSS&at_campaign=rss",
+    "source": "BBC Sport",
+    "pubDate": "2026-10-08 15:21:16",
+    "summary": "Our F1 correspondent Andrew Benson is doing a weekly Q&amp;A this season, so get your questions in now.",
+    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/0892/live/e16baa60-f8ea-11ef-9e61-71ee71f26eb1.png"
+  },
+  {
     "title": "“Am I confident? Probably not” – The unprecedented challenge Singapore is throwing at F1 drivers",
     "link": "https://www.motorsport.com/f1/news/am-i-confident-probably-not-the-unprecedented-challenge-singapore-is-throwing-at-f1-drivers/10863111/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
     "source": "Motorsport.com",
     "pubDate": "2026-10-08 15:13:36",
     "summary": "The 2026 Singapore Grand Prix is upon us, and it will be a little different to the previous 16 editions of that Formula 1 race.<br>For the first time, the Marina Bay Street Circuit will host a sprint weekend, but it also will differ from other sprint weekends, for scheduling reasons. The only free practice session and the sprint will take place in the afternoon, while both qualifying sessions and ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/am-i-confident-probably-not-the-unprecedented-challenge-singapore-is-throwing-at-f1-drivers/10863111/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "“Unfinished business” for Max Verstappen – Has Red Bull finally fixed its Singapore weakness?",
-    "link": "https://www.motorsport.com/f1/news/unfinished-business-for-max-verstappen-has-red-bull-finally-fixed-its-singapore-weakness/10863092/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-    "source": "Motorsport.com",
-    "pubDate": "2026-10-08 14:46:33",
-    "summary": "Of all circuits on the current Formula 1 calendar, there are only two where Max Verstappen has yet to win: the Madring and the Marina Bay Street Circuit in Singapore. While that is entirely logical in the case of Madrid – after all, F1 visited the brand-new street track around IFEMA for the first time this year – Verstappen is already heading into his 10th attempt to win the race in ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/unfinished-business-for-max-verstappen-has-red-bull-finally-fixed-its-singapore-weakness/10863092/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "Ferrari issues 'unofficial statement' after Lewis Hamilton and Charles Leclerc social media chaos",
-    "link": "https://www.motorsport.com/f1/news/ferrari-issues-unofficial-statement-after-lewis-hamilton-and-charles-leclerc-social-media-chaos/10863100/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-    "source": "Motorsport.com",
-    "pubDate": "2026-10-08 14:43:34",
-    "summary": "The Ferrari Formula 1 team has issued a light-hearted 'unofficial' statement on social media after drivers Lewis Hamilton and Charles Leclerc temporarily took control of the Italian team's Instagram page.<br>The Maranello outfit's social media accounts took a chaotic turn ahead of the Singapore Grand Prix weekend when Hamilton and Leclerc replaced its iconic prancing horse profile photo with a ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/ferrari-issues-unofficial-statement-after-lewis-hamilton-and-charles-leclerc-social-media-chaos/10863100/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
@@ -248,27 +296,11 @@
     "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/bltc3be0c87c5811400/6ac7a569cd0bd96b9bd50556/GettyImages-2297040213.jpg?environment=live"
   },
   {
-    "title": "McLaren targets Lando Norris’ costly fuel system issue with Singapore F1 power unit fixes",
-    "link": "https://www.motorsport.com/f1/news/mclaren-targets-lando-norris-fuel-system-issue-with-singapore-f1-power-unit-fixes/10863082/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-    "source": "Motorsport.com",
-    "pubDate": "2026-10-08 14:07:30",
-    "summary": "The McLaren F1 team has made a number of peripheral changes to Lando Norris' Mercedes power unit in a bid to eradicate a persistent fuel system problem.<br>McLaren was left significantly off the pace on Baku's long straights two weeks ago compared to Mercedes, with which it shares engines. But while some of its deficit was explained by intrinsic car weaknesses and by how it ran the Mercedes unit ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/mclaren-targets-lando-norris-fuel-system-issue-with-singapore-f1-power-unit-fixes/10863082/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
     "title": "McLaren targets Norris’ costly fuel system issue with Singapore F1 power unit fixes",
     "link": "https://www.autosport.com/f1/news/mclaren-targets-lando-norris-costly-fuel-system-issue-with-singapore-f1-power-unit-fixes/10863087/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
     "source": "Autosport",
     "pubDate": "2026-10-08 14:06:38",
     "summary": "The McLaren F1 team has made a number of peripheral changes to Lando Norris' Mercedes power unit in a bid to eradicate a persistent fuel system problem.<br>McLaren was left significantly off the pace on Baku's long straights two weeks ago compared to Mercedes, with which it shares engines. But while some of its deficit was explained by intrinsic car weaknesses and by how it ran the Mercedes unit ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/mclaren-targets-lando-norris-costly-fuel-system-issue-with-singapore-f1-power-unit-fixes/10863087/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "Lewis Hamilton: Younger F1 drivers are “more and more cautious” about racing in rain",
-    "link": "https://www.motorsport.com/f1/news/lewis-hamilton-younger-f1-drivers-are-more-and-more-cautious-about-racing-in-rain/10863077/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-    "source": "Motorsport.com",
-    "pubDate": "2026-10-08 14:00:16",
-    "summary": "Seven-time world champion Lewis Hamilton has suggested not all Formula 1 drivers have the same approach regarding wet-weather racing, with youngsters becoming “more and more cautious”.<br>After drops of rain on several occasions, Sepang marked the first significant competitive running for F1’s new-for-2026 machinery this season, as a downpour soaked the track shortly before the race was ...<a class=\"more\" href=\"https://www.motorsport.com/f1/news/lewis-hamilton-younger-f1-drivers-are-more-and-more-cautious-about-racing-in-rain/10863077/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=www\">Keep reading</a>\n",
     "imageUrl": null
   },
   {
@@ -312,14 +344,6 @@
     "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/8042/live/069800b0-c2ff-11f1-9955-5d2e13ff2bea.png"
   },
   {
-    "title": "What is the format for F1 sprint races in 2026?",
-    "link": "https://www.bbc.co.uk/sport/formula1/articles/c4g236r9npyo?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-10-08 10:33:42",
-    "summary": "There are six sprint races in the 2026 season and here is all you need to know about how the format works.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/51ff/live/ee0014b0-9e24-11f1-8c7d-f12be985a317.jpg"
-  },
-  {
     "title": "How to follow Singapore Grand Prix on the BBC",
     "link": "https://www.bbc.co.uk/sport/formula1/articles/cm2d6p4e3y93o?at_medium=RSS&at_campaign=rss",
     "source": "BBC Sport",
@@ -352,14 +376,6 @@
     "imageUrl": null
   },
   {
-    "title": "Russell to start from back of Singapore grid after penalty",
-    "link": "https://www.bbc.co.uk/sport/formula1/articles/cm0qkdk37gy0o?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-10-07 10:01:59",
-    "summary": "Britain's George Russell will start from the back of the grid in Sunday's Singapore Grand Prix because of a power-unit penalty from last weekend's race.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/24ae/live/22440600-c233-11f1-be2f-0fbd447d6e43.jpg"
-  },
-  {
     "title": "Mercedes confirms Russell's Singapore GP grid penalty following Sepang retirement",
     "link": "https://www.autosport.com/f1/news/russell-suffers-grid-penalty-for-singapore-gp/10862656/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
     "source": "Autosport",
@@ -376,107 +392,11 @@
     "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt1cf241b64c513907/68115b6fc39b0fe676cbf81b/mailbag.jpg?environment=live"
   },
   {
-    "title": "Russell to take grid penalty in Singapore due to Sepang retirement",
-    "link": "https://www.autosport.com/f1/news/russell-to-take-grid-penalty-in-singapore-due-to-sepang-retirement/10862556/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-10-06 14:45:22",
-    "summary": "George Russell is set to receive a grid penalty for this weekend’s Formula 1 Singapore Grand Prix as a consequence of his retirement in Sepang last weekend.<br>The Mercedes driver was running third under the safety car with five laps remaining until he stopped at the Turn 1 entry due to a sudden failure in his power unit.<br>It means he needs a new engine for Marina Bay and, because he’s ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/russell-to-take-grid-penalty-in-singapore-due-to-sepang-retirement/10862556/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
     "title": "Did McLaren's latest upgrade work? Not even McLaren is sure yet",
     "link": "https://racer.com/2026/10/06/did-mclaren-s-latest-upgrade-work-not-even-mclaren-is-sure-yet",
     "source": "RACER",
     "pubDate": "2026-10-06 12:45:31",
     "summary": "McLaren team principal Andrea Stella says the latest raft of updates improved its car's potential, but whether it has climbed up F1's pecking order remains an open question.",
     "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt5fad78f91c6715b4/6ac4efdaa7395f84a7aa3a3a/GettyImages-2298361572.jpg?environment=live"
-  },
-  {
-    "title": "What caused Mercedes' pace deficit at Sepang despite upgraded W17?",
-    "link": "https://www.autosport.com/f1/news/the-mechanisms-at-play-behind-mercedes-difficult-bahrain-gp-weekend/10862473/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-10-06 09:54:48",
-    "summary": "Mercedes' performance at Formula 1's Bahrain Grand Prix in Malaysia will require further investigation as the conditions around the Sepang circuit made it difficult for the team to get a read on its latest update package.<br>The team introduced a revised floor and sidepod package for F1's first visit to Sepang in nine years, but it became apparent that the team was struggling to unlock its usual ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/the-mechanisms-at-play-behind-mercedes-difficult-bahrain-gp-weekend/10862473/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "Wet races and why future of F1 engines appears to be V8 turbos - Q&amp;A",
-    "link": "https://www.bbc.co.uk/sport/formula1/articles/cr15j3z2npz9o?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-10-06 06:47:43",
-    "summary": "BBC Sport F1 correspondent Andrew Benson answers your latest questions after the Bahrain Grand Prix in Malaysia.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/e02c/live/b81738e0-c0d6-11f1-a5b0-6f550c662e91.jpg"
-  },
-  {
-    "title": "Alonso wanted retirements for slow cars on formation lap at Sepang",
-    "link": "https://racer.com/2026/10/05/alonso-wanted-retirements-for-slow-cars-on-formation-lap-at-sepang",
-    "source": "RACER",
-    "pubDate": "2026-10-05 12:09:59",
-    "summary": "Despite the cause of multiple slow cars on the formation lap of the Bahrain GP in Malaysia being an FIA software glitch, Fernando Alonso believes those cars should have been removed from the race.",
-    "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/bltc67e3ef719d2c287/6ac3961fe7a20e8ed034b017/GettyImages-2298522998.jpg?environment=live"
-  },
-  {
-    "title": "Honda Racing CEO Watanabe to retire at end of 2026",
-    "link": "https://racer.com/2026/10/05/honda-racing-ceo-watanabe-to-retire-at-end-of-2026",
-    "source": "RACER",
-    "pubDate": "2026-10-05 11:54:24",
-    "summary": "Koji Watanabe will exit the role he's held since 2022 with HRC’s current executive vice president and representative director Keiichi Yasuda taking his place.",
-    "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt3d996e9598f64a58/6ac3907ee791e03f0b3637b0/GettyImages-2268865125.jpg?environment=live"
-  },
-  {
-    "title": "F1 needs to have hard look at itself - Sainz",
-    "link": "https://www.bbc.co.uk/sport/formula1/articles/cr62y51n1841o?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-10-05 11:52:01",
-    "summary": "F1 \"needs to have a hard look at\" itself in the wake of unprecedented software glitches that affected the Bahrain Grand Prix in Malaysia, Carlos Sainz says.",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/fb5c/live/48f2c490-c0b1-11f1-b026-53d1506ee826.jpg"
-  },
-  {
-    "title": "Hamilton thought his Bahrain GP was 'done' before podium fightback",
-    "link": "https://racer.com/2026/10/05/hamilton-thought-his-bahrain-gp-was-done-before-podium-fightback",
-    "source": "RACER",
-    "pubDate": "2026-10-05 11:31:35",
-    "summary": "Starting on slicks after the delayed start to the Bahrain Grand Prix in Malaysia, Lewis amilton knew he was in trouble. But perseverance led to him battling back to a third place finish.",
-    "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt94ed3efb2b3c751a/6ac38e91819bd055fe32d7a4/GettyImages-2298348697.jpg?environment=live"
-  },
-  {
-    "title": "The dire consequence of Russell's Bahrain GP in Malaysia retirement",
-    "link": "https://www.autosport.com/f1/news/the-added-consequence-of-george-russells-retirement-in-malaysia/10862235/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-10-05 11:15:02",
-    "summary": "George Russell’s retirement from the Bahrain Grand Prix in Malaysia will have huge consequences on the rest of his 2026 Formula 1 campaign - especially in regards to ADUO.<br>The Mercedes driver was running third under the safety car with five laps remaining at Sepang on Sunday, until he pulled over at the Turn 1 entry with a power unit failure.<br>Minds immediately went to what impact it would ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/the-added-consequence-of-george-russells-retirement-in-malaysia/10862235/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "Honda HRC to get new boss with Watanabe set to retire",
-    "link": "https://www.autosport.com/f1/news/honda-hrc-to-get-new-boss-with-koji-watanabe-set-for-retirement/10862195/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-10-05 08:28:52",
-    "summary": "Koji Watanabe, the long-time boss of Honda's racing activities under HRC, will retire on 1 January 2027, with Keiichi Yasuda appointed as his successor.<br>A long-time Honda employee after first joining the Japanese marque in 1987, Watanabe became the head of Honda's racing division in 2022. In that time Watanabe oversaw the company's merger of its four-wheel and two-wheel divisions as well as its ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/honda-hrc-to-get-new-boss-with-koji-watanabe-set-for-retirement/10862195/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
-  },
-  {
-    "title": "Hamilton &amp; Verstappen bemused after glitch turns F1 into 'Lego race'",
-    "link": "https://www.bbc.co.uk/sport/formula1/articles/cwg7x820k9xjo?at_medium=RSS&at_campaign=rss",
-    "source": "BBC Sport",
-    "pubDate": "2026-10-04 16:58:56",
-    "summary": "Max Verstappen and Lewis Hamilton liken the effects of a software bug that affected multiple cars before the Bahrain Grand Prix in Malaysia to a \"Lego race\".",
-    "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/f0d8/live/b118f330-c013-11f1-b8fc-7927883c19e9.jpg"
-  },
-  {
-    "title": "Russell bemoans ‘relentless’ misfortune as title falls almost out of reach",
-    "link": "https://racer.com/2026/10/04/russell-bemoans-relentless-misfortune-as-title-falls-almost-out-of-reach",
-    "source": "RACER",
-    "pubDate": "2026-10-04 14:57:00",
-    "summary": "A third power unit failure for George Russell left him 84 points off teammate Kimi Antonelli after the Bahrain Grand Prix in Malaysia.",
-    "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/bltb6209bad3d203e0c/6ac26d4bd1edc64fca57212f/GettyImages-2298516992.jpg?environment=live"
-  },
-  {
-    "title": "How FIA software bug caused chaos in Bahrain GP in Malaysia – and the emergency fix that saved the race",
-    "link": "https://www.autosport.com/f1/news/how-fia-software-bug-caused-chaos-in-bahrain-gp-in-malaysia-and-the-emergency-fix-that-saved-the-ra/10861989/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-    "source": "Autosport",
-    "pubDate": "2026-10-04 13:50:48",
-    "summary": "The start of the first wet-weather race of the 2026 Formula 1 season descended into chaos. Leader Max Verstappen was the first to suffer from a lack of power while driving slowly during the formation laps behind the safety car, after which Lewis Hamilton came to a standstill and several other cars followed.<br>Race control was forced to stop the formation lap with a red flag, after which there was ...<a class=\"more\" href=\"https://www.autosport.com/f1/news/how-fia-software-bug-caused-chaos-in-bahrain-gp-in-malaysia-and-the-emergency-fix-that-saved-the-ra/10861989/?utm_source=RSS&amp;utm_medium=referral&amp;utm_campaign=RSS-F1&amp;utm_term=News&amp;utm_content=uk\">Keep reading</a>\n",
-    "imageUrl": null
   }
 ]
