@@ -9,6 +9,12 @@
 <style>
 :root{font-family:system-ui,-apple-system,sans-serif;color:#202a35;background:#f8fafc}*{box-sizing:border-box}body{max-width:1180px;margin:auto;padding:16px}a{color:#0757a6}header{margin-bottom:18px}h1{margin:8px 0}p{line-height:1.5}.muted{color:#526174}.controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px;background:white;padding:16px;border:1px solid #d5dde7;border-radius:10px}.field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:200px}label{font-weight:650}input,select,button{font:inherit;padding:10px;border:1px solid #a5b4c5;border-radius:6px}button{background:#135e9b;color:white;border-color:#135e9b;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.suggestions{display:flex;flex-direction:column;gap:5px;margin:10px 0}.suggestions button{background:#fff;color:#17364f;text-align:left;border-color:#c9d3df}.layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,1fr);gap:16px;margin-top:16px}#map{height:540px;border-radius:10px;border:1px solid #ccd5df;background:#e6edf3}.panel{background:#fff;border:1px solid #d5dde7;border-radius:10px;padding:14px;min-width:0}#results{max-height:490px;overflow:auto;list-style:none;padding:0;margin:0}.article{padding:12px 4px;border-bottom:1px solid #e3e8ee}.article button{background:none;color:#0757a6;border:0;padding:0;text-align:left;font-weight:650;text-decoration:underline}.article small{display:block;margin-top:5px;color:#526174}.article p{margin:6px 0 0;font-size:.92rem}.status{min-height:24px;margin:12px 0}.error{color:#9a1b1b}.privacy{margin-top:18px;font-size:.9rem}footer{border-top:1px solid #d5dde7;margin-top:20px;padding:14px 0;font-size:.9rem}@media(max-width:760px){.layout{grid-template-columns:1fr}#map{height:350px}#results{max-height:none}}
 
+/* Critical Leaflet layout fallback: map remains usable if the CDN stylesheet fails. */
+.leaflet-container{position:relative;overflow:hidden;outline:0;touch-action:pan-x pan-y;background:#ddd}
+.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas{position:absolute;left:0;top:0}
+.leaflet-pane{z-index:400}.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}
+.leaflet-tile{width:256px;height:256px;border:0;max-width:none!important;max-height:none!important;user-select:none;pointer-events:none}
+.leaflet-map-pane{position:absolute;left:0;top:0}.leaflet-control-container{position:relative;z-index:800}.leaflet-control{position:relative;z-index:800;pointer-events:auto}.leaflet-top{position:absolute;top:0}.leaflet-bottom{position:absolute;bottom:0}.leaflet-left{left:0}.leaflet-right{right:0}.leaflet-control-zoom a{display:block;background:#fff;padding:5px 10px;text-decoration:none;border:1px solid #aaa}.leaflet-control-attribution{background:#ffffffd9;font-size:11px;padding:2px 5px}
 /* Keep the map and its transformed tile panes inside their own stacking context. */
 #map{position:relative;overflow:hidden;isolation:isolate;width:100%;min-width:0}
 .layout{min-width:0}.panel{overflow-wrap:anywhere}
@@ -38,7 +44,7 @@ const $ = id => document.getElementById(id);
 const MILES_TO_METERS = 1609.344;
 const API = 'https://en.wikipedia.org/w/api.php';
 const PHOTON = 'https://photon.komoot.io/api/';
-const leafletCSSReady = [...document.styleSheets].some(s => s.href && s.href.includes('/leaflet@1.9.4/dist/leaflet.css'));\nconst map = typeof L === 'undefined' ? null : L.map('map').setView([39.5,-98.35],4);
+const map = typeof L === 'undefined' ? null : L.map('map').setView([39.5,-98.35],4);
 if (map) L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:18}).addTo(map);
 let markers = map ? L.layerGroup().addTo(map) : null;
 let originMarker = null, chosen = null, controller = null, articles = [];
