@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Discover geotagged Wikipedia articles near a searched place on a map and in a list.">
+<title>Local Wikipedia Explorer</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzx1Z9PbHRI9q+J7q7BMYg8=" crossorigin="">
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#202a35;background:#f8fafc}*{box-sizing:border-box}body{max-width:1180px;margin:auto;padding:16px}a{color:#0757a6}header{margin-bottom:18px}h1{margin:8px 0}p{line-height:1.5}.muted{color:#526174}.controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px;background:white;padding:16px;border:1px solid #d5dde7;border-radius:10px}.field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:200px}label{font-weight:650}input,select,button{font:inherit;padding:10px;border:1px solid #a5b4c5;border-radius:6px}button{background:#135e9b;color:white;border-color:#135e9b;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.suggestions{display:flex;flex-direction:column;gap:5px;margin:10px 0}.suggestions button{background:#fff;color:#17364f;text-align:left;border-color:#c9d3df}.layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,1fr);gap:16px;margin-top:16px}#map{height:540px;border-radius:10px;border:1px solid #ccd5df;background:#e6edf3}.panel{background:#fff;border:1px solid #d5dde7;border-radius:10px;padding:14px;min-width:0}#results{max-height:490px;overflow:auto;list-style:none;padding:0;margin:0}.article{padding:12px 4px;border-bottom:1px solid #e3e8ee}.article button{background:none;color:#0757a6;border:0;padding:0;text-align:left;font-weight:650;text-decoration:underline}.article small{display:block;margin-top:5px;color:#526174}.article p{margin:6px 0 0;font-size:.92rem}.status{min-height:24px;margin:12px 0}.error{color:#9a1b1b}.privacy{margin-top:18px;font-size:.9rem}footer{border-top:1px solid #d5dde7;margin-top:20px;padding:14px 0;font-size:.9rem}@media(max-width:760px){.layout{grid-template-columns:1fr}#map{height:350px}#results{max-height:none}}
+</style>
+</head>
+<body>
+<header><a href="index.html">← All tools</a><h1>Local Wikipedia Explorer</h1><p class="muted">Find Wikipedia articles about places near a town, landmark, or postcode. Distances are straight-line, not walking routes.</p></header>
+<form id="searchForm" class="controls">
+<div class="field"><label for="place">Search location</label><input id="place" type="search" required maxlength="160" autocomplete="off" placeholder="e.g. Seattle, Washington"></div>
+<div class="field" style="flex:0 1 170px;min-width:145px"><label for="radius">Radius</label><select id="radius"><option value="0.5">0.5 miles</option><option value="1">1 mile</option><option value="1.5" selected>1.5 miles</option><option value="3">3 miles</option><option value="6">6 miles</option></select></div>
+<button id="searchBtn" type="submit">Find places</button>
+</form>
+<div id="suggestions" class="suggestions" aria-label="Choose a location"></div>
+<p id="status" class="status" role="status" aria-live="polite">Search for a place to begin.</p>
+<div class="layout">
+<div id="map" aria-label="Map of nearby Wikipedia articles"></div>
+<section class="panel" aria-label="Wikipedia articles"><h2 style="margin:0 0 8px">Nearby articles <span id="count"></span></h2><ol id="results"></ol></section>
+</div>
+<p class="privacy"><strong>Privacy and data:</strong> Typed searches are sent to the public Photon geocoder; selected coordinates are sent to Wikipedia for nearby article lookup. Map tiles are requested from OpenStreetMap. No device location is requested, and searches or coordinates are not saved in this page's URL. External services can observe requests. This tool needs an internet connection.</p>
+<footer><a href="https://github.com/jschell/spa-tools/blob/main/local-wikipedia.html">View source</a> · Wikipedia content is provided by Wikipedia contributors; map data © OpenStreetMap contributors.</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const MILES_TO_METERS = 1609.344;
+const API = 'https://en.wikipedia.org/w/api.php';
+const PHOTON = 'https://photon.komoot.io/api/';
+const map = typeof L === 'undefined' ? null : L.map('map').setView([39.5,-98.35],4);
+if (map) L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:18}).addTo(map);
+let markers = map ? L.layerGroup().addTo(map) : null;
+let originMarker = null, chosen = null, controller = null, articles = [];
+const status = (message,error=false) => { $('status').textContent=message; $('status').className='status'+(error?' error':''); };
+const busy = value => { $('searchBtn').disabled=value; $('searchBtn').textContent=value?'Searching…':'Find places'; };
+function distanceMiles(lat1,lon1,lat2,lon2) {
+ const rad=Math.PI/180, dLat=(lat2-lat1)*rad,dLon=(lon2-lon1)*rad;
+ const a=Math.sin(dLat/2)**2+Math.cos(lat1*rad)*Math.cos(lat2*rad)*Math.sin(dLon/2)**2;
+ return 3958.7613*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+async function getJSON(url,signal) {
+ const response=await fetch(url,{signal,headers:{Accept:'application/json'}});
+ if(!response.ok) throw new Error('Remote service returned HTTP '+response.status);
+ return response.json();
+}
+async function geocode(query,signal) {
+ const url=new URL(PHOTON);url.searchParams.set('q',query);url.searchParams.set('limit','5');url.searchParams.set('lang','en');
+ const data=await getJSON(url,signal);
+ return (data.features||[]).filter(f=>Array.isArray(f.geometry?.coordinates)&&f.geometry.coordinates.length===2).map(f=>{
+  const p=f.properties||{};
+  return {lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],name:[p.name,p.city,p.state,p.country].filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i).join(', ')||query};
+ });
+}
+async function geoSearch(lat,lon,radiusMiles,signal) {
+ // MediaWiki geosearch limits radius to 10 km; cap requested radius accordingly.
+ const radius=Math.min(10000,Math.ceil(radiusMiles*MILES_TO_METERS));
+ const found=new Map();let offset=0;let truncated=false;
+ for(let page=0;page<6;page++){
+  const url=new URL(API);Object.entries({action:'query',list:'geosearch',gscoord:lat+'|'+lon,gsradius:String(radius),gslimit:'500',gsoffset:String(offset),format:'json',origin:'*'}).forEach(([k,v])=>url.searchParams.set(k,v));
+  const data=await getJSON(url,signal);
+  if(data.error)throw new Error(data.error.info||'Wikipedia API error');
+  for(const a of data.query?.geosearch||[])if(Number.isFinite(a.lat)&&Number.isFinite(a.lon))found.set(a.pageid,{...a,miles:distanceMiles(lat,lon,a.lat,a.lon)});
+  const next=data.continue?.gsoffset;
+  if(next===undefined)break;
+  if(page===5){truncated=true;break;}
+  offset=next;
+ }
+ return {items:[...found.values()].filter(a=>a.miles<=radiusMiles+1e-8).sort((a,b)=>a.miles-b.miles),truncated};
+}
+function articleURL(pageid){return 'https://en.wikipedia.org/?curid='+encodeURIComponent(pageid);}
+function render(center,expanded,partial) {
+ articles=articles.slice(0,500);$('count').textContent='('+articles.length+')';$('results').replaceChildren();
+ if(markers)markers.clearLayers();
+ if(map){if(originMarker)map.removeLayer(originMarker);originMarker=L.circleMarker([center.lat,center.lon],{radius:8,color:'#124c83',fillOpacity:1}).addTo(map).bindPopup('Search center');}
+ const bounds=[[center.lat,center.lon]];
+ for(const article of articles){
+  const li=document.createElement('li');li.className='article';
+  const link=document.createElement('a');link.href=articleURL(article.pageid);link.target='_blank';link.rel='noopener noreferrer';link.textContent=article.title;
+  const small=document.createElement('small');small.textContent=article.miles.toFixed(2)+' miles away';
+  li.append(link,small);$('results').append(li);
+  if(markers){const marker=L.marker([article.lat,article.lon]).addTo(markers);const popup=document.createElement('div');const a=link.cloneNode(true);popup.append(a);marker.bindPopup(popup);li.addEventListener('mouseenter',()=>marker.openPopup());}
+  bounds.push([article.lat,article.lon]);
+ }
+ if(map){map.fitBounds(bounds,{padding:[24,24],maxZoom:14});setTimeout(()=>map.invalidateSize(),0);}
+ const msg=articles.length+' articles within '+expanded+' mile'+(expanded===1?'':'s')+(partial?' (Wikipedia returned a partial set)':'')+'.'+(articles.length===500?' Display capped at 500.':'');
+ status(msg);
+}
+async function discover(center,signal) {
+ const selected=Number($('radius').value);
+ let result={items:[],truncated:false},used=selected;
+ // Expand to the next meaningful radius, stopping at 6 miles.
+ for(const radius of [...new Set([selected,3,6].filter(r=>r>=selected))]){
+  used=radius;result=await geoSearch(center.lat,center.lon,radius,signal);
+  if(result.items.length>=25||radius>=6)break;
+ }
+ articles=result.items;render(center,used,result.truncated);
+ if(used>selected)status($('status').textContent+' Expanded from '+selected+' miles because fewer than 25 articles were found.');
+}
+async function selectLocation(location){
+ if(controller)controller.abort();controller=new AbortController();const signal=controller.signal;
+ chosen=location;$('suggestions').replaceChildren();busy(true);status('Loading nearby Wikipedia articles…');
+ try{await discover(location,signal);}catch(e){if(e.name!=='AbortError')status('Could not load articles: '+e.message,true);}finally{if(!signal.aborted)busy(false);}
+}
+$('searchForm').addEventListener('submit',async event=>{
+ event.preventDefault();if(controller)controller.abort();controller=new AbortController();const signal=controller.signal;
+ chosen=null;$('suggestions').replaceChildren();busy(true);status('Looking up location…');
+ try{
+  const locations=await geocode($('place').value.trim(),signal);
+  if(!locations.length){status('No matching locations found. Try adding a city or country.',true);return;}
+  if(locations.length===1){await selectLocation(locations[0]);return;}
+  status('Choose the intended location:');
+  for(const location of locations){const button=document.createElement('button');button.type='button';button.textContent=location.name;button.addEventListener('click',()=>selectLocation(location));$('suggestions').append(button);}
+ }catch(e){if(e.name!=='AbortError')status('Location search failed: '+e.message,true);}finally{if(!signal.aborted)busy(false);}
+});
+$('radius').addEventListener('change',()=>{if(chosen)selectLocation(chosen);});
+if(!map)status('Map library unavailable. Please reload when connected to the internet.',true);
+</script>
+</body>
+</html>
