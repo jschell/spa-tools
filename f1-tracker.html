@@ -547,13 +547,14 @@
       ].join(',');
 
       return {
-        async fetchForecast(circuitId, lat, lon, unit = 'celsius') {
-          const cacheKey = `weather:${circuitId}:${unit}`;
+        async fetchForecast(circuitId, lat, lon) {
+          // Keep cached temperatures in Celsius; convert only when rendering.
+          const cacheKey = `weather:${circuitId}:celsius`;
           const cached = cacheManager.get(cacheKey);
           if (cached) return cached;
 
           const url = `${BASE}?latitude=${lat}&longitude=${lon}&daily=${DAILY}` +
-            `&temperature_unit=${unit}&wind_speed_unit=kmh&forecast_days=7&timezone=auto`;
+            `&temperature_unit=celsius&wind_speed_unit=kmh&forecast_days=7&timezone=auto`;
           const ctrl = new AbortController();
           const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
           try {
@@ -583,14 +584,14 @@
           }
         },
 
-        async fetchRaceWeekendForecast(circuit, raceDate, unit) {
+        async fetchRaceWeekendForecast(circuit, raceDate) {
           const raceMs = new Date(raceDate).getTime();
           const daysUntil = (raceMs - Date.now()) / 86_400_000;
           if (daysUntil > 7) {
             // Out of forecast range — return sentinel
             return { outOfRange: true, availableDate: new Date(raceMs - 7 * 86_400_000) };
           }
-          return this.fetchForecast(circuit.circuitId, circuit.lat, circuit.lon, unit);
+          return this.fetchForecast(circuit.circuitId, circuit.lat, circuit.lon);
         },
       };
     })();
@@ -1310,9 +1311,8 @@
       appState.loading.weather = true;
       appState.weatherSentinel = null;
       try {
-        const unit = settings.get().temperatureUnit;
         const result = await weatherClient.fetchRaceWeekendForecast(
-          appState.nextRace.circuit, appState.nextRace.date, unit
+          appState.nextRace.circuit, appState.nextRace.date
         );
         if (result?.outOfRange) {
           appState.weatherSentinel = result;
@@ -1481,8 +1481,7 @@
       document.querySelectorAll('input[name="tempUnit"]').forEach(r => {
         r.addEventListener('change', () => {
           settings.update('temperatureUnit', r.value);
-          cacheManager.clear(); // Clear weather cache so it re-fetches with new unit
-          fetchWeather().then(renderWeather);
+          renderWeather();
         });
       });
       document.getElementById('refresh-interval')?.addEventListener('change', e => {
