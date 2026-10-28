@@ -31,7 +31,8 @@
 </form>
 <div id="suggestions" class="suggestions" aria-label="Choose a location"></div>
 <p id="status" class="status" role="status" aria-live="polite">Search for a place to begin.</p>
-<div class="map-actions"><button id="searchMapBtn" type="button">Search this map area</button><span class="map-help">Or tap an empty spot on the map to choose a search center.</span></div>\n<div class="layout">
+<div class="map-actions"><button id="searchMapBtn" type="button">Search this map area</button><span class="map-help">Or tap an empty spot on the map to choose a search center.</span></div>
+<div class="layout">
 <div id="map" aria-label="Map of nearby Wikipedia articles"></div>
 <section class="panel" aria-label="Wikipedia articles"><h2 style="margin:0 0 8px">Nearby articles <span id="count"></span></h2><ol id="results"></ol></section>
 </div>
@@ -113,7 +114,35 @@ async function discover(center,signal) {
  articles=result.items;render(center,used,result.truncated);
  if(used>selected)status($('status').textContent+' Expanded from '+selected+' miles because fewer than 25 articles were found.');
 }
-function clearPending(){\n if(pendingMarker&&map)map.removeLayer(pendingMarker);pendingMarker=null;\n}\nfunction pickOnMap(latlng){\n if(!map)return;\n clearPending();\n const point={lat:latlng.lat,lon:latlng.lng,name:'Map selection'};\n pendingMarker=L.circleMarker(latlng,{radius:9,color:'#a33b13',weight:3,fillColor:'#fff',fillOpacity:1}).addTo(map);\n const popup=document.createElement('div');popup.className='pick-popup';\n const label=document.createElement('strong');label.textContent='Search from this point?';\n const coords=document.createElement('div');coords.textContent=point.lat.toFixed(5)+', '+point.lon.toFixed(5);\n const confirm=document.createElement('button');confirm.type='button';confirm.textContent='Find articles here';\n confirm.addEventListener('click',()=>{clearPending();map.closePopup();selectLocation(point);});\n const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.style.marginLeft='8px';\n cancel.addEventListener('click',()=>{map.closePopup();clearPending();});\n popup.append(label,coords,confirm,cancel);\n pendingMarker.bindPopup(popup,{closeButton:true}).openPopup();\n}\nif(map){\n map.on('click',e=>pickOnMap(e.latlng));\n map.on('popupclose',()=>{if(pendingMarker)clearPending();});\n}\n$('searchMapBtn').addEventListener('click',()=>{\n if(!map)return;\n clearPending();map.closePopup();\n const center=map.getCenter();selectLocation({lat:center.lat,lon:center.lng,name:'Map center'});\n});\nif(!map)$('searchMapBtn').disabled=true;\nasync function selectLocation(location){
+function clearPending(){
+ if(pendingMarker&&map)map.removeLayer(pendingMarker);pendingMarker=null;
+}
+function pickOnMap(latlng){
+ if(!map)return;
+ clearPending();
+ const point={lat:latlng.lat,lon:latlng.lng,name:'Map selection'};
+ pendingMarker=L.circleMarker(latlng,{radius:9,color:'#a33b13',weight:3,fillColor:'#fff',fillOpacity:1}).addTo(map);
+ const popup=document.createElement('div');popup.className='pick-popup';
+ const label=document.createElement('strong');label.textContent='Search from this point?';
+ const coords=document.createElement('div');coords.textContent=point.lat.toFixed(5)+', '+point.lon.toFixed(5);
+ const confirm=document.createElement('button');confirm.type='button';confirm.textContent='Find articles here';
+ confirm.addEventListener('click',()=>{clearPending();map.closePopup();selectLocation(point);});
+ const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.style.marginLeft='8px';
+ cancel.addEventListener('click',()=>{map.closePopup();clearPending();});
+ popup.append(label,coords,confirm,cancel);
+ pendingMarker.bindPopup(popup,{closeButton:true}).openPopup();
+}
+if(map){
+ map.on('click',e=>pickOnMap(e.latlng));
+ map.on('popupclose',()=>{if(pendingMarker)clearPending();});
+}
+$('searchMapBtn').addEventListener('click',()=>{
+ if(!map)return;
+ clearPending();map.closePopup();
+ const center=map.getCenter();selectLocation({lat:center.lat,lon:center.lng,name:'Map center'});
+});
+if(!map)$('searchMapBtn').disabled=true;
+async function selectLocation(location){
  if(controller)controller.abort();controller=new AbortController();const signal=controller.signal;
  chosen=location;clearPending();$('suggestions').replaceChildren();busy(true);status('Loading nearby Wikipedia articles…');
  try{await discover(location,signal);}catch(e){if(e.name!=='AbortError')status('Could not load articles: '+e.message,true);}finally{if(!signal.aborted)busy(false);}
