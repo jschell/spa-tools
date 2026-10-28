@@ -2,7 +2,7 @@ name: Update F1 News Cache
 
 on:
   schedule:
-    - cron: '*/30 * * * *'   # every 30 minutes
+    - cron: '17,47 * * * *'   # every 30 minutes
   workflow_dispatch:           # allow manual trigger from Actions UI
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Fetch RSS feeds and write cache
-        run: node .github/scripts/fetch-news.js
+        run: python3 .github/scripts/fetch-news.py
 
       - name: Commit if changed
         run: |
