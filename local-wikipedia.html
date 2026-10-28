@@ -59,9 +59,9 @@ async function geocode(query,signal) {
 async function geoSearch(lat,lon,radiusMiles,signal) {
  // MediaWiki geosearch limits radius to 10 km; cap requested radius accordingly.
  const radius=Math.min(10000,Math.ceil(radiusMiles*MILES_TO_METERS));
- const found=new Map();let offset=0;let truncated=false;
+ const found=new Map();let continuation=null;let truncated=false;
  for(let page=0;page<6;page++){
-  const url=new URL(API);Object.entries({action:'query',list:'geosearch',gscoord:lat+'|'+lon,gsradius:String(radius),gslimit:'500',gsoffset:String(offset),format:'json',origin:'*'}).forEach(([k,v])=>url.searchParams.set(k,v));
+  const url=new URL(API);Object.entries({action:'query',list:'geosearch',gscoord:lat+'|'+lon,gsradius:String(radius),gslimit:'500',format:'json',origin:'*'}).forEach(([k,v])=>url.searchParams.set(k,v));
   const data=await getJSON(url,signal);
   if(data.error)throw new Error(data.error.info||'Wikipedia API error');
   for(const a of data.query?.geosearch||[])if(Number.isFinite(a.lat)&&Number.isFinite(a.lon))found.set(a.pageid,{...a,miles:distanceMiles(lat,lon,a.lat,a.lon)});
@@ -94,7 +94,7 @@ async function discover(center,signal) {
  const selected=Number($('radius').value);
  let result={items:[],truncated:false},used=selected;
  // Expand to the next meaningful radius, stopping at 6 miles.
- for(const radius of [...new Set([selected,3,6].filter(r=>r>=selected))]){
+ for(const radius of [...new Set([selected,1.5,3,6].filter(r=>r>=selected))]){
   used=radius;result=await geoSearch(center.lat,center.lon,radius,signal);
   if(result.items.length>=25||radius>=6)break;
  }
