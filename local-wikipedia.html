@@ -5,9 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Discover geotagged Wikipedia articles near a searched place on a map and in a list.">
 <title>Local Wikipedia Explorer</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzx1Z9PbHRI9q+J7q7BMYg8=" crossorigin="">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <style>
 :root{font-family:system-ui,-apple-system,sans-serif;color:#202a35;background:#f8fafc}*{box-sizing:border-box}body{max-width:1180px;margin:auto;padding:16px}a{color:#0757a6}header{margin-bottom:18px}h1{margin:8px 0}p{line-height:1.5}.muted{color:#526174}.controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px;background:white;padding:16px;border:1px solid #d5dde7;border-radius:10px}.field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:200px}label{font-weight:650}input,select,button{font:inherit;padding:10px;border:1px solid #a5b4c5;border-radius:6px}button{background:#135e9b;color:white;border-color:#135e9b;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.suggestions{display:flex;flex-direction:column;gap:5px;margin:10px 0}.suggestions button{background:#fff;color:#17364f;text-align:left;border-color:#c9d3df}.layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,1fr);gap:16px;margin-top:16px}#map{height:540px;border-radius:10px;border:1px solid #ccd5df;background:#e6edf3}.panel{background:#fff;border:1px solid #d5dde7;border-radius:10px;padding:14px;min-width:0}#results{max-height:490px;overflow:auto;list-style:none;padding:0;margin:0}.article{padding:12px 4px;border-bottom:1px solid #e3e8ee}.article button{background:none;color:#0757a6;border:0;padding:0;text-align:left;font-weight:650;text-decoration:underline}.article small{display:block;margin-top:5px;color:#526174}.article p{margin:6px 0 0;font-size:.92rem}.status{min-height:24px;margin:12px 0}.error{color:#9a1b1b}.privacy{margin-top:18px;font-size:.9rem}footer{border-top:1px solid #d5dde7;margin-top:20px;padding:14px 0;font-size:.9rem}@media(max-width:760px){.layout{grid-template-columns:1fr}#map{height:350px}#results{max-height:none}}
+
+/* Critical Leaflet layout fallback: map remains usable if the CDN stylesheet fails. */
+.leaflet-container{position:relative;overflow:hidden;outline:0;touch-action:pan-x pan-y;background:#ddd}
+.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas{position:absolute;left:0;top:0}
+.leaflet-pane{z-index:400}.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}
+.leaflet-tile{width:256px;height:256px;border:0;max-width:none!important;max-height:none!important;user-select:none;pointer-events:none}
+.leaflet-map-pane{position:absolute;left:0;top:0}.leaflet-control-container{position:relative;z-index:800}.leaflet-control{position:relative;z-index:800;pointer-events:auto}.leaflet-top{position:absolute;top:0}.leaflet-bottom{position:absolute;bottom:0}.leaflet-left{left:0}.leaflet-right{right:0}.leaflet-control-zoom a{display:block;background:#fff;padding:5px 10px;text-decoration:none;border:1px solid #aaa}.leaflet-control-attribution{background:#ffffffd9;font-size:11px;padding:2px 5px}
+/* Keep the map and its transformed tile panes inside their own stacking context. */
+#map{position:relative;overflow:hidden;isolation:isolate;width:100%;min-width:0}
+.layout{min-width:0}.panel{overflow-wrap:anywhere}
+.controls input,.controls select{width:100%;min-width:0}
+@media(max-width:760px){body{padding:12px}.controls{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.field{min-width:0!important;width:100%;flex:auto!important}.controls button{width:100%}#map{height:360px}.layout{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -25,7 +37,7 @@
 </div>
 <p class="privacy"><strong>Privacy and data:</strong> Typed searches are sent to the public Photon geocoder; selected coordinates are sent to Wikipedia for nearby article lookup. Map tiles are requested from OpenStreetMap. No device location is requested, and searches or coordinates are not saved in this page's URL. External services can observe requests. This tool needs an internet connection.</p>
 <footer><a href="https://github.com/jschell/spa-tools/blob/main/local-wikipedia.html">View source</a> · Wikipedia content is provided by Wikipedia contributors; map data © OpenStreetMap contributors.</footer>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
