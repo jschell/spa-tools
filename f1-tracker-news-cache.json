@@ -1,9 +1,385 @@
 {
-  "updatedAt": "2026-11-01T20:51:42.115255+00:00",
+  "updatedAt": "2026-11-02T00:47:45.714727+00:00",
   "failedSources": [
     "Formula 1"
   ],
   "items": [
+    {
+      "title": "Oscar Piastri stripped of Mexico points after huge F1 stewards penalty",
+      "link": "https://racingnews365.com/oscar-piastri-stripped-of-mexico-points-after-huge-f1-stewards-penalty",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-02T00:45:00+00:00",
+      "summary": "Oscar Piastri's collision has earned him a 10-second time penalty, and cost him a points finish.",
+      "imageUrl": null
+    },
+    {
+      "title": "How F1 drivers reacted to Kimi Antonelli's world title: \"He's made everyone else look silly\"",
+      "link": "https://www.motorsport.com/f1/news/how-f1-drivers-reacted-to-kimi-antonellis-world-title-hes-made-everyone-else-look-silly/10870828/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-02T00:32:34+00:00",
+      "summary": "Kimi Antonelli's rivals have paid tribute to the Mercedes driver after he clinched the Formula 1 world championship at the Mexico City Grand Prix.<br>The Italian finished third behind Max Verstappen and Lewis Hamilton to secure the title with four races to spare. At just 20 years and 68 days old, he is the youngest champion in the sport's history, and the first Italian to win the drivers' title ...<a class='more' href='https://www.motorsport.com/f1/news/how-f1-drivers-reacted-to-kimi-antonellis-world-title-hes-made-everyone-else-look-silly/10870828/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-9.motorsport.com/images/amp/6DGgbgwY/s6/motorsport-com-graphics-59.jpg"
+    },
+    {
+      "title": "'We've got big problems' - Hamilton says Ferrari need 'serious talks'",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cmwy7dl879gzo?at_medium=RSS&at_campaign=rss",
+      "source": "BBC Sport",
+      "pubDate": "2026-11-02T00:28:28+00:00",
+      "summary": "Lewis Hamilton says Ferrari need \"some serious talks behind closed doors\" after fighting between their two drivers in Mexico.",
+      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/1abc/live/c33d2200-d64f-11f1-93e1-3b657b665bcf.jpg"
+    },
+    {
+      "title": "Winners and losers from F1's record-breaking Mexico Grand Prix",
+      "link": "https://www.motorsport.com/f1/news/winners-and-losers-from-f1s-historic-mexico-grand-prix/10870803/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-02T00:24:04+00:00",
+      "summary": "Superlatives are running out to describe Kimi Antonelli's unprecedented ascent to power over the 2026 season. At the Mexico Grand Prix, Formula 1's new ruler received the coronation his campaign deserved.<br>Winner: Kimi Antonelli<br>Antonelli's title triumph may have been a foregone conclusion at this point, but that only makes his achievement more remarkable, not less.<br>It's impossible not to ...<a class='more' href='https://www.motorsport.com/f1/news/winners-and-losers-from-f1s-historic-mexico-grand-prix/10870803/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-2.motorsport.com/images/amp/63Qa3m72/s6/lewis-hamilton-ferrari-max-ver.jpg"
+    },
+    {
+      "title": "Toto Wolff apologises to George Russell after Mercedes \"let him down\" at Mexican GP",
+      "link": "https://www.motorsport.com/f1/news/toto-wolff-apologises-to-george-russell-after-mercedes-let-him-down-at-mexican-gp/10870825/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-02T00:22:27+00:00",
+      "summary": "Mercedes Formula 1 team principal Toto Wolff claimed the Brackley outfit \"let down\" George Russell after a deployment issue spoiled his start at the Mexican Grand Prix.<br>Russell started from second on the grid after missing out on pole position to seven-time champion Lewis Hamilton by just 0.009 seconds, but he lost ground at the start. He was then given a 10-second penalty for a first-lap ...<a class='more' href='https://www.motorsport.com/f1/news/toto-wolff-apologises-to-george-russell-after-mercedes-let-him-down-at-mexican-gp/10870825/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/YE9EpEDY/s6/motorsport-com-graphics-45.jpg"
+    },
+    {
+      "title": "Charles Leclerc responds to Lewis Hamilton's call for Ferrari talks after Mexico GP",
+      "link": "https://www.motorsport.com/f1/news/charles-leclerc-responds-to-lewis-hamiltons-call-for-ferrari-talks-after-mexico-gp/10870814/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-02T00:14:27+00:00",
+      "summary": "Charles Leclerc says Lewis Hamilton’s driving was “very much on the limit” as he defended his own move at the beginning of the Mexico City Grand Prix.<br>Leclerc attacked polesitter Hamilton at Turn 4 on the opening lap and made it out of the scrap ahead of him.<br>“I mean, it was definitely an opportunity. In Turn 1 there was a gap on the outside and I had quite a lot of speed around the ...<a class='more' href='https://www.motorsport.com/f1/news/charles-leclerc-responds-to-lewis-hamiltons-call-for-ferrari-talks-after-mexico-gp/10870814/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/YBVj1j7Y/s6/motorsport-com-graphics-58.jpg"
+    },
+    {
+      "title": "Adjusted 2026 F1 championship standings after the Mexico City Grand Prix penalty",
+      "link": "https://racingnews365.com/adjusted-2026-f1-championship-standings-after-the-mexico-city-grand-prix-penalty",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-02T00:10:00+00:00",
+      "summary": "Find out how the 2026 F1 drivers' and constructors' standings have been impacted by the Mexico City Grand Prix.",
+      "imageUrl": null
+    },
+    {
+      "title": "Why Leclerc didn’t give up Mexico GP lead after cutting Turn 5",
+      "link": "https://www.autosport.com/f1/news/why-leclerc-didnt-give-up-mexico-gp-lead-after-cutting-turn-5/10870807/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+      "source": "Autosport",
+      "pubDate": "2026-11-02T00:06:00+00:00",
+      "summary": "Ferrari Formula 1 driver Charles Leclerc has delved into his controversial Mexico Grand Prix drive, more specifically the way he snatched – and retained – the lead from Lewis Hamilton.<br>Leclerc challenged his polesitting team-mate for the lead at the start, with Hamilton holding him off over the first sequence of corners. The Monegasque then launched an attack around the outside of Turn 4 ...<a class='more' href='https://www.autosport.com/f1/news/why-leclerc-didnt-give-up-mexico-gp-lead-after-cutting-turn-5/10870807/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/6O7zXQX6/s6/charles-leclerc-ferrari-lewis--3.jpg"
+    },
+    {
+      "title": "2026 F1 Mexico City Grand Prix results adjusted after severe post-race penalty",
+      "link": "https://racingnews365.com/2026-f1-mexico-city-grand-prix-results-adjusted-after-severe-post-race-penalty",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-02T00:06:00+00:00",
+      "summary": "Check out the adjusted results from the 2026 F1 Mexico City Grand Prix after a severe penalty.",
+      "imageUrl": null
+    },
+    {
+      "title": "Why Charles Leclerc didn’t yield Mexico GP lead after cutting Turn 5",
+      "link": "https://www.motorsport.com/f1/news/why-charles-leclerc-didnt-yield-mexico-gp-lead-after-cutting-turn-5/10870796/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-02T00:03:49+00:00",
+      "summary": "Ferrari Formula 1 driver Charles Leclerc has delved into his controversial Mexico Grand Prix drive, more specifically the way he snatched – and retained – the lead from Lewis Hamilton.<br>Leclerc challenged his polesitting team-mate for the lead at the start, with Hamilton holding him off over the first sequence of corners. The Monegasque then launched an attack around the outside of Turn 4 ...<a class='more' href='https://www.motorsport.com/f1/news/why-charles-leclerc-didnt-yield-mexico-gp-lead-after-cutting-turn-5/10870796/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/6O7zXQX6/s6/charles-leclerc-ferrari-lewis--5.jpg"
+    },
+    {
+      "title": "F1 CEO Stefano Domenicali releases touching statement after Kimi Antonelli's title win",
+      "link": "https://www.motorsport.com/f1/news/f1-ceo-stefano-domenicali-releases-touching-statement-after-kimi-antonellis-title-win/10870790/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T23:53:55+00:00",
+      "summary": "Formula 1 CEO Stefano Domenicali says \"an entire nation will celebrate\" after Kimi Antonelli became the series' youngest champion at the Mexican Grand Prix.<br>The 20-year-old also became the first Italian world champion in 73 years, since Alberto Ascari in 1953. The Mercedes driver finished third at the Autódromo Hermanos Rodríguez behind race-winner Max Verstappen and Ferrari's Lewis Hamilton ...<a class='more' href='https://www.motorsport.com/f1/news/f1-ceo-stefano-domenicali-releases-touching-statement-after-kimi-antonellis-title-win/10870790/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-9.motorsport.com/images/amp/0rVP8PO0/s6/motorsport-com-graphics-44.jpg"
+    },
+    {
+      "title": "Furious Ferrari boss lays into Lewis Hamilton and Charles Leclerc for 'lack of respect'",
+      "link": "https://racingnews365.com/furious-ferrari-boss-lays-into-lewis-hamilton-and-charles-leclerc-for-lack-of-respect",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T23:41:00+00:00",
+      "summary": "Lewis Hamilton and Charles Leclerc were subject to fierce criticism from their team principal following the Mexico City Grand Prix.",
+      "imageUrl": null
+    },
+    {
+      "title": "Turning back the clock: F1’s youngest world champions",
+      "link": "https://racer.com/2026/11/01/turning-back-the-clock-f1-s-youngest-world-champions",
+      "source": "RACER",
+      "pubDate": "2026-11-01T23:34:22+00:00",
+      "summary": "Kimi Antonelli’s sensational sophomore season has seen him crowned the youngest Formula 1 world champion in history. It’s a record that has only progressed through 10 different drivers, and at 16 years since the age was last lowered, Antonelli ends the second-longest gap between new benchmarks.",
+      "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt2393eacdc689b274/6ae791eb629a084d77b2cbea/GettyImages-2286756048.jpg?environment=live"
+    },
+    {
+      "title": "Lando Norris says Kimi Antonelli should celebrate F1 title “properly” after breakthrough season",
+      "link": "https://www.motorsport.com/f1/news/lando-norris-says-kimi-antonelli-should-celebrate-f1-title-properly-after-breakthrough-season/10870775/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T23:22:36+00:00",
+      "summary": "Antonelli finished third behind Max Verstappen and Lewis Hamilton at the Autodromo Hermanos Rodriguez to clinch the title with four races to spare, becoming the youngest champion in Formula 1's history at just 20 years and 68 days old.<br>Norris, who won his first title with McLaren last year and finished fifth in Mexico, said after the race that he was delighted for the Italian.<br>“I mean, he ...<a class='more' href='https://www.motorsport.com/f1/news/lando-norris-says-kimi-antonelli-should-celebrate-f1-title-properly-after-breakthrough-season/10870775/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/6n7bwAA0/s6/motorsport-com-graphics-57.jpg"
+    },
+    {
+      "title": "Antonelli becomes world champion as Verstappen wins in Mexico",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cv62y1e6wly6o?at_medium=RSS&at_campaign=rss",
+      "source": "BBC Sport",
+      "pubDate": "2026-11-01T23:20:54+00:00",
+      "summary": "Kimi Antonelli becomes the youngest world champion in Formula 1 history as Max Verstappen wins the Mexico City Grand Prix.",
+      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/1694/live/d0cd8590-d64a-11f1-b441-2b33b063138f.jpg"
+    },
+    {
+      "title": "Hamilton demands “serious talks” at Ferrari after Leclerc clash in Mexico GP “lost us the win”",
+      "link": "https://www.autosport.com/f1/news/lewis-hamilton-demands-serious-talks-at-ferrari-after-charles-leclerc-clash-that-lost-us-the-win-to/10870772/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+      "source": "Autosport",
+      "pubDate": "2026-11-01T23:14:33+00:00",
+      "summary": "Lewis Hamilton has called for “serious talks” at Ferrari following his clash with team-mate Charles Leclerc in Formula 1’s Mexico Grand Prix.<br>Polesitter Hamilton was challenged by Leclerc from third after front-row starter George Russell lost momentum ahead of Turn 1. The seven-time world champion narrowly held off the sister car in the first corner sequence, but Leclerc launched an ...<a class='more' href='https://www.autosport.com/f1/news/lewis-hamilton-demands-serious-talks-at-ferrari-after-charles-leclerc-clash-that-lost-us-the-win-to/10870772/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/63QaE1D2/s6/charles-leclerc-ferrari-lewis-.jpg"
+    },
+    {
+      "title": "Lewis Hamilton demands “serious talks” at Ferrari after Charles Leclerc clash",
+      "link": "https://www.motorsport.com/f1/news/lewis-hamilton-demands-serious-talks-at-ferrari-after-charles-leclerc-clash-that-lost-us-the-win-to/10870745/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T23:11:50+00:00",
+      "summary": "Lewis Hamilton has called for “serious talks” at Ferrari following his clash with team-mate Charles Leclerc in Formula 1’s Mexico Grand Prix.<br>Polesitter Hamilton was challenged by Leclerc from third after front-row starter George Russell lost momentum ahead of Turn 1. The seven-time world champion narrowly held off the sister car in the first corner sequence, but Leclerc launched an ...<a class='more' href='https://www.motorsport.com/f1/news/lewis-hamilton-demands-serious-talks-at-ferrari-after-charles-leclerc-clash-that-lost-us-the-win-to/10870745/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-4.motorsport.com/images/amp/63QaE1D2/s6/charles-leclerc-ferrari-lewis-.jpg"
+    },
+    {
+      "title": "Kimi Antonelli title history hailed as 'only the beginning' of F1 legacy",
+      "link": "https://racingnews365.com/kimi-antonelli-title-history-hailed-as-only-the-beginning-of-f1-legacy",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T23:08:00+00:00",
+      "summary": "F1 CEO Stefano Domenicali has delivered a fitting tribute to the sport's youngest champion.",
+      "imageUrl": null
+    },
+    {
+      "title": "Max Verstappen shares emotional message after Kimi Antonelli's historic F1 title win",
+      "link": "https://www.motorsport.com/f1/news/max-verstappen-shares-emotional-message-after-kimi-antonellis-historic-f1-title-win/10870753/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T23:03:32+00:00",
+      "summary": "Red Bull's Max Verstappen says he is \"very proud\" of Kimi Antonelli after the 20-year-old driver became the youngest world champion in Formula 1 history at the Mexican Grand Prix.<br>Antonelli finished third behind Verstappen and seven-time champion Lewis Hamilton at the Autodromo Hermanos Rodriguez to claim his first title at the age of 20 years and 68 days, beating Sebastian Vettel's record by ...<a class='more' href='https://www.motorsport.com/f1/news/max-verstappen-shares-emotional-message-after-kimi-antonellis-historic-f1-title-win/10870753/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/01QN8mx0/s6/motorsport-com-graphics-43.jpg"
+    },
+    {
+      "title": "Lewis Hamilton says Ferrari needs “serious talks” after Charles Leclerc clash cost Mexico GP win",
+      "link": "https://www.motorsport.com/f1/news/lewis-hamilton-says-ferrari-needs-serious-talks-after-charles-leclerc-clash-cost-mexico-gp-win/10870748/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T23:00:59+00:00",
+      "summary": "Lewis Hamilton has warned that Ferrari will have to hold “serious talks” behind the scenes following his clash with team-mate Charles Leclerc on the first lap of the Mexico City Grand Prix. Hamilton argues that it cost the team the win.<br>Hamilton started from pole and held the lead through Turn 1, but Leclerc attempted to pass him aggressively at Turn 4. Both drivers went off the track, with ...<a class='more' href='https://www.motorsport.com/f1/news/lewis-hamilton-says-ferrari-needs-serious-talks-after-charles-leclerc-clash-cost-mexico-gp-win/10870748/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-3.motorsport.com/images/amp/YN7vVgV6/s6/motorsport-com-graphics-56.jpg"
+    },
+    {
+      "title": "Lewis Hamilton demands 'serious talks' after Charles Leclerc incident fury",
+      "link": "https://racingnews365.com/lewis-hamilton-demands-serious-talks-after-charles-leclerc-incident-fury",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T23:00:00+00:00",
+      "summary": "Lewis Hamilton is absolutely furious with his Ferrari partner.",
+      "imageUrl": null
+    },
+    {
+      "title": "Emotional Kimi Antonelli left \"speechless\" by maiden F1 world title in Mexico",
+      "link": "https://www.motorsport.com/f1/news/emotional-kimi-antonelli-left-speechless-by-maiden-f1-world-title-in-mexico/10870739/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T22:57:53+00:00",
+      "summary": "Newly-crowned Formula 1 world champion Kimi Antonelli paid a tearful tribute to Mercedes as he became grand prix racing's youngest-ever title winner in Mexico.<br>Antonelli took third at the Autodromo Hermanos Rodriguez after a controlled driver to his maiden title, beating Sebastian Vettel's previous record by three years as he became the youngest driver to do so aged 20.<br>With neither George ...<a class='more' href='https://www.motorsport.com/f1/news/emotional-kimi-antonelli-left-speechless-by-maiden-f1-world-title-in-mexico/10870739/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-4.motorsport.com/images/amp/6O7zXkm6/s6/andrea-kimi-antonelli-mercedes-2.jpg"
+    },
+    {
+      "title": "Max Verstappen made to 'sweat' by Lewis Hamilton in fierce Mexico pursuit",
+      "link": "https://racingnews365.com/max-verstappen-made-to-sweat-by-lewis-hamilton-in-fierce-mexico-pursuit",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:55:00+00:00",
+      "summary": "Max Verstappen held Lewis Hamilton at arm's length to narrowly pip the Ferrari to Mexico City Grand Prix victory.",
+      "imageUrl": null
+    },
+    {
+      "title": "Is this the most fitting podium in Formula 1 as history made in Mexico?",
+      "link": "https://racingnews365.com/is-this-the-most-fitting-podium-in-formula-1-as-history-made-in-mexico",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:52:00+00:00",
+      "summary": "What a top three at the end of the Mexico City Grand Prix!!",
+      "imageUrl": null
+    },
+    {
+      "title": "F1's youngest world champions",
+      "link": "https://www.motorsport.com/f1/news/f1s-youngest-world-champions/10870660/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T22:49:14+00:00",
+      "summary": "Kimi Antonelli crossing the line in third place at the Mexico Grand Prix has resulted in the Mercedes driver becoming Formula 1’s youngest ever world champion.<br>The Italian has achieved his childhood dream at just 20 years old, which means he takes the record from Sebastian Vettel who was still only 23 when he became world champion in 2010.<br>It comes after a dominant season for Antonelli who ...<a class='more' href='https://www.motorsport.com/f1/news/f1s-youngest-world-champions/10870660/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-9.motorsport.com/images/amp/0rVP1470/s6/andrea-kimi-antonelli-mercedes.jpg"
+    },
+    {
+      "title": "Kimi Antonelli savours 'live forever' moment after making F1 history",
+      "link": "https://racingnews365.com/kimi-antonelli-savours-live-forever-moment-after-making-f1-history",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:47:00+00:00",
+      "summary": "Naturally, it is a moment he will never forget!",
+      "imageUrl": null
+    },
+    {
+      "title": "Verstappen holds off Hamilton for Mexico win as Antonelli clinches title",
+      "link": "https://racer.com/2026/11/01/verstappen-holds-off-hamilton-for-mexico-win-as-antonelli-clinches-title",
+      "source": "RACER",
+      "pubDate": "2026-11-01T22:44:38+00:00",
+      "summary": "Kimi Antonelli became the youngest ever Formula 1 world champion after finishing third at the Mexico City Grand Prix behind winner Max Verstappen.",
+      "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt428fbd76bf9461f6/6ae7c2e1f0e9f210bee1be13/GettyImages-2303038799.jpg?environment=live"
+    },
+    {
+      "title": "F1 Mexico GP: Antonelli becomes youngest world champion as Verstappen holds off Hamilton for victory",
+      "link": "https://www.autosport.com/f1/news/f1-mexico-gp-kimi-antonelli-clinches-world-title-as-max-verstappen-holds-off-lewis-hamilton-for-vic/10870724/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+      "source": "Autosport",
+      "pubDate": "2026-11-01T22:38:22+00:00",
+      "summary": "Kimi Antonelli has written history by becoming Formula 1's youngest-ever world champion at the Mexico Grand Prix, as Red Bull's Max Verstappen beat Ferrari's Lewis Hamilton to win the race.<br>Verstappen seized control of the race during the only pitstop of the race on lap 28 of 71, leapfrogging early leader Charles Leclerc, and he fended off Leclerc's team-mate Hamilton to take victory, with ...<a class='more' href='https://www.autosport.com/f1/news/f1-mexico-gp-kimi-antonelli-clinches-world-title-as-max-verstappen-holds-off-lewis-hamilton-for-vic/10870724/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/63Qa3m72/s6/lewis-hamilton-ferrari-max-ver-5.jpg"
+    },
+    {
+      "title": "F1 Mexico GP: Kimi Antonelli clinches world title as Max Verstappen holds off Lewis Hamilton for victory",
+      "link": "https://www.motorsport.com/f1/news/f1-mexico-gp-race-report-/10870694/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T22:35:56+00:00",
+      "summary": "Kimi Antonelli has written history by becoming Formula 1's youngest-ever world champion at the Mexico Grand Prix, as Red Bull's Max Verstappen beat Ferrari's Lewis Hamilton to win the race.<br>Verstappen seized control of the race during the only pitstop of the race on lap 28 of 71, leapfrogging early leader Charles Leclerc, and he fended off Leclerc's team-mate Hamilton to take victory, with ...<a class='more' href='https://www.motorsport.com/f1/news/f1-mexico-gp-race-report-/10870694/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-2.motorsport.com/images/amp/2dEoOZwY/s6/andrea-kimi-antonelli-mercedes-2.jpg"
+    },
+    {
+      "title": "Breaking: Kimi Antonelli smashes F1 record as youngest world champion",
+      "link": "https://racingnews365.com/breaking-kimi-antonelli-smashes-f1-record-as-youngest-world-champion",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:35:00+00:00",
+      "summary": "Kimi Antonelli is officially your 2026 F1 drivers' champion.",
+      "imageUrl": null
+    },
+    {
+      "title": "Youngest world champions in F1 history after Kimi Antonelli glory",
+      "link": "https://racingnews365.com/youngest-world-champions-in-f1-history-after-kimi-antonelli-glory",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:35:00+00:00",
+      "summary": "RacingNews365 takes a look at the youngest world champions in F1 history after Kimi Antonelli sealed the 2026 title.",
+      "imageUrl": null
+    },
+    {
+      "title": "Five quick takeaways from historic Mexico GP",
+      "link": "https://www.motorsport.com/f1/news/five-quick-takeaways-from-mexico-gp/10870690/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T22:29:07+00:00",
+      "summary": "Antonelli celebrates in style with mature podium drive<br>What a luxury to enjoy your coronation with so little pressure. Kimi Antonelli did admit to being extra tense this weekend as his maiden world championship loomed, but all he had to do was keep it on the island to cruise to the finish line.<br>Antonelli didn't have his finest qualifying session in Mexico, but from fifth on the grid he ...<a class='more' href='https://www.motorsport.com/f1/news/five-quick-takeaways-from-mexico-gp/10870690/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-9.motorsport.com/images/amp/0Zq8ZM46/s6/andrea-kimi-antonelli-mercedes-3.jpg"
+    },
+    {
+      "title": "2026 F1 championship standings after the Mexico City Grand Prix",
+      "link": "https://racingnews365.com/2026-f1-championship-standings-after-the-mexico-city-grand-prix",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:29:00+00:00",
+      "summary": "Find out how the 2026 F1 drivers' and constructors' standings have been impacted by the Mexico City Grand Prix.",
+      "imageUrl": null
+    },
+    {
+      "title": "Antonelli heads list of F1's youngest champions",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cjy56wkdk3nko?at_medium=RSS&at_campaign=rss",
+      "source": "BBC Sport",
+      "pubDate": "2026-11-01T22:28:28+00:00",
+      "summary": "As Kimi Antonelli becomes F1's youngest world champion, we look at how his achievement compares with some of the drivers who previously held the record.",
+      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/18c8/live/7dea6970-d00e-11f1-b441-2b33b063138f.png"
+    },
+    {
+      "title": "LIVE: Reaction as Kimi Antonelli makes F1 history in Mexico as Ferrari civil war brews",
+      "link": "https://racingnews365.com/live-2026-f1-mexico-city-grand-prix",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:28:00+00:00",
+      "summary": "Follow live coverage of the 2026 F1 Mexico City Grand Prix!",
+      "imageUrl": null
+    },
+    {
+      "title": "Kimi Antonelli becomes youngest world champion in F1 history",
+      "link": "https://www.motorsport.com/f1/news/kimi-antonelli-becomes-youngest-world-champion-in-f1-history/10870717/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T22:25:24+00:00",
+      "summary": "Kimi Antonelli has become the youngest Formula 1 world champion after finishing third at the Mexican Grand Prix.<br>The Mercedes driver needed to finish at least ninth in the race at the Autódromo Hermanos Rodríguez to claim his maiden title. At 20 years and 68 days old, he has broken the record set by four-time champion Sebastian Vettel, who was 23 years and 134 days old when he won his first ...<a class='more' href='https://www.motorsport.com/f1/news/kimi-antonelli-becomes-youngest-world-champion-in-f1-history/10870717/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/6zoDxdw0/s6/motorsport-com-graphics-42.jpg"
+    },
+    {
+      "title": "How much do you know about F1 champion Antonelli?",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/c98rzkv5y115o?at_medium=RSS&at_campaign=rss",
+      "source": "BBC Sport",
+      "pubDate": "2026-11-01T22:25:21+00:00",
+      "summary": "Kimi Antonelli has been crowned Formula 1 world champion - how well do you know the Mercedes driver?",
+      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/03ec/live/7a9b0a60-ce2c-11f1-a64c-550be9e3c66b.png"
+    },
+    {
+      "title": "Antonelli - the boy 'born in a garage' who became world champion",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/c0rdvxdwwwwo?at_medium=RSS&at_campaign=rss",
+      "source": "BBC Sport",
+      "pubDate": "2026-11-01T22:25:01+00:00",
+      "summary": "Kimi Antonelli was a natural driver at the age of three, according to his dad. Here's how he developed to become the F1 champion at the age of 20.",
+      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/2c15/live/b16a1f00-94a6-11f1-afe9-fb1a837ec5d9.jpg"
+    },
+    {
+      "title": "Max Verstappen survives almighty Lewis Hamilton pressure as Kimi Antonelli seals world title",
+      "link": "https://racingnews365.com/max-verstappen-survives-almighty-lewis-hamilton-pressure-as-kimi-antonelli-seals-world-title",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:25:00+00:00",
+      "summary": "Max Verstappen secured yet another Mexico City victory, but it is Kimi Antonelli being celebrated as the 2026 world champion.",
+      "imageUrl": null
+    },
+    {
+      "title": "2026 F1 Mexico City Grand Prix results",
+      "link": "https://racingnews365.com/2026-f1-mexico-city-grand-prix-results",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:24:00+00:00",
+      "summary": "Check out the full results from the 2026 F1 Mexico City Grand Prix!",
+      "imageUrl": null
+    },
+    {
+      "title": "Arvid Lindblad crash leads to late-race Mexico City Grand Prix safety car",
+      "link": "https://racingnews365.com/arvid-lindblad-crash-leads-to-late-race-mexico-city-grand-prix-safety-car",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:17:00+00:00",
+      "summary": "A first for Arvid Lindblad in Formula 1.",
+      "imageUrl": null
+    },
+    {
+      "title": "Valtteri Bottas health update after huge Mexico GP F1 accident",
+      "link": "https://racingnews365.com/valtteri-bottas-health-update-after-huge-mexico-gp-f1-accident",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T22:07:00+00:00",
+      "summary": "Valtteri Bottas suffered a high-speed suspension failure and huge impact in the Mexico City Grand Prix.",
+      "imageUrl": null
+    },
+    {
+      "title": "Max Verstappen radio dismissed as FIA stewards explain Charles Leclerc penalty",
+      "link": "https://racingnews365.com/fia-stewards-explain-charles-leclerc-penalty-that-dismisses-max-verstappen-radio",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T21:22:00+00:00",
+      "summary": "It appeared Charles Leclerc got off lightly, but the stewards have explained why.",
+      "imageUrl": null
+    },
+    {
+      "title": "Frightening Valtteri Bottas crash sparks Mexico City GP red flag",
+      "link": "https://racingnews365.com/frightening-valtteri-bottas-crash-sparks-mexico-city-gp-red-flag",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-01T21:16:00+00:00",
+      "summary": "That was a major hit for Valtteri Bottas. Thank goodness he is okay.",
+      "imageUrl": null
+    },
+    {
+      "title": "FIA stewards explain Leclerc’s five-second penalty in F1 Mexico GP",
+      "link": "https://www.autosport.com/f1/news/fia-stewards-explain-charles-leclercs-five-second-penalty-in-f1-mexico-gp/10870705/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+      "source": "Autosport",
+      "pubDate": "2026-11-01T21:14:16+00:00",
+      "summary": "The FIA stewards have explained the reasoning behind Charles Leclerc’s five-second penalty in Formula 1’s Mexico Grand Prix.<br>Leclerc was starting the race from third at Autodromo Hermanos Rodriguez with team-mate Lewis Hamilton on pole position; as George Russell dropped like a stone in the second phase of the start, the Ferraris went wheel to wheel for the lead.<br>Hamilton narrowly ...<a class='more' href='https://www.autosport.com/f1/news/fia-stewards-explain-charles-leclercs-five-second-penalty-in-f1-mexico-gp/10870705/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
+      "imageUrl": "https://cdn-2.motorsport.com/images/amp/YMXb5Q12/s6/charles-leclerc-ferrari.jpg"
+    },
+    {
+      "title": "Why Charles Leclerc only got a five-second penalty in F1 Mexico GP",
+      "link": "https://www.motorsport.com/f1/news/fia-stewards-explain-charles-leclercs-five-second-penalty-in-f1-mexico-gp/10870700/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T21:13:00+00:00",
+      "summary": "The FIA stewards have explained the reasoning behind Charles Leclerc’s five-second penalty in Formula 1’s Mexico Grand Prix.<br>Leclerc was starting the race from third at Autodromo Hermanos Rodriguez with team-mate Lewis Hamilton on pole position; as George Russell dropped like a stone in the second phase of the start, the Ferraris went wheel to wheel for the lead.<br>Hamilton narrowly ...<a class='more' href='https://www.motorsport.com/f1/news/fia-stewards-explain-charles-leclercs-five-second-penalty-in-f1-mexico-gp/10870700/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/YMXb5Q12/s6/charles-leclerc-ferrari.jpg"
+    },
+    {
+      "title": "Charles Leclerc's Mexico GP penalty leaves F1 fans furious for very different reasons",
+      "link": "https://www.motorsport.com/f1/news/charles-leclercs-mexico-gp-penalty-leaves-f1-fans-furious-for-very-different-reasons/10870698/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-01T20:51:35+00:00",
+      "summary": "Charles Leclerc’s five-second penalty at the Mexico City Grand Prix has divided Formula 1 fans. Some believe that it was far too lenient while others insist that he should not have been punished at all.<br>The Ferrari driver went around the outside of polesitter and team-mate Lewis Hamilton at Turn 4 on the opening lap. Both drivers went off the track but it was Leclerc who came out ahead of the ...<a class='more' href='https://www.motorsport.com/f1/news/charles-leclercs-mexico-gp-penalty-leaves-f1-fans-furious-for-very-different-reasons/10870698/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-4.motorsport.com/images/amp/0qgKRyBY/s6/motorsport-com-graphics-55.jpg"
+    },
     {
       "title": "Charles Leclerc hit with penalty after Mexico City GP clash with Lewis Hamilton",
       "link": "https://racingnews365.com/charles-leclerc-hit-with-penalty-after-mexico-city-gp-clash-with-lewis-hamilton",
@@ -45,14 +421,6 @@
       "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blte3160996b732c439/6ae78f10687685a473d7095a/GettyImages-2302869971.jpg?environment=live"
     },
     {
-      "title": "LIVE: 2026 F1 Mexico City Grand Prix",
-      "link": "https://racingnews365.com/live-2026-f1-mexico-city-grand-prix",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-01T18:55:00+00:00",
-      "summary": "Follow live coverage of the 2026 F1 Mexico City Grand Prix!",
-      "imageUrl": null
-    },
-    {
       "title": "Lewis Hamilton handed vote of confidence ahead of Mexico City GP",
       "link": "https://racingnews365.com/lewis-hamilton-handed-vote-of-confidence-ahead-of-mexico-city-gp",
       "source": "RacingNews365",
@@ -66,7 +434,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T18:19:39+00:00",
       "summary": "Tensions surrounding next week's Qatar Grand Prix have reached boiling point in the MotoGP paddock. There had already been unrest behind the scenes for some time, with several riders expressing their concerns, but on Sunday Yamaha became the first manufacturer to make a public statement.<br>Both Yamaha and its satellite team Pramac have decided to boycott the race, prompting MotoGP to issue a ...<a class='more' href='https://www.motorsport.com/f1/news/what-does-yamahas-shock-motogp-boycott-mean-for-f1-in-qatar-and-abu-dhabi/10870664/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/0R7w7jE2/s6/a-general-view-of-the-grid-dur.jpg"
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/0R7w7jE2/s6/a-general-view-of-the-grid-dur.jpg"
     },
     {
       "title": "George Russell shares honest Kimi Antonelli opinion: 'The truth is...'",
@@ -114,7 +482,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T16:16:37+00:00",
       "summary": "Valtteri Bottas is “pretty confident” of staying in Formula 1 as he batted away questions surrounding his future amid rumours of Cadillac promoting Colton Herta.<br>The American outfit announced a contract extension for Sergio Perez but is yet to confirm Bottas for 2027, after a 2026 season in which the latter has been consistently outperformed.<br>Perez leads Bottas 15-9 in their qualifying ...<a class='more' href='https://www.motorsport.com/f1/news/valtteri-bottas-pretty-confident-of-staying-for-f1-2027-amid-colton-herta-rumours/10870623/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/25dLoeQ0/s6/valtteri-bottas-cadillac-racin.jpg"
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/25dLoeQ0/s6/valtteri-bottas-cadillac-racin.jpg"
     },
     {
       "title": "Resurfaced Mexico City GP track adds uncertainty to strategy",
@@ -210,7 +578,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T10:03:04+00:00",
       "summary": "After every Formula 1 qualifying session, Motorsport.com publishes each team's qualifying record in terms of team-mate battles.<br>This record is based exclusively on qualifying results so that grid penalties don't alter the statistics.<br>When a driver can't put in a representative lap time due to a technical issue or an incident, this will be mentioned in the table.<br>Read ...<a class='more' href='https://www.motorsport.com/f1/news/f1-2026-qualifying-head-to-head-mexico-gp/10870529/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-8.motorsport.com/images/amp/6DGg8ZGY/s6/lewis-hamilton-ferrari-george-.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/6DGg8ZGY/s6/lewis-hamilton-ferrari-george-.jpg"
     },
     {
       "title": "Red Bull drivers fear Mexico start, Max Verstappen jokes: “A Le Mans start would be just as quick”",
@@ -218,7 +586,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T09:59:17+00:00",
       "summary": "Although Max Verstappen said he had the pace to take pole position in Mexico City, his final run was ruined by a lock-up at Turn 13 – according to the Red Bull driver, mainly caused by Lando Norris getting slightly in his way in the final sector.<br>The eventual qualifying result would normally have earned the Dutchman a place on the second row of the grid, but the grid penalty after his ...<a class='more' href='https://www.motorsport.com/f1/news/red-bull-drivers-fear-mexico-start-max-verstappen-jokes-a-le-mans-start-would-be-just-as-quick/10870533/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/YXyKBmx6/s6/max-verstappen-red-bull-racing.jpg"
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/YXyKBmx6/s6/max-verstappen-red-bull-racing.jpg"
     },
     {
       "title": "Fernando Alonso 'frustration beyond imagination' after latest Aston Martin woe",
@@ -282,7 +650,7 @@
       "source": "Autosport",
       "pubDate": "2026-11-01T01:54:48+00:00",
       "summary": "Liam Lawson has lost his ninth-place starting position for the Formula 1 Mexico City Grand Prix.<br>Racing Bulls impressed at the Autodromo Hermanos Rodriguez on Saturday and managed to get both cars into Q3. The team subsequently emerged as the 'best of the rest' in eighth and ninth places, but Lawson now faces a recovery drive on Sunday.<br>The New Zealander has been disqualified by the FIA for ...<a class='more' href='https://www.autosport.com/f1/news/lawson-disqualified-from-f1-qualifying-in-mexico-heres-why/10870411/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-5.motorsport.com/images/amp/YpbA99Z0/s6/liam-lawson-racing-bulls.jpg"
+      "imageUrl": "https://cdn-3.motorsport.com/images/amp/YpbA99Z0/s6/liam-lawson-racing-bulls.jpg"
     },
     {
       "title": "Liam Lawson disqualified from F1 qualifying in Mexico – here's why",
@@ -290,7 +658,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T01:54:02+00:00",
       "summary": "Liam Lawson has lost his ninth-place starting position for the Formula 1 Mexico City Grand Prix.<br>Racing Bulls impressed at the Autodromo Hermanos Rodriguez on Saturday and managed to get both cars into Q3. The team subsequently emerged as the 'best of the rest' in eighth and ninth places, but Lawson now faces a recovery drive on Sunday.<br>The New Zealander has been disqualified by the FIA for ...<a class='more' href='https://www.motorsport.com/f1/news/liam-lawson-disqualified-after-f1-qualifying-in-mexico-heres-why/10870409/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-5.motorsport.com/images/amp/YpbA99Z0/s6/liam-lawson-racing-bulls.jpg"
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/YpbA99Z0/s6/liam-lawson-racing-bulls.jpg"
     },
     {
       "title": "Esteban Ocon axed bombshell as Lewis Hamilton ends three-year wait",
@@ -362,7 +730,7 @@
       "source": "Autosport",
       "pubDate": "2026-11-01T00:28:51+00:00",
       "summary": "Max Verstappen qualified fourth for the Formula 1 Mexico City Grand Prix, but will have to drop one place on the starting grid, meaning he will start from the third row. The reason is remarkable, to say the least: contact with Liam Lawson - two drivers from the Red Bull teams during the second free practice session.<br>Verstappen was rather outspoken in the media pen on Friday, saying, among other ...<a class='more' href='https://www.autosport.com/f1/news/verstappen-clears-the-air-with-lawson-but-keeps-opinion-on-racing-bulls-f1-seat-to-himself/10870388/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/2eZxbVKY/s6/max-verstappen-red-bull-racing-2.jpg"
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/2eZxbVKY/s6/max-verstappen-red-bull-racing-2.jpg"
     },
     {
       "title": "Ferrari reveals luxury $4,300 fountain pen inspired by its bespoke supercars",
@@ -370,7 +738,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T00:28:32+00:00",
       "summary": "You do not need to buy a Ferrari to spend serious money on the Prancing Horse. Montblanc’s latest collaboration with Maranello has come in the shape of a fountain pen, and it costs more than some used cars.<br>The Meisterstuck Great Masters Ferrari Tailor Made Inedita Special Edition is for sale for $4,300 in the United States. If you would rather not deal with the messy reloading of such a pen ...<a class='more' href='https://www.motorsport.com/f1/news/ferrari-reveals-luxury-4300-fountain-pen-inspired-by-its-bespoke-supercars/10870386/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/6DGg8rGY/s6/motorsport-com-graphics-53.jpg"
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/6DGg8rGY/s6/motorsport-com-graphics-53.jpg"
     },
     {
       "title": "Max Verstappen clears the air with Liam Lawson, but stays tight-lipped on Racing Bulls F1 seat",
@@ -378,7 +746,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T00:26:35+00:00",
       "summary": "Max Verstappen qualified fourth for the Formula 1 Mexico City Grand Prix, but will have to drop one place on the starting grid, meaning he will start from the third row. The reason is remarkable, to say the least: contact with Liam Lawson - two drivers from the Red Bull teams during the second free practice session.<br>Verstappen was rather outspoken in the media pen on Friday, saying, among other ...<a class='more' href='https://www.motorsport.com/f1/news/max-verstappen-clears-the-air-with-liam-lawson-but-stays-tight-lipped-on-racing-bulls-f1-seat/10870381/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-6.motorsport.com/images/amp/6VyKrdLY/s6/max-verstappen-red-bull-racing.jpg"
+      "imageUrl": "https://cdn-7.motorsport.com/images/amp/6VyKrdLY/s6/max-verstappen-red-bull-racing.jpg"
     },
     {
       "title": "Charles Leclerc reveals Mexican GP overtaking fears after missing out on pole",
@@ -386,7 +754,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T00:24:47+00:00",
       "summary": "Charles Leclerc doubts there will be any overtaking in the Mexican Grand Prix, warning the race order will likely be set in the first few corners at the Autodromo Hermanos Rodriguez.<br>The Ferrari driver topped both of Friday's practice sessions but had to settle for third on the grid. His team-mate and seven-time champion Lewis Hamilton claimed his first pole position with the Maranello outfit ...<a class='more' href='https://www.motorsport.com/f1/news/charles-leclerc-reveals-mexican-gp-overtaking-fears-after-missing-out-on-pole/10870384/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-5.motorsport.com/images/amp/0Zq8ZNR6/s6/motorsport-com-graphics-41.jpg"
+      "imageUrl": "https://cdn-2.motorsport.com/images/amp/0Zq8ZNR6/s6/motorsport-com-graphics-41.jpg"
     },
     {
       "title": "Antonelli admits to driving \"tense\" and \"tired\" on cusp of F1 title",
@@ -394,7 +762,7 @@
       "source": "Autosport",
       "pubDate": "2026-11-01T00:09:23+00:00",
       "summary": "Kimi Antonelli is hoping to overcome an off-colour Mexico City Grand Prix qualifying session with a good night's rest, but admits Formula 1 title nerves have led to him driving with unwanted tension.<br>The Italian was just 0.001s slower than Lando Norris' FP3 headliner earlier in the day, but in qualifying had been half a step behind Mercedes team-mate George Russell and unable to find the right ...<a class='more' href='https://www.autosport.com/f1/news/ill-bombard-myself-with-melatonin-kimi-antonelli-admits-to-driving-tense-and-tired-on-cusp-of-f1-ti/10870380/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/YvKB13G6/s6/andrea-kimi-antonelli-mercedes.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/YvKB13G6/s6/andrea-kimi-antonelli-mercedes.jpg"
     },
     {
       "title": "\"I'll bombard myself with melatonin\": Kimi Antonelli admits to driving \"tense\" and \"tired\" on cusp of F1 title",
@@ -402,7 +770,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T00:08:16+00:00",
       "summary": "Kimi Antonelli is hoping to overcome an off-colour Mexico City Grand Prix qualifying session with a good night's rest, but admits Formula 1 title nerves have led to him driving with unwanted tension.<br>The Italian was just 0.001s slower than Lando Norris' FP3 headliner earlier in the day, but in qualifying had been half a step behind Mercedes team-mate George Russell and unable to find the right ...<a class='more' href='https://www.motorsport.com/f1/news/ill-bombard-myself-with-melatonin-kimi-antonelli-admits-to-driving-tense-and-tired-on-cusp-of-f1-ti/10870375/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-2.motorsport.com/images/amp/YvKB13G6/s6/andrea-kimi-antonelli-mercedes.jpg"
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/YvKB13G6/s6/andrea-kimi-antonelli-mercedes.jpg"
     },
     {
       "title": "George Russell identifies costly decision behind Mexican GP qualifying near-miss",
@@ -410,7 +778,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-01T00:03:37+00:00",
       "summary": "George Russell believes an extra lap of fuel cost him pole position for the Mexican Grand Prix after he missed out to his former team-mate and seven-time champion Lewis Hamilton by just 0.009 seconds.<br>The Mercedes driver will start alongside Hamilton on the front row, with Charles Leclerc in third. Russell explained that his rivals had not done preparation laps on their final Q3 runs, while ...<a class='more' href='https://www.motorsport.com/f1/news/george-russell-identifies-costly-decision-behind-mexican-gp-qualifying-near-miss/10870370/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-6.motorsport.com/images/amp/68VwR1Q2/s6/motorsport-com-graphics-40.jpg"
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/68VwR1Q2/s6/motorsport-com-graphics-40.jpg"
     },
     {
       "title": "Ocon issues statement after being sidelined by Haas",
@@ -426,7 +794,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T23:58:57+00:00",
       "summary": "Lewis Hamilton can finally say he has scored pole position for three different teams after a blistering lap today gave him pole for tomorrow's Mexico City Grand Prix - his first grand prix pole for Ferrari. The seven-time champion says it took him back to watching Michael Schumacher dominate with the Italian team.<br>Hamilton beat his former team-mate George Russell by just 0.009 seconds, with ...<a class='more' href='https://www.motorsport.com/f1/news/lewis-hamilton-first-ferrari-f1-pole-takes-me-back-to-watching-michael/10870368/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/0rVPjJP0/s6/motorsport-com-graphics-52.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/0rVPjJP0/s6/motorsport-com-graphics-52.jpg"
     },
     {
       "title": "Ocon denies reports of physical altercation behind dropping",
@@ -442,7 +810,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T23:34:23+00:00",
       "summary": "Isack Hadjar has hit back at the paddock guest he pushed away at the Mexican Grand Prix, insisting that \"it's not a reality show\".<br>The Red Bull driver was summoned to the stewards on Saturday morning after footage on social media showed him shoving a man who was trying to take a selfie with him in the paddock.<br>The stewards found that Hadjar had breached the International Sporting Code, but ...<a class='more' href='https://www.motorsport.com/f1/news/isack-hadjar-defends-mexican-gp-paddock-incident-after-fia-warning-not-a-reality-show/10870360/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-7.motorsport.com/images/amp/YMXb51l2/s6/motorsport-com-graphics-39.jpg"
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/YMXb51l2/s6/motorsport-com-graphics-39.jpg"
     },
     {
       "title": "Ryo Hirakawa could have \"easily\" made Q2 in F1 Mexico GP without late traffic",
@@ -450,7 +818,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T23:33:37+00:00",
       "summary": "Haas stand-in Ryo Hirakawa believes he'd have \"easily\" reached the second part of qualifying for the Mexico City Grand Prix, had he not encountered traffic on his final lap of the session.<br>Hirakawa, making his Formula 1 debut with Haas as Esteban Ocon was stood down from his driving duties, had set a personal-best first sector and was angling to make the Q3 cut at the expense of Carlos ...<a class='more' href='https://www.motorsport.com/f1/news/hirakawa-could-have-easily-made-q2-in-f1-mexico-gp-without-late-traffic/10870356/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-9.motorsport.com/images/amp/25dLDDD0/s6/ryo-hirakawa-haas-f1-team-laur.jpg"
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/25dLDDD0/s6/ryo-hirakawa-haas-f1-team-laur.jpg"
     },
     {
       "title": "F1 Mexico GP: Sunday schedule, weather forecast and how to watch",
@@ -458,15 +826,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T23:23:34+00:00",
       "summary": "Formula 1 heads into Sunday in Mexico City with Lewis Hamilton on pole and Kimi Antonelli only one result away from becoming world champion.<br>Hamilton leads George Russell and Ferrari team-mate Charles Leclerc on the grid, while Antonelli will start fourth after Max Verstappen one-place grid penalty.<br>Antonelli needs only to finish ninth or higher to clinch his first Formula 1 world ...<a class='more' href='https://www.motorsport.com/f1/news/f1-mexico-gp-sunday-schedule-weather-forecast-and-how-to-watch/10870318/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/Y9lNjE82/s6/ryo-hirakawa-haas-f1-team.jpg"
-    },
-    {
-      "title": "How to follow Mexico City Grand Prix on the BBC",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/c6wyrgejp0w8o?at_medium=RSS&at_campaign=rss",
-      "source": "BBC Sport",
-      "pubDate": "2026-10-31T23:23:03+00:00",
-      "summary": "All the key BBC coverage details for the Mexico City Grand Prix, which takes place from 30 October to 1 November.",
-      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/d626/live/21784a30-d0dc-11f1-ad70-07daa2562508.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/Y9lNjE82/s6/ryo-hirakawa-haas-f1-team.jpg"
     },
     {
       "title": "\"Up there for pole\": Max Verstappen rues Turn 13 traffic in F1 Mexico GP qualifying",
@@ -474,7 +834,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T23:21:10+00:00",
       "summary": "Max Verstappen rued being unable to log his final run of Mexico City Grand Prix qualifying, stating that his lap was \"up there for pole\" before encountering Lando Norris in the final sector.<br>The four-time champion was almost a tenth up on the lap of eventual poleman Lewis Hamilton at the close of the second sector, having found a purple opening sector and then matching Hamilton in the second ...<a class='more' href='https://www.motorsport.com/f1/news/up-there-for-pole-verstappen-rues-turn-13-traffic-in-f1-mexico-gp-qualifying/10870339/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-6.motorsport.com/images/amp/0arEVlN2/s6/max-verstappen-red-bull-racing.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/0arEVlN2/s6/max-verstappen-red-bull-racing.jpg"
     },
     {
       "title": "F1 drivers handed potential Mexico City GP penalty warning by FIA stewards",
@@ -490,7 +850,7 @@
       "source": "Autosport",
       "pubDate": "2026-10-31T23:13:59+00:00",
       "summary": "Dropped Haas Formula 1 driver Esteban Ocon has denied French media rumours of a physical altercation with team boss Ayao Komatsu as he issued his response to missing this weekend's Mexico Grand Prix.<br>Ocon was benched in Mexico, most likely connected to a public disagreement with his race engineer during free practice. That led to a discussion with the team on Friday night as the relationship ...<a class='more' href='https://www.autosport.com/f1/news/ocon-denies-physical-altercation-rumours-in-first-statement-since-being-dropped-by-haas-for-mexico-/10870348/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/0qgKEB8Y/s6/esteban-ocon-haas-f1-team-3.jpg"
+      "imageUrl": "https://cdn-3.motorsport.com/images/amp/0qgKEB8Y/s6/esteban-ocon-haas-f1-team-3.jpg"
     },
     {
       "title": "Esteban Ocon issues statement after Haas benching, denies physical altercation rumours",
@@ -498,7 +858,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T23:10:44+00:00",
       "summary": "Dropped Haas Formula 1 driver Esteban Ocon has denied French media rumours of a physical altercation with team boss Ayao Komatsu as he issued his response to missing this weekend's Mexico Grand Prix.<br>Ocon was benched in Mexico, most likely connected to a public disagreement with his race engineer during free practice. That led to a discussion with the team on Friday night as the relationship ...<a class='more' href='https://www.motorsport.com/f1/news/esteban-ocon-issues-statement-after-haas-benching-denies-physical-altercation-rumours/10870336/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-2.motorsport.com/images/amp/0arENOy2/s6/esteban-ocon-haas-f1-team-2.jpg"
+      "imageUrl": "https://cdn-3.motorsport.com/images/amp/0arENOy2/s6/esteban-ocon-haas-f1-team-2.jpg"
     },
     {
       "title": "Liam Lawson at risk of Mexico City qualifying disqualification",
@@ -530,7 +890,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T22:41:25+00:00",
       "summary": "Seven-time Formula 1 champion Lewis Hamilton admitted he was \"lost for words\" after claiming his first grand prix pole position for Ferrari at the Mexican Grand Prix.<br>The Briton beat his former Mercedes team-mate George Russell by just 0.009 seconds to end a three-year wait for a grand prix pole position. It is the 105th pole of Hamilton's career, extending his own F1 record, and his first ...<a class='more' href='https://www.motorsport.com/f1/news/lewis-hamilton-lost-for-words-after-ending-three-year-f1-pole-drought-at-mexican-gp/10870309/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-7.motorsport.com/images/amp/YpbA9a30/s6/motorsport-com-graphics-38.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/YpbA9a30/s6/motorsport-com-graphics-38.jpg"
     },
     {
       "title": "Lewis Hamilton buoyed by historic first Ferrari F1 pole: \"I still love what I do\"",
@@ -538,7 +898,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T22:36:39+00:00",
       "summary": "On the site of two of his seven world championship celebrations, Lewis Hamilton added yet another chapter to his illustrious Formula 1 career and his fond Mexico memory bank, one that was long overdue.<br>Hamilton broke Ferrari's pole drought by earning the Scuderia its first pole of 2026, and in the process also secured his first one in red, his first pole since the 2023 Hungarian Grand Prix. In ...<a class='more' href='https://www.motorsport.com/f1/news/lewis-hamilton-buoyant-by-historic-first-ferrari-f1-pole-i-still-love-what-i-do/10870304/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-5.motorsport.com/images/amp/YBVjz7vY/s6/lewis-hamilton-ferrari-2.jpg"
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/YBVjz7vY/s6/lewis-hamilton-ferrari-2.jpg"
     },
     {
       "title": "Hamilton earns first Ferrari pole in Mexico City",
@@ -554,7 +914,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T22:32:06+00:00",
       "summary": "<br><br><br><br><br>1<br><br><br><br> Lewis Hamilton(Ferrari)<br><br> <br> <br><br><br> <br> <br> <br> <br> <br>2<br><br><br> <br> <br> <br><br> <br><br> George Russell(Mercedes)<br><br><br><br><br>3<br><br><br><br> Charles Leclerc(Ferrari)<br><br> <br> <br><br><br> <br> <br> <br> <br> <br>4<br><br><br> <br> <br> <br><br> <br><br> Kimi ...<a class='more' href='https://www.motorsport.com/f1/news/2026-f1-mexico-grand-prix-starting-grid/10870302/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-8.motorsport.com/images/amp/Y9lNjZb2/s6/lewis-hamilton-ferrari.jpg"
+      "imageUrl": "https://cdn-7.motorsport.com/images/amp/Y9lNjZb2/s6/lewis-hamilton-ferrari.jpg"
     },
     {
       "title": "Lewis Hamilton 'lost for words' after landing major Ferrari milestone",
@@ -578,7 +938,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-10-31T22:19:47+00:00",
       "summary": "Lewis Hamilton has earned Ferrari its first pole of the 2026 Formula 1 campaign by defeating George Russell in a thrilling qualifying shootout for the Mexico Grand Prix.<br>Russell had taken provisional pole away from Charles Leclerc with his final run at the Autodromo Hermanos Rodriguez, but Hamilton responded with a marginally faster first sector to take pole by a minuscule 0.009s.<br>As ...<a class='more' href='https://www.motorsport.com/f1/news/f1-mexico-gp-quali-report/10870286/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/68VwRpQ2/s6/lewis-hamilton-ferrari-2.jpg"
+      "imageUrl": "https://cdn-2.motorsport.com/images/amp/68VwRpQ2/s6/lewis-hamilton-ferrari-2.jpg"
     },
     {
       "title": "Lewis Hamilton defies age barrier to end three-year wait for pole position",
@@ -602,366 +962,6 @@
       "source": "RacingNews365",
       "pubDate": "2026-10-31T22:11:00+00:00",
       "summary": "Check out the results from qualifying at the 2026 F1 Mexico City Grand Prix!",
-      "imageUrl": null
-    },
-    {
-      "title": "Oscar Piastri suffers embarrassing early exit as McLaren gamble backfires",
-      "link": "https://racingnews365.com/oscar-piastri-suffers-embarrassing-early-exit-as-mclaren-gamble-backfires",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T21:54:00+00:00",
-      "summary": "When it rains it truly pours this season for Oscar Piastri.",
-      "imageUrl": null
-    },
-    {
-      "title": "Max Verstappen will have no say in 2027 Racing Bulls driver line-up, says Red Bull boss",
-      "link": "https://www.motorsport.com/f1/news/max-verstappen-will-have-no-say-in-2027-racing-bulls-driver-line-up-says-red-bull-boss/10870282/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T21:24:15+00:00",
-      "summary": "Red Bull Racing CEO and team principal Laurent Mekies has explained that Racing Bulls alone will decide its Formula 1 driver line-up for 2027 and that Max Verstappen will not have a say despite his clash with Liam Lawson in Mexico.<br>Both Verstappen and Lawson were handed a one-place grid penalty for the Mexican Grand Prix after making contact during the second practice session on ...<a class='more' href='https://www.motorsport.com/f1/news/max-verstappen-will-have-no-say-in-2027-racing-bulls-driver-line-up-says-red-bull-boss/10870282/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-8.motorsport.com/images/amp/2y7QprX6/s6/motorsport-com-graphics-37.jpg"
-    },
-    {
-      "title": "Fernando Alonso furious stoppage triggers early qualifying red flag",
-      "link": "https://racingnews365.com/fernando-alonso-furious-stoppage-triggers-early-qualifying-red-flag",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T21:12:00+00:00",
-      "summary": "Fernando Alonso is already out of Mexico City qualifying and Q1 is not even over yet!",
-      "imageUrl": null
-    },
-    {
-      "title": "F1 rookie reveals bizarre impairment: 'I couldn't feel my legs'",
-      "link": "https://racingnews365.com/f1-rookie-reveals-bizarre-impairment-i-couldnt-feel-my-legs",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T20:25:00+00:00",
-      "summary": "A strange issue during FP1 saw rookie Nikola Tsolov having to stand up in the car to return feeling to his legs.",
-      "imageUrl": null
-    },
-    {
-      "title": "Jack Doohan unexpectedly on the brink of huge F1 opportunity",
-      "link": "https://racingnews365.com/jack-doohan-unexpectedly-on-the-brink-of-huge-f1-opportunity",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T19:30:00+00:00",
-      "summary": "Ryo Hirakawa will take the wheel of Esteban Ocon's Haas for the Mexico City Grand Prix. However, it is far from certain that he will finish the  F1 season, with Jack Doohan waiting in the wings.",
-      "imageUrl": null
-    },
-    {
-      "title": "Max Verstappen doubles down on Liam Lawson criticism: 'That doesn't happen to me'",
-      "link": "https://racingnews365.com/max-verstappen-doubles-down-on-liam-lawson-criticism-that-doesnt-happen-to-me",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T19:03:00+00:00",
-      "summary": "Max Verstappen has decided to have another go at his former Red Bull team-mate.",
-      "imageUrl": null
-    },
-    {
-      "title": "Norris edges Antonelli in third Mexico City GP practice",
-      "link": "https://racer.com/2026/10/31/norris-edges-antonelli-in-third-mexico-city-gp-practice",
-      "source": "RACER",
-      "pubDate": "2026-10-31T18:52:09+00:00",
-      "summary": "Lando Norris bested Kimi Antonelli to top spot in the final practice session at the Mexico City Grand Prix. Charles Leclerc, who topped both Friday practice sessions, finished the final pre-qualifying hour third.Norris saved his fastest lap until the final two minutes of the session. Despite the lap featuring only...",
-      "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/blt5e852281b26cd16e/6ae639431a8b5a0ccf772d1c/GettyImages-2302875610.jpg?environment=live"
-    },
-    {
-      "title": "F1 Mexico GP: Norris tops final practice by 0.001s from Antonelli",
-      "link": "https://www.autosport.com/f1/news/f1-mexico-gp-norris-tops-final-practice-by-0001s-from-antonelli/10870228/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-      "source": "Autosport",
-      "pubDate": "2026-10-31T18:44:34+00:00",
-      "summary": "Reigning world champion Lando Norris has topped third and final practice at Formula 1's Mexico Grand Prix, beating championship leader Kimi Antonelli in a tight session at the Autodromo Hermanos Rodriguez.<br>Norris dipped just 0.001s under Antonelli's initial benchmark as all four top teams looked in the mix on the tricky high-altitude circuit, with several midfield running into power unit ...<a class='more' href='https://www.autosport.com/f1/news/f1-mexico-gp-norris-tops-final-practice-by-0001s-from-antonelli/10870228/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/2wlKOl3Y/s6/lando-norris-mclaren-2.jpg"
-    },
-    {
-      "title": "F1 Mexico GP: Lando Norris tops final practice by 0.001s from Kimi Antonelli",
-      "link": "https://www.motorsport.com/f1/news/f1-mexico-gp-fp3-report/10870217/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T18:42:30+00:00",
-      "summary": "Reigning world champion Lando Norris has topped third and final practice at Formula 1's Mexico Grand Prix, beating championship leader Kimi Antonelli in a tight session at the Autodromo Hermanos Rodriguez.<br>Norris dipped just 0.001s under Antonelli's initial benchmark as all four top teams looked in the mix on the tricky high-altitude circuit, with several midfield running into power unit ...<a class='more' href='https://www.motorsport.com/f1/news/f1-mexico-gp-fp3-report/10870217/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/6VyKrydY/s6/lando-norris-mclaren.jpg"
-    },
-    {
-      "title": "Lando Norris pips Kimi Antonelli as Mexico FP3 serves up an unexpected curveball",
-      "link": "https://racingnews365.com/lando-norris-pips-kimi-antonelli-as-mexico-fp3-serves-up-an-unexpected-curveball",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T18:36:00+00:00",
-      "summary": "Lando Norris set the pace in FP3 at the Mexico City Grand Prix, narrowly beating Kimi Antonelli and Charles Leclerc at the Autódromo Hermanos Rodríguez.",
-      "imageUrl": null
-    },
-    {
-      "title": "2026 F1 Mexico City Grand Prix - Free Practice 3 results",
-      "link": "https://racingnews365.com/2026-f1-mexico-city-grand-prix-free-practice-3-results",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T18:30:00+00:00",
-      "summary": "Check out the results from Free Practice 3 at the 2026 F1 Mexico City Grand Prix!",
-      "imageUrl": null
-    },
-    {
-      "title": "Haas team principal takes clear stance over Esteban Ocon furore",
-      "link": "https://racingnews365.com/haas-team-principal-takes-clear-stance-over-esteban-ocon-furore",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T18:10:00+00:00",
-      "summary": "Ayao Komatsu remained tight-lipped when discussing the burning issue ahead of this weekend's Mexico City GP.",
-      "imageUrl": null
-    },
-    {
-      "title": "When Red Bull expects to start using its long-awaited new F1 wind tunnel",
-      "link": "https://www.motorsport.com/f1/news/when-red-bull-expects-to-start-using-its-long-awaited-new-f1-wind-tunnel/10870210/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T18:00:06+00:00",
-      "summary": "Although Red Bull has turned its 2026 Formula 1 season around in impressive fashion, the technical team led by Pierre Wache is still dealing with several limitations behind the scenes. One of the main ones is perhaps the wind tunnel, the oldest on the entire F1 grid.<br>Former team principal Christian Horner repeatedly described Red Bull's wind tunnel as \"a Cold War relic\" and said working with ...<a class='more' href='https://www.motorsport.com/f1/news/when-red-bull-expects-to-start-using-its-long-awaited-new-f1-wind-tunnel/10870210/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-2.motorsport.com/images/amp/YK15Rvz0/s6/isack-hadjar-red-bull-racing.jpg"
-    },
-    {
-      "title": "Red Bull provides timeline for long-awaited new F1 wind tunnel",
-      "link": "https://www.autosport.com/f1/news/when-red-bull-expects-to-start-using-its-long-awaited-new-f1-wind-tunnel/10870214/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-      "source": "Autosport",
-      "pubDate": "2026-10-31T17:58:02+00:00",
-      "summary": "Although Red Bull has turned its 2026 Formula 1 season around in impressive fashion, the technical team led by Pierre Wache is still dealing with several limitations behind the scenes. One of the main ones is perhaps the wind tunnel, the oldest on the entire F1 grid.<br>Former team principal Christian Horner repeatedly described Red Bull's wind tunnel as \"a Cold War relic\" and said working with ...<a class='more' href='https://www.autosport.com/f1/news/when-red-bull-expects-to-start-using-its-long-awaited-new-f1-wind-tunnel/10870214/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/68VwRk42/s6/max-verstappen-red-bull-racing-2.jpg"
-    },
-    {
-      "title": "Isack Hadjar formally warned for fan incident in F1 Mexico GP paddock",
-      "link": "https://www.motorsport.com/f1/news/isack-hadjar-warned-for-fan-incident-in-f1-mexico-gp-paddock/10870033/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T17:17:48+00:00",
-      "summary": "Isack Hadjar has been given a formal warning by the Mexico Grand Prix stewards for shoving a fan in the Formula 1 paddock ahead of opening practice.<br>The Red Bull driver was initially summoned for an alleged incident of “misconduct” at Autodromo Hermanos Rodriguez on Friday.<br>Hadjar had been approached by a fan attempting to take a picture, but he was shoved away twice and the Frenchman ...<a class='more' href='https://www.motorsport.com/f1/news/isack-hadjar-warned-for-fan-incident-in-f1-mexico-gp-paddock/10870033/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-9.motorsport.com/images/amp/6b8ZNN32/s6/isack-hadjar-red-bull-racing.jpg"
-    },
-    {
-      "title": "Isack Hadjar learns stewards' verdict after paddock altercation with fan",
-      "link": "https://racingnews365.com/isack-hadjar-learns-stewards-verdict-after-paddock-altercation-with-fan",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T16:56:00+00:00",
-      "summary": "Isack Hadjar was summoned to the stewards after he was involved in an alleged incident with a fan on Friday in Mexico.",
-      "imageUrl": null
-    },
-    {
-      "title": "LIVE: 2026 F1 Mexico City Grand Prix - Free Practice 3",
-      "link": "https://racingnews365.com/live-2026-f1-mexico-city-prix-free-practice-3",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T16:25:00+00:00",
-      "summary": "Follow all the action live from Free Practice 3 at the 2026 F1 Mexico City Grand Prix weekend.",
-      "imageUrl": null
-    },
-    {
-      "title": "Who is Haas F1 driver Ryo Hirakawa, the shock Esteban Ocon replacement?",
-      "link": "https://racingnews365.com/who-is-haas-f1-driver-ryo-hirakawa-the-shock-esteban-ocon-replacement",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T16:00:00+00:00",
-      "summary": "Ryo Hirakawa is set to make his Formula 1 race debut at the Mexico City Grand Prix after Haas announced the Japanese driver would replace Esteban Ocon for the remainder of the weekend.",
-      "imageUrl": null
-    },
-    {
-      "title": "Mercedes out of performance window at Mexico GP - George Russell",
-      "link": "https://www.motorsport.com/f1/news/george-russell-mercedes-out-of-performance-window-at-mexico-gp/10870173/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T15:52:10+00:00",
-      "summary": "George Russell is enduring further difficulties with the upgraded Mercedes Formula 1 car, as it was outside the optimum set-up in Friday practice at the Mexico Grand Prix.<br>The championship-leading squad introduced an updated W17 for Malaysia this month, but it was easily beaten by Red Bull’s Max Verstappen before a similar story in Singapore.<br>Kimi Antonelli ended Verstappen’s run by ...<a class='more' href='https://www.motorsport.com/f1/news/george-russell-mercedes-out-of-performance-window-at-mexico-gp/10870173/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/0R7Bb9M2/s6/george-russell-mercedes.jpg"
-    },
-    {
-      "title": "Haas share more information on sudden Esteban Ocon withdrawal",
-      "link": "https://racingnews365.com/haas-share-more-information-on-sudden-esteban-ocon-withdrawal",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T15:30:00+00:00",
-      "summary": "Esteban Ocon will not compete in the rest of the Mexico City Grand Prix weekend, with the Haas driver replaced by Ryo Hirakawa.",
-      "imageUrl": null
-    },
-    {
-      "title": "Hirakawa replaces Ocon for Mexico in shock late move for Haas",
-      "link": "https://racer.com/2026/10/31/hirakawa-replaces-ocon-for-mexico-in-shock-late-move-for-haas",
-      "source": "RACER",
-      "pubDate": "2026-10-31T15:15:32+00:00",
-      "summary": "Esteban Ocon's time at Haas could be over after the team announced that reserve driver Ryo Hirakawa will be taking his place for the Mexico Grand Prix, with no reason given for the change.",
-      "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/bltf99441e23ec888e6/6ae607f05d9d91446bfaf945/GettyImages-2302608203.jpg?environment=live"
-    },
-    {
-      "title": "Hirakawa replaces Ocon for Mexico City Grand Prix",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/crwydk35zlnvo?at_medium=RSS&at_campaign=rss",
-      "source": "BBC Sport",
-      "pubDate": "2026-10-31T15:05:11+00:00",
-      "summary": "Ryo Hirakawa will race for Haas at the Mexico City Grand Prix, replacing Esteban Ocon.",
-      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/ec99/live/88031980-d53a-11f1-b64c-03717a6e5b71.jpg"
-    },
-    {
-      "title": "George Russell voices biggest Mercedes threat after Mexico practice",
-      "link": "https://racingnews365.com/george-russell-voices-biggest-mercedes-threat-after-mexico-practice",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T15:00:00+00:00",
-      "summary": "Mercedes did not appear to be the fastest team on the road during free practice one on Friday.",
-      "imageUrl": null
-    },
-    {
-      "title": "Haas drops Ocon for F1 Mexico GP",
-      "link": "https://www.autosport.com/f1/news/haas-drops-ocon-for-f1-mexico-gp/10870160/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-      "source": "Autosport",
-      "pubDate": "2026-10-31T14:54:48+00:00",
-      "summary": "The Haas Formula 1 team has made the shock decision to replace Esteban Ocon with reserve driver Ryo Hirakawa for the remainder of the Mexico Grand Prix weekend.<br>Hirakawa will act as Oliver Bearman’s team-mate for final practice, qualifying and Sunday’s race, having also taken Ocon’s VF-26 on Friday morning as part of the rookie mandate for FP1 sessions.<br>Ocon returned for second ...<a class='more' href='https://www.autosport.com/f1/news/haas-drops-ocon-for-f1-mexico-gp/10870160/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/68VwR8V2/s6/esteban-ocon-haas-f1-team.jpg"
-    },
-    {
-      "title": "Haas drops Esteban Ocon for F1 Mexico GP",
-      "link": "https://www.motorsport.com/f1/news/haas-drops-esteban-ocon-for-f1-mexico-gp/10870158/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T14:52:55+00:00",
-      "summary": "The Haas Formula 1 team has made the shock decision to replace Esteban Ocon with reserve driver Ryo Hirakawa for the remainder of the Mexico Grand Prix weekend.<br>Hirakawa will act as Oliver Bearman’s team-mate for final practice, qualifying and Sunday’s race, having also taken Ocon’s VF-26 on Friday morning as part of the rookie mandate for FP1 sessions.<br>Ocon returned for second ...<a class='more' href='https://www.motorsport.com/f1/news/haas-drops-esteban-ocon-for-f1-mexico-gp/10870158/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-8.motorsport.com/images/amp/68VwR8V2/s6/esteban-ocon-haas-f1-team.jpg"
-    },
-    {
-      "title": "Esteban Ocon sidelined as 32-year-old rookie handed F1 debut in Mexico",
-      "link": "https://racingnews365.com/breaking-esteban-ocon-sidelined-as-32-year-old-rookie-handed-f1-debut-in-mexico",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T14:39:00+00:00",
-      "summary": "Esteban Ocon has been withdrawn from the Haas F1 team for the remainder of the Mexico City Grand Prix weekend.",
-      "imageUrl": null
-    },
-    {
-      "title": "Pierre Gasly reveals 'big ask' at Alpine with 'back of our head' admission",
-      "link": "https://racingnews365.com/pierre-gasly-reveals-big-ask-at-alpine-with-back-of-our-head-admission",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T14:30:00+00:00",
-      "summary": "Pierre Gasly maintains that Alpine securing fifth in the F1 constructors' championship is going to be a tall order given the team's recent form.",
-      "imageUrl": null
-    },
-    {
-      "title": "MotoGP riders at risk of extraordinary ban over refusal to race in Qatar - report",
-      "link": "https://racingnews365.com/motogp-riders-at-risk-of-extraordinary-ban-over-refusal-to-race-in-qatar-report",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T14:05:00+00:00",
-      "summary": "A remarkable developing story in the world of MotoGP as the season nears its end.",
-      "imageUrl": null
-    },
-    {
-      "title": "Ferrari downplays expectations for F1 Mexico GP despite blistering Friday",
-      "link": "https://www.motorsport.com/f1/news/fred-vasseur-downplays-expectations-for-f1-mexico-gp-despite-blistering-friday/10870125/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T14:00:05+00:00",
-      "summary": "Ferrari Formula 1 boss Fred Vasseur has downplayed expectations for the Mexico Grand Prix despite Charles Leclerc topping both Friday practice sessions.<br>The Ferrari driver set the pace with a 1m18.128s in FP1, before lowering that benchmark to 1m17.827s for FP2 at Autodromo Hermanos Rodriguez.<br>Team-mate Lewis Hamilton was also competitive, having taken fourth in opening practice, 0.738s ...<a class='more' href='https://www.motorsport.com/f1/news/fred-vasseur-downplays-expectations-for-f1-mexico-gp-despite-blistering-friday/10870125/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/6O7zXZJ6/s6/charles-leclerc-ferrari.jpg"
-    },
-    {
-      "title": "How Ferrari's latest F1 engine upgrade is reaping the rewards in Mexico",
-      "link": "https://racingnews365.com/how-ferraris-latest-f1-engine-upgrade-is-reaping-the-rewards-in-mexico",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T13:30:00+00:00",
-      "summary": "Ferrari enjoyed a strong start to the weekend in Mexico City with Charles Leclerc topping both practice sessions.",
-      "imageUrl": null
-    },
-    {
-      "title": "George Russell tips Frederik Vesti for F1 2027 Cadillac seat",
-      "link": "https://www.motorsport.com/f1/news/george-russell-frederik-vesti-deserves-cadillac-seat-for-f1-2027/10870111/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T13:00:03+00:00",
-      "summary": "George Russell has labelled Mercedes reserve driver Frederik Vesti as a shock contender to join Cadillac for the 2027 Formula 1 campaign.<br>The American outfit is yet to confirm Valtteri Bottas as a team-mate to Sergio Perez - who signed a contract extension on Wednesday - for next year, with various contenders emerging.<br>Cadillac’s test driver Colton Herta is an option, despite his current ...<a class='more' href='https://www.motorsport.com/f1/news/george-russell-frederik-vesti-deserves-cadillac-seat-for-f1-2027/10870111/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/YpbAB5A0/s6/frederik-vesti-mercedes.jpg"
-    },
-    {
-      "title": "Max Verstappen defended after Liam Lawson clash: 'I would have put him in the barrier'",
-      "link": "https://racingnews365.com/max-verstappen-defended-after-liam-lawson-clash-i-would-have-put-him-in-the-barrier",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T13:00:00+00:00",
-      "summary": "Max Verstappen and Liam Lawson came together during the second practice session in Mexico City.",
-      "imageUrl": null
-    },
-    {
-      "title": "Lewis Hamilton 'praying' after painful Ferrari issue during Mexico practice",
-      "link": "https://racingnews365.com/lewis-hamilton-praying-after-painful-ferrari-issue-during-mexico-practice",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T12:10:00+00:00",
-      "summary": "Lewis Hamilton's running during free practice on Friday in Mexico was cut short due to an engine issue.",
-      "imageUrl": null
-    },
-    {
-      "title": "Red Bull finds ‘disconnect’ in RB22 in F1 Mexico GP practice",
-      "link": "https://www.motorsport.com/f1/news/red-bull-finds-disconnect-in-rb22-in-f1-mexico-gp-practice/10870035/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T12:00:04+00:00",
-      "summary": "Red Bull admits it still has work to do after Friday's Formula 1 practice sessions in Mexico City.<br>Max Verstappen ended the day fifth, three tenths off the pace, but that was despite damage sustained in an incident with Liam Lawson. Verstappen described the moment in the media pen as 'not very smart' from the Racing Bulls driver, given that Lawson is still fighting for his seat.<br>The stewards ...<a class='more' href='https://www.motorsport.com/f1/news/red-bull-finds-disconnect-in-rb22-in-f1-mexico-gp-practice/10870035/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/0LdejdJ0/s6/max-verstappen-red-bull-racing.jpg"
-    },
-    {
-      "title": "Colton Herta takes ‘now or never’ F1 stance after super licence confusion",
-      "link": "https://racingnews365.com/colton-herta-takes-now-or-never-f1-stance-after-super-licence-confusion",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T11:20:00+00:00",
-      "summary": "Will Colton Herta finally be able to call himself an F1 driver in 2027?",
-      "imageUrl": null
-    },
-    {
-      "title": "Lewis Hamilton \"praying\" for Ferrari power unit after Mexico FP2 failure",
-      "link": "https://www.motorsport.com/f1/news/lewis-hamilton-praying-for-ferrari-power-unit-after-mexico-fp2-failure/10870069/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T10:41:19+00:00",
-      "summary": "Lewis Hamilton has been left “praying” for his Ferrari power unit after it caused an early retirement in second practice for the Formula 1 Mexico Grand Prix.<br>The seven-time world champion suddenly lost power down the start-finish straight after 28 minutes, leading to him stopping at the exit of Turn 3 at Autodromo Hermanos Rodriguez.<br>Hamilton was enjoying a competitive FP2 until then as ...<a class='more' href='https://www.motorsport.com/f1/news/lewis-hamilton-praying-for-ferrari-power-unit-after-mexico-fp2-failure/10870069/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-8.motorsport.com/images/amp/0arEV9G2/s6/lewis-hamilton-ferrari-2.jpg"
-    },
-    {
-      "title": "F1 fans rush to defend Isack Hadjar after controversial Mexican GP incident",
-      "link": "https://www.motorsport.com/f1/news/f1-fans-defend-isack-hadjar-after-paddock-selfie-row-leads-to-fia-summons/10870067/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-10-31T10:34:30+00:00",
-      "summary": "Formula 1 fans have jumped to the defence of Isack Hadjar after the Red Bull driver was summoned to the stewards for alleged misconduct during the Mexican Grand Prix race weekend. This comes after he was filmed pushing a fan as they tried to get a selfie with the driver.<br>The video spread quickly on social media on Friday, appearing to show Hadjar pushing away a fan who was launching himself at ...<a class='more' href='https://www.motorsport.com/f1/news/f1-fans-defend-isack-hadjar-after-paddock-selfie-row-leads-to-fia-summons/10870067/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/0Zq8Zdb6/s6/motorsport-com-graphics-51.jpg"
-    },
-    {
-      "title": "Mercedes F1 driver eyeing up Cadillac switch amid Valtteri Bottas uncertainty",
-      "link": "https://racingnews365.com/mercedes-f1-driver-eyeing-up-cadillac-switch-amid-valtteri-bottas-uncertainty",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T10:30:00+00:00",
-      "summary": "Cadillac is believed to be weighing up options when it comes to its second seat at the team for 2027.",
-      "imageUrl": null
-    },
-    {
-      "title": "Lando Norris plotting execution plan for McLaren to stun F1 rivals",
-      "link": "https://racingnews365.com/lando-norris-plotting-execution-plan-for-mclaren-to-stun-f1-rivals",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T09:40:00+00:00",
-      "summary": "Lando Norris has a plan to shock his F1 rivals at the Mexico City Grand Prix, but there is a lot that must go right.",
-      "imageUrl": null
-    },
-    {
-      "title": "George Russell details fresh F1 target as title hopes dashed",
-      "link": "https://racingnews365.com/george-russell-details-fresh-f1-target-as-title-hopes-dashed",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T08:50:00+00:00",
-      "summary": "George Russell has seen his F1 title hopes all but eliminated as the sport descends upon Mexico.",
-      "imageUrl": null
-    },
-    {
-      "title": "Lewis Hamilton firmly rejects Mexico F1 theory surrounding Ferrari trick",
-      "link": "https://racingnews365.com/lewis-hamilton-firmly-rejects-mexico-f1-theory-surrounding-ferrari-trick",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T08:00:00+00:00",
-      "summary": "Lewis Hamilton isn't having anything to do with the theory surrounding the Ferrari power unit at the Mexico City Grand Prix.",
-      "imageUrl": null
-    },
-    {
-      "title": "Isack Hadjar summoned by F1 stewards over alleged paddock misconduct",
-      "link": "https://racingnews365.com/isack-hadjar-summoned-by-f1-stewards-over-alleged-paddock-misconduct",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T07:10:00+00:00",
-      "summary": "Isack Hadjar will see the stewards in Mexico on Saturday morning after an altercation with a fan on Friday.",
-      "imageUrl": null
-    },
-    {
-      "title": "Red Bull issue withering 'on fire' response to brutal Christian Horner comments",
-      "link": "https://racingnews365.com/red-bull-issue-withering-on-fire-response-to-brutal-christian-horner-comments",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T06:20:00+00:00",
-      "summary": "Red Bull team principal Laurent Mekies has fired back at Christian's 'lost its mojo' gibe.",
-      "imageUrl": null
-    },
-    {
-      "title": "Ferrari call for track changes at 'almost dangerous' Mexico City GP",
-      "link": "https://racingnews365.com/ferrari-call-for-track-changes-at-almost-dangerous-mexico-city-gp",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T05:30:00+00:00",
-      "summary": "Ferrari boss Fred Vasseur was unimpressed with what he saw on track at the Mexico City Grand Prix, despite Charles Leclerc setting the fastest times in the first two practice sessions.",
-      "imageUrl": null
-    },
-    {
-      "title": "2026 F1 Mexico City Grand Prix qualifying start time today",
-      "link": "https://racingnews365.com/2026-f1-mexico-city-grand-prix-qualifying-start-time-today",
-      "source": "RacingNews365",
-      "pubDate": "2026-10-31T05:00:00+00:00",
-      "summary": "Find out the start time for qualifying ahead of the 2026 F1 Mexico City Grand Prix today.",
       "imageUrl": null
     }
   ]
