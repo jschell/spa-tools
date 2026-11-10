@@ -1,16 +1,128 @@
 {
-  "updatedAt": "2026-11-10T03:36:29.208157+00:00",
+  "updatedAt": "2026-11-10T11:49:28.331375+00:00",
   "failedSources": [
     "Formula 1"
   ],
   "items": [
+    {
+      "title": "FIA reveals ADUO results in final review of 2026 F1 season",
+      "link": "https://www.autosport.com/f1/news/fia-reveals-aduo-results-in-final-review-of-2026-f1-season/10873566/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
+      "source": "Autosport",
+      "pubDate": "2026-11-10T11:45:39+00:00",
+      "summary": "The FIA has announced its final Additional Development and Upgrade Opportunities (ADUO) results for the 2026 Formula 1 season, with no changes granted for any of the power unit manufacturers.<br>From this season, the FIA installed a mechanism in the F1 regulations which allowed power unit manufacturers the ability to make updates, if they fell behind the leading engine, in the form of tokens ...<a class='more' href='https://www.autosport.com/f1/news/fia-reveals-aduo-results-in-final-review-of-2026-f1-season/10873566/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
+      "imageUrl": "https://cdn-2.motorsport.com/images/amp/0kZX9KA6/s6/lando-norris-mclaren-liam-laws-2.jpg"
+    },
+    {
+      "title": "FIA reveals latest ADUO results in final review of 2026 F1 season",
+      "link": "https://www.motorsport.com/f1/news/fia-reveals-latest-aduo-results-in-final-review-of-2026-f1-season/10873562/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-10T11:42:46+00:00",
+      "summary": "The FIA has announced its final Additional Development and Upgrade Opportunities (ADUO) results for the 2026 Formula 1 season, with no changes granted for any of the power unit manufacturers.<br>From this season, the FIA installed a mechanism in the F1 regulations which allowed power unit manufacturers the ability to make updates, if they fell behind the leading engine, in the form of tokens ...<a class='more' href='https://www.motorsport.com/f1/news/fia-reveals-latest-aduo-results-in-final-review-of-2026-f1-season/10873562/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-3.motorsport.com/images/amp/YMXbMRL2/s6/andrea-kimi-antonelli-mercedes.jpg"
+    },
+    {
+      "title": "Toto Wolff sends clear message by raising numerous Mercedes questions",
+      "link": "https://racingnews365.com/toto-wolff-sends-clear-message-by-raising-numerous-mercedes-questions",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-10T11:20:00+00:00",
+      "summary": "Toto Wolff has listed multiple questions he wants answers to ahead of the F1 winter break, insisting the 2027 campaign starts now.",
+      "imageUrl": null
+    },
+    {
+      "title": "Lando Norris eyes review after perplexing issue triggered mixed emotions",
+      "link": "https://racingnews365.com/lando-norris-eyes-review-after-perplexing-issue-triggered-mixed-emotions",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-10T10:30:00+00:00",
+      "summary": "Lando Norris plans to review the start of the São Paulo Grand Prix after he dropped from first to third in the opening corners, although he did battle back to take the 14th victory of his F1 career.",
+      "imageUrl": null
+    },
+    {
+      "title": "Honda struggling to explain Lance Stroll’s 13th DNF of the season",
+      "link": "https://www.motorsport.com/f1/news/honda-struggling-to-explain-lance-strolls-13th-dnf-of-the-season/10873412/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-10T10:25:06+00:00",
+      "summary": "Honda says it needs to find the root cause of Lance Stroll’s multiple battery issues after yet another retirement for the Aston Martin Formula 1 driver in the Brazilian Grand Prix.<br>Stroll’s race in Sao Paulo ended after 30 laps, as he lay 18th, 28 seconds adrift of 12-placed team-mate Fernando Alonso. This marked his 13th retirement in the 2026 campaign – discounting the Melbourne race ...<a class='more' href='https://www.motorsport.com/f1/news/honda-struggling-to-explain-lance-strolls-13th-dnf-of-the-season/10873412/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/Y9lNZkP2/s6/lance-stroll-aston-martin-raci-2.jpg"
+    },
+    {
+      "title": "Jaguar unveil dramatic new Formula E appearance as GEN4 challenger revealed",
+      "link": "https://racingnews365.com/jaguar-unveil-dramatic-new-formula-e-appearance-as-gen4-challenger-revealed",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-10T10:00:00+00:00",
+      "summary": "After running a very similar look for four seasons, Jaguar has gone for a completely different look to kickstart the Gen4 era!",
+      "imageUrl": null
+    },
+    {
+      "title": "Oliver Bearman feels Haas 'giving it away' in Audi fight after pit-stop disaster",
+      "link": "https://racingnews365.com/oliver-bearman-feels-haas-giving-it-away-in-audi-fight-after-pit-stop-disaster",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-10T09:40:00+00:00",
+      "summary": "Oliver Bearman was a miserable P17 in São Paulo. He explains why, with strong words for Haas.",
+      "imageUrl": null
+    },
+    {
+      "title": "Red Bull make unbelievable claim about Max Verstappen after defying expectations",
+      "link": "https://racingnews365.com/red-bull-make-unbelievable-claim-about-max-verstappen-no-sim-able-to-do-that",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-10T08:50:00+00:00",
+      "summary": "Max Verstappen slicing his way through the field at Interlagos from P21 to second was something that not even computers predicted.",
+      "imageUrl": null
+    },
+    {
+      "title": "Laurent Mekies: Liam Lawson’s fate has nothing to do with me",
+      "link": "https://www.motorsport.com/f1/news/laurent-mekies-liam-lawsons-fate-has-nothing-to-do-with-me/10873368/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-10T08:28:03+00:00",
+      "summary": "Red Bull team principal Laurent Mekies says it’s up to Racing Bulls whether to retain Liam Lawson or promote Nikola Tsolov to a race seat in the 2027 Formula 1 season.<br>Rookie Arvid Lindblad is set to get a second campaign in the world championship next year, but the identity of his team-mate has been uncertain. Formula 2 title contender Tsolov was the favourite to get the seat, but his form ...<a class='more' href='https://www.motorsport.com/f1/news/laurent-mekies-liam-lawsons-fate-has-nothing-to-do-with-me/10873368/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/YE9wPXPY/s6/liam-lawson-racing-bulls-laure.jpg"
+    },
+    {
+      "title": "How good is Hamilton and how long can he stay in F1? - Q&A",
+      "link": "https://www.bbc.co.uk/sport/formula1/articles/cmp3g005zyxko?at_medium=RSS&at_campaign=rss",
+      "source": "BBC Sport",
+      "pubDate": "2026-11-10T08:00:49+00:00",
+      "summary": "BBC F1 correspondent Andrew Benson answers your latest questions after the Sao Paulo Grand Prix.",
+      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/cadd/live/b2a33930-dc4d-11f1-b441-2b33b063138f.jpg"
+    },
+    {
+      "title": "Toto Wolff addresses prospect of Mercedes imposing team orders on Kimi Antonelli",
+      "link": "https://racingnews365.com/toto-wolff-addresses-prospect-of-mercedes-imposing-team-orders-on-kimi-antonelli",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-10T08:00:00+00:00",
+      "summary": "Mercedes has the drivers' and constructors' titles wrapped up - but one achievement remains in the 2026 season.",
+      "imageUrl": null
+    },
+    {
+      "title": "Lewis Hamilton explains 'massive' Ferrari issue after surprise failure",
+      "link": "https://racingnews365.com/lewis-hamilton-explains-massive-ferrari-issue-after-surprise-failure",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-10T07:10:00+00:00",
+      "summary": "Lewis Hamilton had a rocket start, but his race went backwards from there in Sao Paulo.",
+      "imageUrl": null
+    },
+    {
+      "title": "Max Verstappen bitterness after failing to match early Lewis Hamilton heroics",
+      "link": "https://racingnews365.com/max-verstappen-bitterness-after-failing-to-match-early-lewis-hamilton-heroics",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-10T06:20:00+00:00",
+      "summary": "Max Verstappen has voiced his disappointment at not being able to follow Lewis Hamilton's early Sao Paulo heroics.",
+      "imageUrl": null
+    },
+    {
+      "title": "Oscar Piastri reveals 'scary' George Russell encounter after spin",
+      "link": "https://racingnews365.com/oscar-piastri-reveals-scary-george-russell-encounter-after-spin",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-10T05:30:00+00:00",
+      "summary": "It was a troubling moment for George Russell, and a worrying one for all those who came across him.",
+      "imageUrl": null
+    },
     {
       "title": "F1 Las Vegas Grand Prix announces pre-race music line-up",
       "link": "https://www.motorsport.com/f1/news/f1-las-vegas-grand-prix-announces-pre-race-music-line-up/10873488/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T23:57:29+00:00",
       "summary": "American DJ Steve Aoki will return to the Las Vegas Grand Prix grid this year for a performance before the race on 21 November. He will be joined by fellow DJ MORTEN and singer Jordin Sparks as part of the pre-race line-up.<br>MORTEN will perform ahead of the driver introductions, which have become a fan-favourite part of the Las Vegas Grand Prix weekend after the viral moment between Sergio ...<a class='more' href='https://www.motorsport.com/f1/news/f1-las-vegas-grand-prix-announces-pre-race-music-line-up/10873488/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/6n7b5XR0/s6/motorsport-com-graphics-84.jpg"
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/6n7b5XR0/s6/motorsport-com-graphics-84.jpg"
     },
     {
       "title": "Lewis Hamilton to share flight with Mercedes after former team's F1 title triumph",
@@ -18,7 +130,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T23:30:48+00:00",
       "summary": "Seven-time Formula 1 champion Lewis Hamilton's trip back from Interlagos could have been an awkward one after Mercedes team principal Toto Wolff revealed that the Ferrari driver would be travelling with the newly crowned constructors' champions.<br>Mercedes secured its ninth constructors' title at the Brazilian Grand Prix on Sunday, with George Russell and Kimi Antonelli finishing fourth and ...<a class='more' href='https://www.motorsport.com/f1/news/lewis-hamilton-to-share-flight-with-mercedes-after-former-teams-f1-title-triumph/10873483/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/2QedBGJ2/s6/motorsport-com-graphics-83.jpg"
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/2QedBGJ2/s6/motorsport-com-graphics-83.jpg"
     },
     {
       "title": "George Russell \"keeps getting kicked\" as F1 pundit addresses 2026 struggles",
@@ -26,7 +138,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T22:59:41+00:00",
       "summary": "Former IndyCar Series driver and F1 TV pundit James Hinchcliffe believes George Russell had good reason to look \"a bit defeated\" after another difficult afternoon at the Brazilian Grand Prix.<br>While Mercedes ended the weekend on a high, securing the constructors' championship, Russell endured another frustrating race. The Briton missed out on pole position to McLaren's Lando Norris and ...<a class='more' href='https://www.motorsport.com/f1/news/george-russell-keeps-getting-kicked-as-f1-pundit-addresses-2026-struggles/10873477/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/6lmAR5k0/s6/motorsport-com-graphics-82.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/6lmAR5k0/s6/motorsport-com-graphics-82.jpg"
     },
     {
       "title": "Red Bull Max Verstappen plan revealed as major Oscar Piastri announcement made - RacingNews365",
@@ -74,7 +186,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T18:31:47+00:00",
       "summary": "George Russell has teased an imminent announcement linked to karting on 12 November.<br>The Mercedes driver posted a video to Instagram on Monday with the caption \"Stay tuned\". He talks about his first steps in motorsport over footage of himself racing karts as a boy, including a kart carrying the number 63 that he still uses in Formula 1.<br>The clip ends with the date 12.11.26, suggesting more ...<a class='more' href='https://www.motorsport.com/f1/news/george-russell-teases-imminent-karting-announcement-as-f1-fans-spot-major-clue/10873459/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-6.motorsport.com/images/amp/YN7vzGV6/s6/motorsport-com-graphics-81.jpg"
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/YN7vzGV6/s6/motorsport-com-graphics-81.jpg"
     },
     {
       "title": "Liam Lawson 'hypocrisy' warning to Racing Bulls as Max Verstappen shows 'true colours' - International Media reacts",
@@ -90,7 +202,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T17:56:51+00:00",
       "summary": "Formula 1 fans in the United States will be able to watch the Las Vegas Grand Prix for free after Apple TV confirmed the whole race weekend will be available to stream with no subscription needed.<br>The free coverage will include every on-track session from first practice on Thursday evening through to qualifying and Saturday night's grand prix.<br>F1 announced a five-year partnership with Apple ...<a class='more' href='https://www.motorsport.com/f1/news/apple-tv-confirms-free-f1-las-vegas-grand-prix-coverage-how-to-watch-in-the-us/10873443/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/27No31e0/s6/motorsport-com-graphics-80.jpg"
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/27No31e0/s6/motorsport-com-graphics-80.jpg"
     },
     {
       "title": "McLaren react to Lando Norris champagne and 'pyrotechnics' issues",
@@ -130,7 +242,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T15:51:41+00:00",
       "summary": "On the Monday after the Formula 1 Brazilian Grand Prix, Oscar Piastri and Mark Webber announced in a joint statement that the latter and Ann Neal would no longer manage the 25-year-old McLaren driver. The timing may come as a surprise – now rather than at the end of the season – but the news itself had been on the cards for some time.<br>The clearest hint came from Piastri during pre-season ...<a class='more' href='https://www.motorsport.com/f1/news/what-the-split-with-mark-webber-says-about-the-next-phase-of-oscar-piastris-f1-career/10873385/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-5.motorsport.com/images/amp/6DGg5rKY/s6/oscar-piastri-mclaren-with-mar.jpg"
+      "imageUrl": "https://cdn-4.motorsport.com/images/amp/6DGg5rKY/s6/oscar-piastri-mclaren-with-mar.jpg"
     },
     {
       "title": "Why Mercedes says a repeat of its 2014-2021 dominance is \"impossible\"",
@@ -138,7 +250,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T15:46:27+00:00",
       "summary": "Mercedes trackside engineering director Andrew Shovlin has argued that the Brackley outfit cannot expect to repeat its run of eight consecutive constructors' titles after its 2026 success.<br>Mercedes clinched its ninth constructors' championship at Interlagos on Sunday, ending a wait that began after the last of those eight in 2021.<br>The Toto Wolff-led team won every constructors' title from ...<a class='more' href='https://www.motorsport.com/f1/news/why-mercedes-says-a-repeat-of-its-2014-2021-dominance-is-impossible/10873407/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-7.motorsport.com/images/amp/0Zq8VG86/s6/motorsport-com-graphics-79.jpg"
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/0Zq8VG86/s6/motorsport-com-graphics-79.jpg"
     },
     {
       "title": "Red Bull reveal plan to impose team orders on Max Verstappen",
@@ -186,7 +298,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T13:46:01+00:00",
       "summary": "Mercedes is considering giving George Russell “all the force” to secure a 1-2 in the drivers’ championship after a nightmare run of form.<br>Three rounds remain in the 2026 season - assuming the Qatar and Abu Dhabi grands prix proceed as planned - with no fewer than five drivers in contention for the runner-up spot: Max Verstappen (279 points), Russell (262), Lewis Hamilton (261), Charles ...<a class='more' href='https://www.motorsport.com/f1/news/mercedes-considers-push-for-george-russell-to-be-f1-2026-runner-up/10873310/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-6.motorsport.com/images/amp/6zoDvWa0/s6/max-verstappen-red-bull-racing.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/6zoDvWa0/s6/max-verstappen-red-bull-racing.jpg"
     },
     {
       "title": "Lewis Hamilton sends message to Ferrari fans after 'devastating' Brazil GP",
@@ -194,7 +306,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T13:38:32+00:00",
       "summary": "Lewis Hamilton has told fans he is \"devastated\" by the outcome of his Brazilian Grand Prix, which began with an impressive charge from the back of the grid and finished with a spin in the closing laps.<br>The Ferrari driver shared his thoughts on Instagram on Monday after finishing ninth at Interlagos on Sunday.<br>Hamilton had to start from 20th on the grid after an engine penalty, but climbed ...<a class='more' href='https://www.motorsport.com/f1/news/lewis-hamilton-sends-message-to-ferrari-fans-after-devastating-brazil-gp/10873360/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-6.motorsport.com/images/amp/0arE3jP2/s6/motorsport-com-graphics-78.jpg"
+      "imageUrl": "https://cdn-3.motorsport.com/images/amp/0arE3jP2/s6/motorsport-com-graphics-78.jpg"
     },
     {
       "title": "2026 F1 Sao Paulo Grand Prix Driver Ratings: See which drivers scored a 10",
@@ -210,7 +322,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T13:19:30+00:00",
       "summary": "A Honda NSX used by three-time Formula 1 champion Ayrton Senna has set an auction record for the model.<br>The car, which had been estimated to sell for between £500,000 and £800,000 prior to the auction, sold for £871,250 at RM Sotheby's in London on 31 October. The auction also included a 2002 Ferrari 550 Maranello, a 1964 Ferrari 250 GT/L Berlinetta Lusso by Scaglietti and a 1903 Clement ...<a class='more' href='https://www.motorsport.com/f1/news/ayrton-sennas-rare-honda-nsx-smashes-auction-estimate-with-record-six-figure-sale/10873355/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-7.motorsport.com/images/amp/YP748WQ2/s6/motorsport-com-graphics-77.jpg"
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/YP748WQ2/s6/motorsport-com-graphics-77.jpg"
     },
     {
       "title": "Lewis Hamilton 'devastated' as Sao Paulo GP unravels after 'rocket' start",
@@ -250,7 +362,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T11:55:10+00:00",
       "summary": "When job security is in short supply, there's one solution for an F1 driver. Be so good they can't ignore you.<br>That's easier said than done, but it certainly seems to be what Liam Lawson has taken to heart as he battled for his future over the recent American triple-header. Having been an integral part of Racing Bulls' rise to fifth in the constructors' championship, which will be the ...<a class='more' href='https://www.motorsport.com/f1/news/how-the-racing-bulls-pendulum-is-swinging-back-towards-undeniable-liam-lawson/10873304/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-2.motorsport.com/images/amp/2QedBBa2/s6/liam-lawson-racing-bulls-2.jpg"
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/2QedBBa2/s6/liam-lawson-racing-bulls-2.jpg"
     },
     {
       "title": "How the Racing Bulls pendulum is swinging back towards Lawson",
@@ -266,7 +378,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T11:33:44+00:00",
       "summary": "For the third year in a row, Verstappen produced an impressive comeback drive in the Formula 1 Sao Paulo Grand Prix. While the Dutchman won from 17th on the grid in 2024 and climbed from the pitlane to third place last year, this time he charged from 21st to second.<br>According to Verstappen, his start on the uphill grid did not go to plan, although he took the blame himself after holding the ...<a class='more' href='https://www.motorsport.com/f1/news/how-max-verstappen-beat-red-bulls-own-simulation-tools-with-p2-in-brazil/10873308/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-7.motorsport.com/images/amp/6Alv98EY/s6/max-verstappen-red-bull-racing-3.jpg"
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/6Alv98EY/s6/max-verstappen-red-bull-racing-3.jpg"
     },
     {
       "title": "Who slept best last night: Toto Wolff",
@@ -274,7 +386,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T11:13:10+00:00",
       "summary": "Toto Wolff didn't need to brag when, on Sunday evening in Sao Paulo, he was asked about his records, which now put him alongside two of F1's greats. The question of how it feels to match Frank Williams' tally of constructors' championships and Ron Dennis' overall number of titles was enough in itself to illustrate the magnitude of Wolff's achievements.He now has nine constructors' titles, level ...<a class='more' href='https://www.motorsport.com/f1/news/who-slept-best-last-night-toto-wolff-10873302/10873302/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-7.motorsport.com/images/amp/24QGbXdY/s6/george-russell-mercedes-andrea.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/24QGbXdY/s6/george-russell-mercedes-andrea.jpg"
     },
     {
       "title": "Isack Hadjar reveals near Red Bull wipeout disaster before Brazil podium",
@@ -298,7 +410,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T09:33:04+00:00",
       "summary": "When Fernando Alonso became Formula 1 world champion in 2005, he was just 24 years old, replacing Emerson Fittipaldi as the youngest champion in the sport's history. At last, Michael Schumacher had a challenger. And although the reigning king of F1 once mistakenly called the young Spanish bull \"Ferdinando\" because he couldn't quite remember his name, it was Alonso who ultimately brought ...<a class='more' href='https://www.motorsport.com/f1/news/who-slept-worst-last-night-fernando-alonso/10873272/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/68VwMBV2/s6/fernando-alonso-aston-martin-r.jpg"
+      "imageUrl": "https://cdn-4.motorsport.com/images/amp/68VwMBV2/s6/fernando-alonso-aston-martin-r.jpg"
     },
     {
       "title": "Charles Leclerc pained by 'complete disaster' Ferrari in wet weather 'coin flip'",
@@ -314,7 +426,7 @@
       "source": "Autosport",
       "pubDate": "2026-11-09T08:43:40+00:00",
       "summary": "Oscar Piastri and Mark Webber have mutually agreed to terminate their management agreement, the pair have announced.<br>Webber and his wife Ann – who ran Mark’s career herself back in the day – became Piastri’s managers in 2019, the year the youngster narrowly beat Victor Martins to the Formula Renault Eurocup title and a spot on Renault’s F1 academy.<br>Piastri’s rise was meteoric ...<a class='more' href='https://www.autosport.com/f1/news/oscar-piastri-splits-from-mark-webber-management/10873258/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/0Zq8VN46/s6/oscar-piastri-mclaren-with-mar-2.jpg"
+      "imageUrl": "https://cdn-7.motorsport.com/images/amp/0Zq8VN46/s6/oscar-piastri-mclaren-with-mar-2.jpg"
     },
     {
       "title": "Oscar Piastri ends management agreement with Mark Webber",
@@ -330,7 +442,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-09T08:39:26+00:00",
       "summary": "Oscar Piastri and Mark Webber have mutually agreed to terminate their management agreement, the pair have announced.<br>Webber and his wife Ann – who ran Mark’s career herself back in the day – became Piastri’s managers in 2019, the year the youngster narrowly beat Victor Martins to the Formula Renault Eurocup title and a spot on Renault’s F1 academy.<br>Piastri’s rise was meteoric ...<a class='more' href='https://www.motorsport.com/f1/news/oscar-piastri-wont-have-mark-webber-as-his-manager-anymore/10873253/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-8.motorsport.com/images/amp/0Zq8VN46/s6/oscar-piastri-mclaren-with-mar-3.jpg"
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/0Zq8VN46/s6/oscar-piastri-mclaren-with-mar-3.jpg"
     },
     {
       "title": "How Max Verstappen turned a 30-place penalty into another Interlagos miracle",
@@ -386,7 +498,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T23:11:39+00:00",
       "summary": "Red Bull team principal Laurent Mekies said no simulation could have predicted Max Verstappen's charge from 21st to second in the Brazilian Grand Prix at Interlagos.<br>The Dutchman started near the back of the grid after an engine penalty and warned after qualifying that it would be harder to overtake at the São Paulo circuit than in previous years. But he proved himself wrong with an ...<a class='more' href='https://www.motorsport.com/f1/news/red-bull-boss-hails-max-verstappens-brazil-podium-hes-beating-the-sim-on-a-regular-basis/10873193/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/2y7Qrrm6/s6/motorsport-com-graphics-76.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/2y7Qrrm6/s6/motorsport-com-graphics-76.jpg"
     },
     {
       "title": "Winners and losers from F1's chaotic Brazilian Grand Prix",
@@ -394,7 +506,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T22:59:54+00:00",
       "summary": "Are you not entertained? While Lando Norris took a well-deserved third win of the campaign, Mercedes collectively slipped up and Max Verstappen produced yet another Brazilian Grand Prix masterclass.<br>Winner: Lando Norris<br>McLaren team boss Andrea Stella loves describing Lando Norris as the low-grip master. When conditions are difficult, Norris is one the very best at adapting and getting the ...<a class='more' href='https://www.motorsport.com/f1/news/winners-and-losers-from-f1s-chaotic-brazilian-grand-prix/10873189/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-2.motorsport.com/images/amp/6VyK9rdY/s6/lando-norris-mclaren-max-verst.jpg"
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/6VyK9rdY/s6/lando-norris-mclaren-max-verst.jpg"
     },
     {
       "title": "F1: Chequered Flag",
@@ -458,7 +570,7 @@
       "source": "Autosport",
       "pubDate": "2026-11-08T21:59:31+00:00",
       "summary": "Charles Leclerc was handed a five-second penalty after the Formula 1 Brazilian Grand Prix for his clash with Liam Lawson, dropping the Ferrari driver down to eighth place in the final results.<br>The Monegasque was battling the Racing Bulls driver for seventh place on lap 69 of the Sao Paulo race when the pair made contact into Juncao, Turn 12, but both were able to continue and finish the ...<a class='more' href='https://www.autosport.com/f1/news/leclerc-penalised-for-lawson-clash-antonelli-and-oliver-bearman-also-punished-after-f1-brazilian-gp/10873166/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-5.motorsport.com/images/amp/0Zq8VdL6/s6/charles-leclerc-ferrari-arvid-.jpg"
+      "imageUrl": "https://cdn-4.motorsport.com/images/amp/0Zq8VdL6/s6/charles-leclerc-ferrari-arvid-.jpg"
     },
     {
       "title": "Norris brilliant in wet & Verstappen recovery extraordinary - driver ratings",
@@ -474,7 +586,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T21:54:53+00:00",
       "summary": "Charles Leclerc was handed a five-second penalty after the Formula 1 Brazilian Grand Prix for his clash with Liam Lawson, dropping the Ferrari driver down to eighth place in the final results.<br>The Monegasque was battling the Racing Bulls driver for seventh place on lap 69 of the Sao Paulo race when the pair made contact into Juncao, Turn 12, but both were able to continue and finish the ...<a class='more' href='https://www.motorsport.com/f1/news/charles-leclerc-penalised-for-liam-lawson-clash-kimi-antonelli-and-oliver-bearman-also-punished-aft/10873163/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-6.motorsport.com/images/amp/0Zq8VdL6/s6/charles-leclerc-ferrari-arvid-.jpg"
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/0Zq8VdL6/s6/charles-leclerc-ferrari-arvid-.jpg"
     },
     {
       "title": "Max Verstappen \"needs to understand what happened\" after \"night and day\" F1 comeback in Brazilian GP",
@@ -482,7 +594,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T21:53:41+00:00",
       "summary": "For the third year in a row, Max Verstappen has produced an impressive comeback drive in Brazil. While he won from 17th on the grid in 2024 and drove from the pitlane to the podium last year, Verstappen finished this year's Formula 1 Brazilian Grand Prix in second place after starting 21st.<br>His start did not go entirely to plan, however, as Verstappen acknowledged in the post-race press ...<a class='more' href='https://www.motorsport.com/f1/news/max-verstappen-needs-to-understand-what-happened-after-night-and-day-f1-comeback-in-brazil/10873146/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-2.motorsport.com/images/amp/0o5AVQ7Y/s6/max-verstappen-red-bull-racing.jpg"
+      "imageUrl": "https://cdn-9.motorsport.com/images/amp/0o5AVQ7Y/s6/max-verstappen-red-bull-racing.jpg"
     },
     {
       "title": "Kimi Antonelli receives post-race F1 penalty after stewards’ Mercedes investigation",
@@ -546,7 +658,7 @@
       "source": "Autosport",
       "pubDate": "2026-11-08T20:57:57+00:00",
       "summary": "Kimi Antonelli vowed to put aside his Brazilian Grand Prix anger to celebrate Mercedes winning the Formula 1 constructors' title, as he rued the balance issues and the spin that took him out of victory contention.<br>The new world champion had picked up the lead from polesitter Lando Norris at the start, and was building a pretty healthy lead over the Briton in the opening laps of the race. He ...<a class='more' href='https://www.autosport.com/f1/news/antonelli-explains-weird-spin-and-car-instability-which-cost-f1-brazilian-gp-win/10873132/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-6.motorsport.com/images/amp/2eZx8n9Y/s6/andrea-kimi-antonelli-mercedes-2.jpg"
+      "imageUrl": "https://cdn-2.motorsport.com/images/amp/2eZx8n9Y/s6/andrea-kimi-antonelli-mercedes-2.jpg"
     },
     {
       "title": "Kimi Antonelli: \"Weird\" spin and car instability cost F1 Brazilian GP win",
@@ -554,7 +666,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T20:56:10+00:00",
       "summary": "Kimi Antonelli vowed to put aside his Brazilian Grand Prix anger to celebrate Mercedes winning the Formula 1 constructors' title, as he rued the balance issues and the spin that took him out of victory contention.<br>The new world champion had picked up the lead from polesitter Lando Norris at the start, and was building a pretty healthy lead over the Briton in the opening laps of the race. He ...<a class='more' href='https://www.motorsport.com/f1/news/kimi-antonelli-weird-spin-and-car-instability-cost-f1-brazilian-gp-win/10873125/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-8.motorsport.com/images/amp/6grQEoVY/s6/andrea-kimi-antonelli-mercedes.jpg"
+      "imageUrl": "https://cdn-2.motorsport.com/images/amp/6grQEoVY/s6/andrea-kimi-antonelli-mercedes.jpg"
     },
     {
       "title": "F1 CEO Stefano Domenicali sends heartfelt message to Mercedes after constructors' title victory",
@@ -562,7 +674,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T20:26:15+00:00",
       "summary": "Formula 1 CEO Stefano Domenicali has congratulated Mercedes on winning the 2026 constructors' championship while singling out team principal Toto Wolff for joining Sir Frank Williams in the record books.<br>The Brackley outfit clinched the title with three races to spare at the Brazilian Grand Prix when George Russell and Kimi Antonelli finished fourth and fifth, leaving Ferrari, which currently ...<a class='more' href='https://www.motorsport.com/f1/news/f1-ceo-stefano-domenicali-sends-heartfelt-message-to-mercedes-after-constructors-title-victory/10873115/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-5.motorsport.com/images/amp/YWKARlxY/s6/motorsport-com-graphics-74.jpg"
+      "imageUrl": "https://cdn-4.motorsport.com/images/amp/YWKARlxY/s6/motorsport-com-graphics-74.jpg"
     },
     {
       "title": "Liam Lawson casts doubt over 'legality' of race-defining Charles Leclerc overtake",
@@ -586,7 +698,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T19:52:06+00:00",
       "summary": "Following the Formula 1 Brazilian Grand Prix, which was convincingly won by outgoing world champion Lando Norris, several drivers still have to pay a visit to the stewards post-race.<br>Kimi Antonelli and a Mercedes representative were required to appear before the stewards at 4.30pm local time over an alleged unsafe release. Mercedes released Antonelli just as Alpine driver Franco Colapinto was ...<a class='more' href='https://www.motorsport.com/f1/news/kimi-antonelli-and-charles-leclerc-summoned-to-stewards-after-f1-brazilian-gp/10873093/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-9.motorsport.com/images/amp/0Zq8VdL6/s6/charles-leclerc-ferrari-arvid-.jpg"
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/0Zq8VdL6/s6/charles-leclerc-ferrari-arvid-.jpg"
     },
     {
       "title": "Lando Norris goes viral after Brazilian GP podium celebration goes wrong",
@@ -594,7 +706,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T19:39:51+00:00",
       "summary": "Lando Norris has gone viral on social media after his Brazilian Grand Prix podium mishap.<br>The McLaren driver controlled almost everything that came his way at Interlagos, right up until he got to the podium. <br>The 2025 champion went for his usual party trick after collecting his trophy, crouching down and slamming the base of the champagne bottle onto the ground to send the contents fizzing ...<a class='more' href='https://www.motorsport.com/f1/news/lando-norris-goes-viral-after-brazilian-gp-podium-celebration-goes-wrong/10873089/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-6.motorsport.com/images/amp/24QGbZAY/s6/motorsport-com-graphics-73.jpg"
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/24QGbZAY/s6/motorsport-com-graphics-73.jpg"
     },
     {
       "title": "Kimi Antonelli among F1 drivers summoned to stewards after Sao Paulo GP",
@@ -650,7 +762,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T18:55:25+00:00",
       "summary": "Another impressive comeback drive from Verstappen, but Norris in a league of his own<br>After qualifying, Max Verstappen and Lewis Hamilton were in agreement: fighting their way through the field at the Autodromo Jose Carlos Pace would be considerably more difficult with the 2026 cars than in previous years.<br>There were plenty of arguments to support that view: no more DRS, an overtake mode that ...<a class='more' href='https://www.motorsport.com/f1/news/five-quick-takeaways-from-brazil-gp/10873014/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-9.motorsport.com/images/amp/6x7Lz8jY/s6/lando-norris-mclaren-liam-laws.jpg"
+      "imageUrl": "https://cdn-5.motorsport.com/images/amp/6x7Lz8jY/s6/lando-norris-mclaren-liam-laws.jpg"
     },
     {
       "title": "F1 Brazilian GP: Norris wins in mixed conditions, Mercedes clinch constructors’ title",
@@ -658,7 +770,7 @@
       "source": "Autosport",
       "pubDate": "2026-11-08T18:50:51+00:00",
       "summary": "Lando Norris has snared his third win of 2026 in a mixed weather Formula 1 Brazilian Grand Prix, defeating a resurgent Max Verstappen while Mercedes claimed the world constructors' championship.<br>After reclaiming the lead from his world champion successor Kimi Antonelli early on when he spun off, polesitter Norris thwarted Verstappen's latest stunning Brazil comeback in a race which both started ...<a class='more' href='https://www.autosport.com/f1/news/f1-brazilian-gp-lando-norris-wins-in-mixed-conditions-mercedes-clinches-constructors-title/10873048/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-2.motorsport.com/images/amp/0JXRprQY/s6/lando-norris-mclaren-4.jpg"
+      "imageUrl": "https://cdn-4.motorsport.com/images/amp/0JXRprQY/s6/lando-norris-mclaren-4.jpg"
     },
     {
       "title": "F1 Brazilian GP: Lando Norris wins in mixed conditions, Mercedes clinch constructors’ title",
@@ -690,7 +802,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T18:43:09+00:00",
       "summary": "Mercedes has won the 2026 Formula 1 constructors' championship, sealing the title at the Brazilian Grand Prix at Interlagos.<br>Kimi Antonelli and George Russell started second and seventh on the grid, after the Briton took a five-place grid penalty. While Antonelli took the lead from polesitter Lando Norris at the start of the race and extended his advantage to five seconds over the first seven ...<a class='more' href='https://www.motorsport.com/f1/news/mercedes-crowned-2026-f1-constructors-champion-at-brazilian-gp/10873044/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/68VwMaX2/s6/motorsport-com-graphics-84-2.jpg"
+      "imageUrl": "https://cdn-4.motorsport.com/images/amp/68VwMaX2/s6/motorsport-com-graphics-84-2.jpg"
     },
     {
       "title": "Mercedes end painful five-year wait by reclaiming F1 constructors’ title",
@@ -714,7 +826,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T18:12:58+00:00",
       "summary": "Ferrari Formula 1 driver Charles Leclerc arrived at Interlagos ahead of the Brazilian Grand Prix wearing a six-figure watch on his wrist.<br>According to watch-spotting account Watches of Celebrities, the Monegasque driver wore a Richard Mille RM 33-02 in Carbon TPT and rose gold when he arrived at the paddock. The account puts its market price at $125,000.<br>The RM 33-02 was limited to 140 ...<a class='more' href='https://www.motorsport.com/f1/news/charles-leclerc-turns-heads-with-125000-watch-at-f1-brazilian-gp/10873032/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-7.motorsport.com/images/amp/6zoD8va0/s6/motorsport-com-graphics-72.jpg"
+      "imageUrl": "https://cdn-9.motorsport.com/images/amp/6zoD8va0/s6/motorsport-com-graphics-72.jpg"
     },
     {
       "title": "Lance Stroll closing in on all-time F1 record after latest Aston Martin failure",
@@ -730,7 +842,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T18:00:14+00:00",
       "summary": "The Formula 1 cost cap did exactly what it was supposed to do: it brought the grid closer together and stopped the massive factory teams from simply outspending their problems. But while the on-track product is undeniably tighter, the financial squeeze behind the scenes is starting to take a human toll.<br>During the Free Practice 3 broadcast at the 2026 Brazilian Grand Prix, Sky Sports F1 pundit ...<a class='more' href='https://www.motorsport.com/f1/news/toto-wolff-wants-the-fia-to-lift-the-salary-cap-on-junior-staff-we-need-to-pay-them-better/10872625/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-5.motorsport.com/images/amp/6grQEGmY/s6/motorsport-com-graphics-83-2.jpg"
+      "imageUrl": "https://cdn-3.motorsport.com/images/amp/6grQEGmY/s6/motorsport-com-graphics-83-2.jpg"
     },
     {
       "title": "George Russell spin nearly blocks pit-lane after crucial Sao Paulo pit-stop",
@@ -802,7 +914,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T14:28:32+00:00",
       "summary": "Gabriel Bortoleto's partner Isabella Bernardini arrived at Interlagos ahead of the Brazilian Grand Prix in a one-off dress made from Audi's special adidas range for the race.<br>The dress was made by designer and upcycler Fiona Roerig, who worked with the team and Bernardini to incorporate their ideas into the design. The dress has been upcycled from the adidas Sampa Soul collection, which the ...<a class='more' href='https://www.motorsport.com/f1/news/gabriel-bortoletos-partner-isabella-bernardini-shows-off-custom-audi-dress-at-brazil-gp/10872947/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/2y7QrPK6/s6/motorsport-com-graphics-71.jpg"
+      "imageUrl": "https://cdn-8.motorsport.com/images/amp/2y7QrPK6/s6/motorsport-com-graphics-71.jpg"
     },
     {
       "title": "F1 drivers face major Sao Paulo GP headache after weather surprise",
@@ -826,7 +938,7 @@
       "source": "Autosport",
       "pubDate": "2026-11-08T13:29:32+00:00",
       "summary": "With Lewis Hamilton and Max Verstappen 20th and 21st on the grid of the Brazilian Grand Prix, Sunday’s Formula 1 race promises to be fascinating – regardless of weather conditions.<br>Hamilton and Verstappen happen to be two drivers who performed memorable recoveries at Autodromo Jose Carlos Pace, a track where overtaking has always been easier than most.<br>Back in 2021, the seven-time world ...<a class='more' href='https://www.autosport.com/f1/news/ill-try-to-win-somehow-can-lewis-hamilton-and-max-verstappen-fight-back-for-f1-brazilian-gp-victory/10872922/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-9.motorsport.com/images/amp/YBVj1bMY/s6/lewis-hamilton-ferrari-max-ver-2.jpg"
+      "imageUrl": "https://cdn-6.motorsport.com/images/amp/YBVj1bMY/s6/lewis-hamilton-ferrari-max-ver-2.jpg"
     },
     {
       "title": "‘I’ll try to win, somehow’ – Can Lewis Hamilton and Max Verstappen fight back for F1 Brazilian GP victory?",
@@ -834,7 +946,7 @@
       "source": "Motorsport.com",
       "pubDate": "2026-11-08T13:28:55+00:00",
       "summary": "With Lewis Hamilton and Max Verstappen 20th and 21st on the grid of the Brazilian Grand Prix, Sunday’s Formula 1 race promises to be fascinating – regardless of weather conditions.<br>Hamilton and Verstappen happen to be two drivers who performed memorable recoveries at Autodromo Jose Carlos Pace, a track where overtaking has always been easier than most.<br>Back in 2021, the seven-time world ...<a class='more' href='https://www.motorsport.com/f1/news/ill-try-to-win-somehow-can-lewis-hamilton-and-max-verstappen-fight-back-for-f1-brazilian-gp-victory/10872909/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-8.motorsport.com/images/amp/2eZxbDjY/s6/lewis-hamilton-ferrari-max-ver.jpg"
+      "imageUrl": "https://cdn-3.motorsport.com/images/amp/2eZxbDjY/s6/lewis-hamilton-ferrari-max-ver.jpg"
     },
     {
       "title": "George Russell issues Mercedes engineer defence after 'wrong decision' frustration",
@@ -850,118 +962,6 @@
       "source": "RacingNews365",
       "pubDate": "2026-11-08T12:15:00+00:00",
       "summary": "Kimi Antonelli will remember the Mexico City podium forever.",
-      "imageUrl": null
-    },
-    {
-      "title": "McLaren’s 2027-spec front wing is making its F1 car more predictable",
-      "link": "https://www.motorsport.com/f1/news/mclarens-2027-spec-front-wing-is-making-its-f1-car-more-predictable/10872891/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-11-08T12:07:45+00:00",
-      "summary": "McLaren team principal Andrea Stella says the 2027-spec front wing concept introduced on the MCL40 at Formula 1’s Brazilian Grand Prix has improved the car’s driveability and predictability.<br>The Woking-based outfit launched an upgrade package at Interlagos - featuring not just this front wing but also a rear wing, a beam wing and new floor furniture - after McLaren lost ground to Mercedes ...<a class='more' href='https://www.motorsport.com/f1/news/mclarens-2027-spec-front-wing-is-making-its-f1-car-more-predictable/10872891/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/0o5AwWwY/s6/lando-norris-mclaren.jpg"
-    },
-    {
-      "title": "What is greatest Lewis Hamilton F1 victory ahead of landmark 400th start?",
-      "link": "https://racingnews365.com/what-is-greatest-lewis-hamilton-f1-victory-ahead-of-landmark-400th-start",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T11:30:00+00:00",
-      "summary": "It is a very special weekend for Lewis Hamilton in Interlagos!",
-      "imageUrl": null
-    },
-    {
-      "title": "The wet-weather challenges thrown up by Brazilian GP qualifying",
-      "link": "https://www.autosport.com/f1/news/the-wet-weather-challenges-thrown-up-by-brazilian-gp-qualifying/10872894/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk",
-      "source": "Autosport",
-      "pubDate": "2026-11-08T11:09:51+00:00",
-      "summary": "One hour, 23 minutes. You could've squeezed most of a football match into the rain delay during Formula 1 qualifying for the Sao Paulo Grand Prix, and it looked for all the world like the session wouldn't actually get going again.<br>A repeat of 2024, where qualifying was squeezed onto Sunday morning, looked likely. Yet, a saviour arrived when a break in the clouds emerged, and the circuit had ...<a class='more' href='https://www.autosport.com/f1/news/the-wet-weather-challenges-thrown-up-by-brazilian-gp-qualifying/10872894/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=uk'>Keep reading</a>",
-      "imageUrl": "https://cdn-4.motorsport.com/images/amp/0qgK1NQY/s6/rafael-camara-haas-f1-team-3.jpg"
-    },
-    {
-      "title": "Ralf Schumacher issues brutal Colton Herta criticism: 'Just burning fuel'",
-      "link": "https://racingnews365.com/ralf-schumacher-issues-brutal-colton-herta-criticism-just-burning-fuel",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T10:45:00+00:00",
-      "summary": "Colton Herta can finally race in F1, but Ralf Schumacher does not want to see it happen.",
-      "imageUrl": null
-    },
-    {
-      "title": "Pierre Gasly on Franco Colapinto fan pressure: “Once you deal with Helmut Marko, anything else is no pressure”",
-      "link": "https://www.motorsport.com/f1/news/pierre-gasly-on-colapinto-fan-pressure-once-you-deal-with-helmut-marko-anything-else-is-no-pressure/10872811/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-11-08T10:20:36+00:00",
-      "summary": "Interlagos is the closest Franco Colapinto gets to a home grand prix, and Pierre Gasly  knows the atmosphere that creates around the Alpine garage in Sao Paulo this weekend.<br>Argentina's flag has become a familiar sight in Formula 1 grandstands since Colapinto ended the country's 23-year wait for a driver on the grid in 2024. The speed and scale of the response exceeded expectations, even in ...<a class='more' href='https://www.motorsport.com/f1/news/pierre-gasly-on-colapinto-fan-pressure-once-you-deal-with-helmut-marko-anything-else-is-no-pressure/10872811/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-7.motorsport.com/images/amp/6VyKlawY/s6/pierre-gasly-alpine.jpg"
-    },
-    {
-      "title": "Toto Wolff makes remarkable Kimi Antonelli claim: 'He wouldn't have lasted'",
-      "link": "https://racingnews365.com/toto-wolff-makes-remarkable-kimi-antonelli-claim-he-wouldnt-have-lasted",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T10:00:00+00:00",
-      "summary": "You get the feeling Toto Wolff may be right on this one. Credit to him and the team for keeping the faith.",
-      "imageUrl": null
-    },
-    {
-      "title": "F1 2026 qualifying head-to-head: Brazilian GP",
-      "link": "https://www.motorsport.com/f1/news/f1-2026-qualifying-head-to-head-brazilian-gp/10872869/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-11-08T09:48:18+00:00",
-      "summary": "After every Formula 1 qualifying session, Motorsport.com publishes each team's qualifying record in terms of team-mate battles.<br>This record is based exclusively on qualifying results so that grid penalties don't alter the statistics.<br>When a driver can't put in a representative lap time due to a technical issue or an incident, this will be mentioned in the table.<br>Read ...<a class='more' href='https://www.motorsport.com/f1/news/f1-2026-qualifying-head-to-head-brazilian-gp/10872869/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-3.motorsport.com/images/amp/0Zq8V1M6/s6/arvid-lindblad-racing-bulls.jpg"
-    },
-    {
-      "title": "Why Lewis Hamilton starts ahead of Max Verstappen despite bigger penalty explained",
-      "link": "https://racingnews365.com/why-lewis-hamilton-starts-ahead-of-max-verstappen-despite-bigger-penalty-explained",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T09:15:00+00:00",
-      "summary": "Lewis Hamilton and Max Verstappen will both attempt to charge through the field from the back in Interlagos.",
-      "imageUrl": null
-    },
-    {
-      "title": "Sunday morning Brazil F1 weather update as rain threat remains",
-      "link": "https://racingnews365.com/sunday-morning-brazil-f1-weather-update-as-wet-weather-threat-remains",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T08:30:00+00:00",
-      "summary": "RacingNews365 gives you the latest lowdown on how the weather could affect the São Paulo Grand Prix from the legendary Interlagos!",
-      "imageUrl": null
-    },
-    {
-      "title": "Fernando Alonso faced ‘unreachable planet’ in Aston Martin F1 breakthrough",
-      "link": "https://racingnews365.com/fernando-alonso-faced-unreachable-planet-in-aston-martin-f1-breakthrough",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T07:45:00+00:00",
-      "summary": "Fernando Alonso will start eighth in the Sao Paulo Grand Prix after making Q3 for the first time in 2026 in the rain of qualifying.",
-      "imageUrl": null
-    },
-    {
-      "title": "Charles Leclerc acknowledges Lewis Hamilton 'tension' in Ferrari supremacy fight",
-      "link": "https://racingnews365.com/charles-leclerc-acknowledges-lewis-hamilton-tension-in-ferrari-supremacy-fight",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T07:00:00+00:00",
-      "summary": "Charles Leclerc and Lewis Hamilton sat down to squash their beef after a tense fight in Mexico City last week.",
-      "imageUrl": null
-    },
-    {
-      "title": "Toto Wolff bursts George Russell bubble after Brazil qualifying fury",
-      "link": "https://racingnews365.com/toto-wolff-bursts-george-russell-bubble-after-brazil-qualifying-fury",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T06:15:00+00:00",
-      "summary": "George Russell was furious after being told to back off his lap in Q3 before heavy rainfall denied him another chance.",
-      "imageUrl": null
-    },
-    {
-      "title": "Max Verstappen raises doubt over historic Brazil F1 win repeat",
-      "link": "https://racingnews365.com/max-verstappen-raises-doubt-over-historic-brazil-f1-win-repeat",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T05:30:00+00:00",
-      "summary": "Max Verstappen will start the Sao Paulo Grand Prix from the back of the grid, but he is not expecting an easy climb through the order",
-      "imageUrl": null
-    },
-    {
-      "title": "2026 F1 Sao Paulo Grand Prix - Brazil start time today",
-      "link": "https://racingnews365.com/2026-f1-sao-paulo-grand-prix-brazil-start-time-today",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-08T05:00:00+00:00",
-      "summary": "Check out the start time for the 2026 F1 Sao Paulo Grand Prix from Brazil today!",
       "imageUrl": null
     }
   ]
