@@ -42,6 +42,23 @@
     .checks label { display: block; margin: .25rem 0; }
     .checks label.sub { margin-left: 1.5rem; }
     tr.sub td:first-child { padding-left: 1.2rem; color: var(--muted); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin: .5rem 0; position: sticky; top: 0; background: #fff; padding: .4rem 0; z-index: 2; border-bottom: 1px solid var(--line); }
+    .toolbar input[type=search] { flex: 1; min-width: 180px; padding: .3rem .5rem; }
+    .legend { margin: .4rem 0 .8rem; line-height: 2; }
+    .badge { display: inline-block; font-size: .75rem; font-weight: 600; border-radius: 10px; padding: 0 .5rem; white-space: nowrap; }
+    .badge.req { background: #fde7e7; color: #9b1c1c; }
+    .badge.flex { background: #eef0f3; color: #444; }
+    .badge.met { background: #e6f4ea; color: #145c2a; }
+    .card .ch { display: flex; justify-content: space-between; gap: .4rem; flex-wrap: wrap; align-items: baseline; }
+    .card .inputs { font-size: .85rem; margin: .3rem 0; display: flex; flex-wrap: wrap; gap: .3rem .8rem; }
+    .card.sub { margin-left: 1rem; border-style: dashed; }
+    .chips { margin-top: .35rem; }
+    .chip { display: inline-block; font-size: .8rem; border: 1px solid #c8ccd2; background: #fff; color: #222; border-radius: 4px; padding: 0 .35rem; margin: 2px; white-space: nowrap; cursor: pointer; }
+    .chip.here { background: var(--ok); border-color: var(--ok); color: #fff; }
+    .chip.elsewhere { border: 1px dashed var(--accent); color: var(--accent); background: #f3f6fd; }
+    .chip b { font-size: .7rem; color: #b35900; }
+    .chip.here b { color: #ffe08a; }
+    button.more { font-size: .78rem; padding: 0 .4rem; }
     footer { margin-top: 3rem; border-top: 1px solid var(--line); }
     @media (max-width: 600px) { th, td { padding: .3rem .2rem; } input.term { width: 5.5rem; } }
   </style>
@@ -54,8 +71,39 @@
 
   <div class="summary" id="summary"></div>
 
-  <h2>1. Your courses</h2>
-  <p class="muted">Add Running Start/college courses you've taken, are taking, or plan to take. Enter codes like <code>ENGL&amp; 101</code>, <code>HIST 146</code>, or <code>BIOL 100 5</code> (credits default to 5). Separate several with commas or new lines. Classes taken at the high school go in the "HS semesters" column in section 2.</p>
+  <h2>1. Requirement map: pick your courses</h2>
+  <p class="muted">Each card is one requirement. It lists every course option from the Riverview equivalency sheet and the BC worksheet, and a badge shows how much choice you have. Click a course to add it to your plan as Planned, and click a planned course again to remove it. Each course is counted only once per credential, and the planner places it where it helps most.</p>
+  <div class="toolbar">
+    <input id="filterQ" type="search" placeholder="Filter courses, e.g. HIST or 101">
+    <label><input type="checkbox" id="filterDbl"> Only courses that count for both HS and AA</label>
+  </div>
+  <div class="legend muted">
+    <span class="badge req">Required</span> a specific course or list you must pick from ·
+    <span class="badge flex">Flexible</span> required credits that any course can fill ·
+    <span class="badge met">✓ Met</span> done, so more picks here are optional ·
+    <span class="chip here">counts here</span><span class="chip elsewhere">in plan, counted elsewhere</span><span class="chip">not in plan</span>
+    <b>2×</b> = counts toward an HS subject and an AA distribution · ✓ completed · ◐ in progress · ᴸ lab · * performance
+  </div>
+  <h3>Cedarcrest HS graduation (Classes of 2027–2030)</h3>
+  <div class="areas" id="hsCards"></div>
+  <h4>Non-credit requirements</h4>
+  <div class="checks">
+    <label><input type="checkbox" id="wah"> Washington State History. Riverview students complete it in 7th grade, and HIST 214 also counts.</label>
+    <label><input type="checkbox" id="finlit"> Financial literacy, met by Personal Finance (usually 9th grade) or an equivalent.</label>
+    <label><input type="checkbox" id="hsbp"> High School and Beyond Plan complete.</label>
+    <div><b>Graduation Pathway</b> (an ELA option and a math option): <span id="pwStatus"></span></div>
+    <label class="sub"><input type="checkbox" id="pwEla"> ELA met another way (state test, SAT/ACT, AP/IB score, CTE sequence…)</label>
+    <label class="sub"><input type="checkbox" id="pwMath"> Math met another way</label>
+  </div>
+  <p class="muted">Dual Credit pathway (OSPI Class of 2027 toolkit): earning at least 1.0 HS credit through Running Start in a 100-level or higher course that the high school credits as English meets the ELA part, and the same for math. A 5-credit ENGL 101 and a 5-credit MATH 1xx together meet the whole pathway.</p>
+  <p class="muted">Equivalencies: English = any ENGL 101+; US History = HIST 146/147/148/150; Civics = POLS 202; World History = HIST 101/102/103/128; WA History = HIST 214; Math = any MATH (below 100 counts but isn't paid by Running Start); Science = ASTR, BIOL, BOTAN, CHEM, ENVS, GEOL, METR, NSCI, NUTR, OCEA, PHYS; World Language = ARAB, ASL, CHIN, FRCH, GERM, ITAL, JAPN, SPAN; Health = HLTH 250; PE = PE, DANCE, NUTR; Art = ART, DANCE, DRMA, MUSC; CTE = ACCT, AHE*, ASL, BA, BUS, BUSIT, BTS, CS, CJ, DBA, DMA, DEV, ECED, EDUC, ECON, ENGR, IMAGE, IT, INDES, MKTG, NSCOM, PROG, TECH; Electives = any 100+ course. High school classes earn 0.5 credit per semester (1.0 for a full year), so enter semesters completed. One 5-credit college quarter = 1.0 HS credit, the same as a full year at the high school. Extra credits in any area spill into electives. Social Studies totals 3.0: World History 1.0, US History 1.0, Civics 0.5 and a 0.5 social studies elective. Cedarcrest's electives are Economics, Global Issues, Law &amp; Business Ethics, Psychology and AP Human Geography, so this tool assumes ECON, PSYC, GEOG, HIST and POLS courses can fill the elective. That's an inference, so confirm with a counselor. Science is 3.0 credits, and 2.0 must be lab science. Running Start courses count as lab only if BC marks them (L). Per the catalog, 1.0 of the 2.0 Arts credits and both World Language credits can be Personal Pathway Requirement (PPR) courses, so lower those numbers if your HSBP uses PPR.</p>
+
+  <h3>Bellevue College AA-DTA</h3>
+  <div class="areas" id="aaAreas"></div>
+  <p class="muted">Rules applied: each course counts in only one area. Humanities, Social Sciences and Natural Sciences each need two different subjects. Humanities allows at most 5 performance/skills (*) credits and 5 credits of one 100-level language. Natural Sciences needs a lab and allows at most 5 MATH/PHIL 120 credits. Electives allow at most 3 PE activity credits and 15 restricted credits. You also need one Diversity course and a 2.0 GPA, and at least 30 of the 90 credits must be taken at BC. Cross-listed courses (e.g. PHIL 201 / POLS 201) count only once, so don't enter both.</p>
+
+  <h2>2. Your courses &amp; status</h2>
+  <p class="muted">Add Running Start/college courses you've taken, are taking, or plan to take. Enter codes like <code>ENGL&amp; 101</code>, <code>HIST 146</code>, or <code>BIOL 100 5</code> (credits default to 5). Separate several with commas or new lines. Classes taken at the high school go in the "HS semesters" boxes in section 1. Update each course's status (Planned → In progress → Completed) as you go.</p>
   <div class="row">
     <textarea id="quick" rows="2" style="flex:1;min-width:220px" placeholder="ENGL 101, MATH 141, HIST 146"></textarea>
     <select id="quickStatus"><option value="done">Completed</option><option value="prog">In progress</option><option value="plan" selected>Planned</option></select>
@@ -68,34 +116,13 @@
   </table></div>
   <p id="courseMsg" class="muted"></p>
 
-  <h2>2. Cedarcrest HS graduation (Classes of 2027–2030)</h2>
-  <div class="scroll"><table id="hsTable">
-    <thead><tr><th>Requirement</th><th>Required</th><th>HS semesters</th><th>From RS</th><th>Progress</th><th>Running Start courses that count</th></tr></thead>
-    <tbody></tbody>
-  </table></div>
-  <h3>Non-credit requirements</h3>
-  <div class="checks">
-    <label><input type="checkbox" id="wah"> Washington State History. Riverview students complete it in 7th grade, and HIST 214 also counts.</label>
-    <label><input type="checkbox" id="finlit"> Financial literacy, met by Personal Finance (usually 9th grade) or an equivalent.</label>
-    <label><input type="checkbox" id="hsbp"> High School and Beyond Plan complete.</label>
-    <div><b>Graduation Pathway</b> (an ELA option and a math option): <span id="pwStatus"></span></div>
-    <label class="sub"><input type="checkbox" id="pwEla"> ELA met another way (state test, SAT/ACT, AP/IB score, CTE sequence…)</label>
-    <label class="sub"><input type="checkbox" id="pwMath"> Math met another way</label>
-  </div>
-  <p class="muted">Dual Credit pathway (OSPI Class of 2027 toolkit): earning at least 1.0 HS credit through Running Start in a 100-level or higher course that the high school credits as English meets the ELA part, and the same for math. A 5-credit ENGL 101 and a 5-credit MATH 1xx together meet the whole pathway.</p>
-  <p class="muted">Equivalencies: English = any ENGL 101+; US History = HIST 146/147/148/150; Civics = POLS 202; World History = HIST 101/102/103/128; WA History = HIST 214; Math = any MATH (below 100 counts but isn't paid by Running Start); Science = ASTR, BIOL, BOTAN, CHEM, ENVS, GEOL, METR, NSCI, NUTR, OCEA, PHYS; World Language = ARAB, ASL, CHIN, FRCH, GERM, ITAL, JAPN, SPAN; Health = HLTH 250; PE = PE, DANCE, NUTR; Art = ART, DANCE, DRMA, MUSC; CTE = ACCT, AHE*, ASL, BA, BUS, BUSIT, BTS, CS, CJ, DBA, DMA, DEV, ECED, EDUC, ECON, ENGR, IMAGE, IT, INDES, MKTG, NSCOM, PROG, TECH; Electives = any 100+ course. High school classes earn 0.5 credit per semester (1.0 for a full year), so enter semesters completed. One 5-credit college quarter = 1.0 HS credit, the same as a full year at the high school. Extra credits in any area spill into electives. Social Studies totals 3.0: World History 1.0, US History 1.0, Civics 0.5 and a 0.5 social studies elective. Cedarcrest's electives are Economics, Global Issues, Law &amp; Business Ethics, Psychology and AP Human Geography, so this tool assumes ECON, PSYC, GEOG, HIST and POLS courses can fill the elective. That's an inference, so confirm with a counselor. Science is 3.0 credits, and 2.0 must be lab science. Running Start courses count as lab only if BC marks them (L). Per the catalog, 1.0 of the 2.0 Arts credits and both World Language credits can be Personal Pathway Requirement (PPR) courses, so lower those numbers if your HSBP uses PPR.</p>
-
-  <h2>3. Bellevue College AA-DTA</h2>
-  <div class="areas" id="aaAreas"></div>
-  <p class="muted">Rules applied: each course counts in only one area. Humanities, Social Sciences and Natural Sciences each need two different subjects. Humanities allows at most 5 performance/skills (*) credits and 5 credits of one 100-level language. Natural Sciences needs a lab and allows at most 5 MATH/PHIL 120 credits. Electives allow at most 3 PE activity credits and 15 restricted credits. You also need one Diversity course and a 2.0 GPA, and at least 30 of the 90 credits must be taken at BC. Cross-listed courses (e.g. PHIL 201 / POLS 201) count only once, so don't enter both.</p>
-
-  <h2>4. Suggested next courses</h2>
+  <h2>3. Suggested next courses</h2>
   <p class="muted">Ranked by how much of your remaining HS + AA requirements each course would fill. These are courses that "double-dip". Check prerequisites and placement in the BC catalog.</p>
   <div class="row"><label>Preferred world language
     <select id="lang"><option>SPAN</option><option>FRCH</option><option>JAPN</option><option>CHIN</option><option>GERM</option><option>ASL</option><option>ITAL</option><option>ARAB</option></select></label></div>
   <ol class="sugg" id="sugg"></ol>
 
-  <h2>5. Build a plan</h2>
+  <h2>4. Build a plan</h2>
   <div class="row">
     <label>Start <select id="startQ"><option>Fall</option><option>Winter</option><option>Spring</option></select></label>
     <input type="number" id="startY" min="2020" max="2040">
@@ -153,6 +180,20 @@
       ['hlth', 'Health', 0.5], ['pe', 'Physical Education', 1.5], ['cte', 'Career & Technical Ed', 1], ['elec', 'Electives', 4]
     ].map(([id, name, req, sub]) => ({ id, name, req, sub: !!sub }));
     const HS_NAME = Object.fromEntries(HS_CATS.map(c => [c.id, c.name]));
+
+    // Every course code named on the BC worksheet or Riverview equivalency sheet = the selectable option set.
+    function byCode(a, b) { return a.dept.localeCompare(b.dept) || a.num - b.num; }
+    let UNIVERSE = null;
+    function universe() {
+      if (!UNIVERSE) {
+        const codes = new Set([...HUM.keys(), ...SS.keys(), ...NS.keys(), ...EXTRA.keys(), ...DIV.keys(), 'HIST 128', 'HIST 214', 'POLS 202', 'HLTH 250']);
+        UNIVERSE = [...codes].map(k => enrich({ code: k, credits: 5 })).filter(Boolean).sort(byCode);
+      }
+      return UNIVERSE;
+    }
+    const isDouble = c => c.hs.some(h => h !== 'elec' && h !== 'none') && c.aa.some(a => a !== 'ELEC');
+    const ui = { q: '', dbl: false, expanded: new Set() };
+    const CHIP_LIMIT = 16;
 
     // ---------- State ----------
     let state = { courses: [], hsReq: {}, hsSem: {}, wah: true, finlit: false, hsbp: false, pwEla: false, pwMath: false, lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 };
@@ -360,31 +401,77 @@
       renderHS(valid); renderAA(); renderSummary(); renderSuggestions(valid); renderTerms(valid); save();
     }
 
+    // Build the chips for one requirement card. qualifies(c) -> bool, here(c, idx) -> counted in this requirement.
+    function chips(cardId, qualifies, here) {
+      const valid = enriched.filter(Boolean);
+      const planIdx = new Map(valid.map((c, i) => [c.code, i]));
+      const opts = universe().filter(qualifies);
+      valid.forEach(c => { if (qualifies(c) && !opts.some(o => o.code === c.code)) opts.push(c); });
+      const q = ui.q.trim().toUpperCase().replace(/&/g, '');
+      const info = opts.filter(c => (!q || c.code.includes(q)) && (!ui.dbl || isDouble(c) || planIdx.has(c.code)))
+        .map(c => {
+          const i = planIdx.get(c.code), inPlan = i !== undefined, h = inPlan && here(valid[i], i);
+          return { c, inPlan, h, st: inPlan ? valid[i].status : null, rank: (h ? 4 : 0) + (inPlan ? 2 : 0) + (isDouble(c) ? 1 : 0) };
+        }).sort((a, b) => b.rank - a.rank || byCode(a.c, b.c));
+      const open = ui.expanded.has(cardId) || q;
+      const shown = open ? info : info.slice(0, CHIP_LIMIT);
+      const quals = c => {
+        const hs = c.hs.filter(x => x !== 'elec' && x !== 'none').map(x => HS_NAME[x]);
+        const aa = c.aa.filter(x => x !== 'ELEC').map(x => AA_NAMES[x]);
+        return `${c.code} (5 cr = 1.0 HS credit). HS: ${hs.join(', ') || 'elective'}. AA: ${aa.join(', ') || (c.transferable ? 'elective' : 'restricted elective')}${c.div ? '. Meets Diversity' : ''}.`;
+      };
+      let html = shown.map(x => `<button class="chip ${x.h ? 'here' : x.inPlan ? 'elsewhere' : ''}" data-chip="${escapeHtml(x.c.code)}" title="${escapeHtml(quals(x.c))}">${x.st === 'done' ? '✓ ' : x.st === 'prog' ? '◐ ' : ''}${escapeHtml(x.c.code)}${x.c.lab ? 'ᴸ' : ''}${x.c.perf ? '*' : ''}${isDouble(x.c) ? ' <b>2×</b>' : ''}</button>`).join('');
+      if (!q && info.length > CHIP_LIMIT) html += `<button class="more" data-expand="${cardId}">${open ? 'Show fewer' : 'Show all ' + info.length}</button>`;
+      if (!info.length) html = '<span class="muted">No matching options.</span>';
+      return { html, count: opts.length, opts };
+    }
+    const badge = (kind, text) => `<span class="badge ${kind}">${escapeHtml(text)}</span>`;
+
     function renderHS(cs) {
       const r = sol.hsR;
+      const hsAssign = new Map(cs.map((c, i) => [c.code, sol.hs[i]]));
       HS_CATS.forEach(cat => {
-        const x = r.r[cat.id], rs = sum(r.lists[cat.id].map(c => ({ credits: c.hsCr })));
-        $('hs-rs-' + cat.id).textContent = fmt(rs) + (cat.id === 'elec' && x.have - rs - priorCr('elec') > 0.001 ? ` +${fmt(x.have - rs - priorCr('elec'))} overflow` : '');
-        $('hs-pr-' + cat.id).innerHTML = bar(x.have, x.req) + `<span class="${x.have >= x.req ? 'ok' : ''}">${fmt(x.have)} / ${fmt(x.req)}</span>`;
-        $('hs-cs-' + cat.id).innerHTML = r.lists[cat.id].map(c => `<span class="tag hs">${escapeHtml(c.code)}</span>`).join('');
+        const x = r.r[cat.id], rs = r.lists[cat.id].reduce((s, c) => s + c.hsCr, 0);
+        const over = cat.id === 'elec' ? x.have - rs - priorCr('elec') : 0;
+        $('hs-pr-' + cat.id).innerHTML = bar(x.have, x.req) + `<span class="${x.have >= x.req ? 'ok' : ''}">${fmt(x.have)} / ${fmt(x.req)}</span> <span class="muted">(HS ${fmt(priorCr(cat.id))} + Running Start ${fmt(rs)}${over > 0.001 ? ' + ' + fmt(over) + ' extra from other subjects' : ''})</span>`;
+        const rem = Math.max(0, x.req - x.have), met = rem < 0.001;
+        if (cat.id === 'elec') {
+          $('hs-b-elec').innerHTML = met ? badge('met', '✓ Met') : badge('flex', `Flexible · ${fmt(rem)} cr, any course`);
+          $('hs-cs-elec').innerHTML = '<span class="muted">Any 100-level or higher college course counts, and so do extra credits from other subjects.</span>';
+          return;
+        }
+        const qual = cat.id === 'scilab' ? (c => c.hs.includes('sci') && c.lab) : (c => c.hs.includes(cat.id));
+        const here = cat.id === 'scilab' ? (c => hsAssign.get(c.code) === 'sci' && c.lab) : (c => hsAssign.get(c.code) === cat.id);
+        const ch = chips('hs-' + cat.id, qual, here);
+        const k = Math.ceil(rem - 1e-9);
+        $('hs-b-' + cat.id).innerHTML = met ? badge('met', '✓ Met · more optional')
+          : ch.count === 1 ? badge('req', `Required · ${ch.opts[0].code} is the only option`)
+          : ch.count <= 5 ? badge('req', `Required · pick ${k} of ${ch.count}`)
+          : badge('req', `Required · ${fmt(rem)} cr ≈ ${k} course${k > 1 ? 's' : ''} from list`);
+        $('hs-cs-' + cat.id).innerHTML = ch.html;
       });
     }
 
     function renderAA() {
-      const a = sol.aaR;
+      const a = sol.aaR, cs = enriched.filter(Boolean);
+      const aaAssign = new Map(cs.map((c, i) => [c.code, sol.aa[i]]));
+      const RULE = { WCA: 'Required · ENGL 101 is the only option', WCB: 'Required · pick 1 of 4', QSR: 'Required · 5 cr from list' };
       const cards = ['WCA', 'WCB', 'QSR', 'HUM', 'SS', 'NS'].map(id => {
         const x = a.r[id], ok = x.have >= x.req && !x.warn.some(w => /needs/.test(w));
-        return `<div class="card"><b>${AA_NAMES[id]}</b> <span class="${ok ? 'ok' : ''}">${fmt(x.have)} / ${x.req}${ok ? ' ✓' : ''}</span>${bar(x.have, x.req)}
-          <div>${x.list.map(c => `<span class="tag">${escapeHtml(c.code)}${c.lab ? ' (L)' : ''}${c.perf ? '*' : ''}</span>`).join('') || '<span class="muted">none yet</span>'}</div>
-          ${x.warn.map(w => `<div class="warn">⚠ ${escapeHtml(w)}</div>`).join('')}</div>`;
+        const ch = chips('aa-' + id, c => c.aa.includes(id), c => aaAssign.get(c.code) === id);
+        const b = ok ? badge('met', '✓ Met · more optional') : badge('req', RULE[id] || `Required · ${fmt(Math.max(0, x.req - x.have))} cr from list, 2+ subjects`);
+        return `<div class="card" id="card-aa-${id}"><div class="ch"><b>${AA_NAMES[id]}</b>${b}</div>${bar(x.have, x.req)}<span class="${ok ? 'ok' : ''}">${fmt(x.have)} / ${x.req} cr</span>
+          ${x.warn.map(w => `<div class="warn">⚠ ${escapeHtml(w)}</div>`).join('')}<div class="chips">${ch.html}</div></div>`;
       });
+      const dv = chips('aa-DIV', c => c.div, c => c.div);
+      cards.push(`<div class="card" id="card-aa-DIV"><div class="ch"><b>Diversity requirement</b>${a.div ? badge('met', '✓ Met') : badge('req', 'Required · pick 1 from list')}</div>
+        <div class="muted">This course also counts in a distribution area or as an elective, so it doesn't add credits by itself.</div><div class="chips">${dv.html}</div></div>`);
       const csOk = enriched.some(c => c && ['FYS 101', 'HD 103', 'HD 120', 'HD 125', 'HD 173'].includes(c.code)) ||
         [['STEM 101', 'STEM 102'], ['CEO 101', 'CEO 102'], ['EXPRL 170', 'EXPRL 171']].some(p => p.every(k => enriched.some(c => c && c.code === k)));
-      cards.push(`<div class="card"><b>Total &amp; other</b> <span class="${a.total >= 90 ? 'ok' : ''}">${fmt(a.total)} / 90 credits</span>${bar(a.total, 90)}
-        <div>Diversity course: ${a.div ? '<span class="ok">✓</span>' : '<span class="bad">needed</span>'}</div>
+      cards.push(`<div class="card" id="card-aa-TOT"><div class="ch"><b>Electives &amp; 90-credit total</b>${a.total >= 90 ? badge('met', '✓ Met') : badge('flex', `Flexible · ${fmt(90 - a.total)} cr, any course`)}</div>${bar(a.total, 90)}<span class="${a.total >= 90 ? 'ok' : ''}">${fmt(a.total)} / 90 credits</span>
         <div>Restricted electives: ${fmt(Math.min(a.rs, 15))}${a.rs > 15 ? ` <span class="warn">(${fmt(a.rs - 15)} over cap)</span>` : ''} / 15 max</div>
         <div>PE activity: ${fmt(a.pe)}${a.pe > 3 ? ' <span class="warn">(only 3 count)</span>' : ''} / 3 max</div>
-        <div>College Success course: ${csOk ? '<span class="ok">✓</span>' : '<span class="muted">not listed. Required for most new BC students (FYS 101 etc.), so ask whether it applies to you.</span>'}</div></div>`);
+        <div>College Success course (FYS 101 etc.): ${csOk ? '<span class="ok">✓</span>' : badge('flex', 'Ask your advisor')} <span class="muted">Required for most new BC students.</span></div></div>`);
       $('aaAreas').innerHTML = cards.join('');
     }
 
@@ -465,10 +552,12 @@
     }
 
     function renderHSTable() {
-      $('hsTable').querySelector('tbody').innerHTML = HS_CATS.map(c => `<tr class="${c.sub ? 'sub' : ''}"><td>${c.name}</td>
-        <td><input type="number" step="0.5" min="0" data-req="${c.id}" value="${reqOf(c)}"></td>
-        <td><input type="number" step="1" min="0" data-prior="${c.id}" value="${state.hsSem[c.id] || 0}"> <span class="muted" id="hs-sc-${c.id}">= ${fmt(priorCr(c.id))} cr</span></td>
-        <td id="hs-rs-${c.id}"></td><td id="hs-pr-${c.id}" style="min-width:110px"></td><td id="hs-cs-${c.id}"></td></tr>`).join('');
+      $('hsCards').innerHTML = HS_CATS.map(c => `<div class="card ${c.sub ? 'sub' : ''}" id="card-hs-${c.id}">
+        <div class="ch"><b>${c.name}</b><span id="hs-b-${c.id}"></span></div>
+        <div class="inputs"><label>Need <input type="number" step="0.5" min="0" data-req="${c.id}" value="${reqOf(c)}"> cr</label>
+          <label>${c.sub ? 'Lab semesters' : 'Semesters'} at Cedarcrest <input type="number" step="1" min="0" data-prior="${c.id}" value="${state.hsSem[c.id] || 0}"></label>
+          <span class="muted" id="hs-sc-${c.id}">= ${fmt(priorCr(c.id))} cr</span></div>
+        <div id="hs-pr-${c.id}"></div><div class="chips" id="hs-cs-${c.id}"></div></div>`).join('');
     }
 
     // ---------- Plan builder ----------
@@ -544,7 +633,7 @@
       const d = e.target.dataset.del;
       if (d !== undefined) { state.courses.splice(+d, 1); renderCourses(); }
     });
-    $('hsTable').addEventListener('change', e => {
+    $('hsCards').addEventListener('change', e => {
       const t = e.target;
       if (t.dataset.req) state.hsReq[t.dataset.req] = t.value;
       if (t.dataset.prior) { state.hsSem[t.dataset.prior] = Math.max(0, Math.round(+t.value || 0)); t.value = state.hsSem[t.dataset.prior]; $('hs-sc-' + t.dataset.prior).textContent = '= ' + fmt(priorCr(t.dataset.prior)) + ' cr'; }
@@ -555,6 +644,33 @@
     [['startQ', 'value'], ['startY', 'value'], ['nq', 'value'], ['cap', 'value']].forEach(([id]) => $(id).onchange = e => {
       state[id] = id === 'startQ' ? e.target.value : +e.target.value; compute();
     });
+    // Requirement-map interactions
+    // Chips act on pointerup: a blur-triggered re-render can replace the chip mid-press, and then the browser fires no click.
+    let pressed = null, handledAt = 0;
+    const hitOf = chip => { const card = chip.closest('.card'); return { code: chip.dataset.chip, cardId: card && card.id, y0: card ? card.getBoundingClientRect().top : 0 }; };
+    document.addEventListener('pointerdown', e => { const c = e.target.closest('[data-chip]'); pressed = c && e.button === 0 ? hitOf(c) : null; });
+    document.addEventListener('pointerup', e => {
+      const c = e.target.closest('[data-chip]'), p = pressed; pressed = null;
+      if (p && c && c.dataset.chip === p.code) { handledAt = Date.now(); toggleChip(p); }
+    });
+    document.addEventListener('click', e => {
+      const ex = e.target.closest('[data-expand]');
+      if (ex) { const id = ex.dataset.expand; ui.expanded.has(id) ? ui.expanded.delete(id) : ui.expanded.add(id); compute(); return; }
+      const chip = e.target.closest('[data-chip]');
+      if (!chip || Date.now() - handledAt < 600) return;
+      toggleChip(hitOf(chip)); // keyboard activation
+    });
+    function toggleChip({ code, cardId, y0 }) {
+      const i = state.courses.findIndex(c => (parseCode(c.code) || {}).code === code);
+      if (i < 0) state.courses.push({ code, credits: 5, status: 'plan', term: '' });
+      else if (state.courses[i].status === 'plan') state.courses.splice(i, 1);
+      else { $('courseMsg').textContent = `${code} is marked ${state.courses[i].status === 'done' ? 'Completed' : 'In progress'}. Change or remove it in "Your courses".`; }
+      renderCourses();
+      const card2 = cardId && $(cardId);
+      if (card2) window.scrollBy(0, card2.getBoundingClientRect().top - y0);
+    }
+    $('filterQ').oninput = e => { ui.q = e.target.value; compute(); };
+    $('filterDbl').onchange = e => { ui.dbl = e.target.checked; compute(); };
     $('planBtn').onclick = autoPlan;
     $('clearPlan').onclick = () => { state.courses = state.courses.filter(c => c.status !== 'plan'); renderCourses(); };
     $('shareBtn').onclick = () => {
