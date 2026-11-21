@@ -58,6 +58,7 @@ When a new catalog or worksheet comes out, update the constants at the top of th
 | 23 | 2026-11-21 | Enforce **max 15 elective credits with a P/S grade** and **≥30 credits completed at BC** (AP exam credit doesn't count toward the 30) | BC AA-DTA worksheet |
 | 24 | 2026-11-21 | Warn when the same course is both AP-awarded and taken at BC, and don't suggest courses already covered by AP | BC chart: "No credit will be given if the same course is taken at BC" |
 | 25 | 2026-11-21 | An AP exam score of 3+ on an OSPI-approved ELA or math exam marks that part of the Graduation Pathway as met automatically. The course-based AP route (C+ each term) stays a manual checkbox, since the tool doesn't track HS grades. | OSPI toolkit p. 18–19 |
+| 26 | 2026-11-21 | **Cedarcrest classes are entered as a class list** (name, requirement, semesters, grade 9–12, status Completed / In progress / Committed, lab flag for science) instead of one semester total per subject. Requirement cards add the list up and show the in-progress and committed parts separately. The summary says "Complete" only when every contributing HS class and college course is completed, and "On track" when the plan meets everything but some items are still pending. Old per-subject totals are migrated to "Earlier HS classes" rows. | User asked for a place to record what's completed or committed for current HS sessions. Supersedes the input part of #3; 1 semester = 0.5 credit still applies. |
 
 ## How it works (implementation notes)
 
@@ -121,5 +122,6 @@ let auto-fill respect that.
 - Opens with no console errors. A plan built with auto-fill reaches "Complete" for both credentials.
 - Chip tap adds and removes a course, including right after editing a number field (blur re-render case).
 - Phone (390px) and tablet (810px and 1080px) have no horizontal scroll, and chips are ≥40px tall on touch.
-- Old share links that used `hsPrior` credits still load (they're migrated to semesters).
+- Old share links that used `hsPrior` credits or `hsSem` semesters still load (they're migrated to "Earlier HS classes" rows).
+- A Cedarcrest class marked In progress or Committed shows separately on its card, and the summary says "On track" (not "Complete") until it's marked Completed.
 - AP: Calculus AB 5 → MATH 151 + 152 (10 cr) and meets the math pathway. English Lang 4 → ENGL 101 and meets ELA. Adding ENGL 101 at BC too shows the no-double-credit warning. More than 15 cr of AP electives is capped at 15.
