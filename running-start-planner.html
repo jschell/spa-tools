@@ -52,7 +52,7 @@
   <div class="summary" id="summary"></div>
 
   <h2>1. Your courses</h2>
-  <p class="muted">Add Running Start/college courses you've taken, are taking, or plan to take. Enter codes like <code>ENGL&amp; 101</code>, <code>HIST 146</code>, or <code>BIOL 100 5</code> (credits default to 5). Separate several with commas or new lines. Classes taken at the high school go in the "Earned at HS" column in section 2.</p>
+  <p class="muted">Add Running Start/college courses you've taken, are taking, or plan to take. Enter codes like <code>ENGL&amp; 101</code>, <code>HIST 146</code>, or <code>BIOL 100 5</code> (credits default to 5). Separate several with commas or new lines. Classes taken at the high school go in the "HS semesters" column in section 2.</p>
   <div class="row">
     <textarea id="quick" rows="2" style="flex:1;min-width:220px" placeholder="ENGL 101, MATH 141, HIST 146"></textarea>
     <select id="quickStatus"><option value="done">Completed</option><option value="prog">In progress</option><option value="plan" selected>Planned</option></select>
@@ -67,11 +67,11 @@
 
   <h2>2. Riverview HS graduation</h2>
   <div class="scroll"><table id="hsTable">
-    <thead><tr><th>Requirement</th><th>Required</th><th>Earned at HS</th><th>From RS</th><th>Progress</th><th>Running Start courses that count</th></tr></thead>
+    <thead><tr><th>Requirement</th><th>Required</th><th>HS semesters</th><th>From RS</th><th>Progress</th><th>Running Start courses that count</th></tr></thead>
     <tbody></tbody>
   </table></div>
   <div class="row"><label><input type="checkbox" id="wah"> Washington State History already done (usually in middle school). If not, HIST 214 counts.</label></div>
-  <p class="muted">Equivalencies: English = any ENGL 101+; US History = HIST 146/147/148/150; Civics = POLS 202; World History = HIST 101/102/103/128; WA History = HIST 214; Math = any MATH (below 100 counts but isn't paid by Running Start); Science = ASTR, BIOL, BOTAN, CHEM, ENVS, GEOL, METR, NSCI, NUTR, OCEA, PHYS; World Language = ARAB, ASL, CHIN, FRCH, GERM, ITAL, JAPN, SPAN; Health = HLTH 250; PE = PE, DANCE, NUTR; Art = ART, DANCE, DRMA, MUSC; CTE = ACCT, AHE*, ASL, BA, BUS, BUSIT, BTS, CS, CJ, DBA, DMA, DEV, ECED, EDUC, ECON, ENGR, IMAGE, IT, INDES, MKTG, NSCOM, PROG, TECH; Electives = any 100+ course. Extra credits in any area spill into electives. "Other social studies" is assumed to accept HIST/POLS. Washington allows Personal Pathway substitutions for 1 Arts and 2 World Language credits, so lower those numbers if that applies to you.</p>
+  <p class="muted">Equivalencies: English = any ENGL 101+; US History = HIST 146/147/148/150; Civics = POLS 202; World History = HIST 101/102/103/128; WA History = HIST 214; Math = any MATH (below 100 counts but isn't paid by Running Start); Science = ASTR, BIOL, BOTAN, CHEM, ENVS, GEOL, METR, NSCI, NUTR, OCEA, PHYS; World Language = ARAB, ASL, CHIN, FRCH, GERM, ITAL, JAPN, SPAN; Health = HLTH 250; PE = PE, DANCE, NUTR; Art = ART, DANCE, DRMA, MUSC; CTE = ACCT, AHE*, ASL, BA, BUS, BUSIT, BTS, CS, CJ, DBA, DMA, DEV, ECED, EDUC, ECON, ENGR, IMAGE, IT, INDES, MKTG, NSCOM, PROG, TECH; Electives = any 100+ course. High school classes earn 0.5 credit per semester (1.0 for a full year), so enter semesters completed. One 5-credit college quarter = 1.0 HS credit, the same as a full year at the high school. Extra credits in any area spill into electives. "Other social studies" is assumed to accept HIST/POLS. Washington allows Personal Pathway substitutions for 1 Arts and 2 World Language credits, so lower those numbers if that applies to you.</p>
 
   <h2>3. Bellevue College AA-DTA</h2>
   <div class="areas" id="aaAreas"></div>
@@ -143,7 +143,7 @@
     const HS_NAME = Object.fromEntries(HS_CATS.map(c => [c.id, c.name]));
 
     // ---------- State ----------
-    let state = { courses: [], hsReq: {}, hsPrior: {}, wah: false, lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 };
+    let state = { courses: [], hsReq: {}, hsSem: {}, wah: false, lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 };
 
     function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function parseCode(s) {
@@ -230,7 +230,7 @@
     }
 
     function hsEval(cs, a) {
-      const have = {}; HS_CATS.forEach(c => have[c.id] = +(state.hsPrior[c.id] || 0));
+      const have = {}; HS_CATS.forEach(c => have[c.id] = priorCr(c.id));
       const lists = {}; HS_CATS.forEach(c => lists[c.id] = []);
       cs.forEach((c, i) => { if (have[a[i]] !== undefined) { have[a[i]] += c.hsCr; lists[a[i]].push(c); } });
       let def = 0, overflow = 0; const r = {};
@@ -249,6 +249,8 @@
       const total = Object.values(have).reduce((s, v) => s + v, 0);
       return { def, r, lists, wahOk, total };
     }
+    // High school classes: one semester = 0.5 credit, a full year (2 semesters) = 1.0 credit.
+    function priorCr(id) { return 0.5 * (+state.hsSem[id] || 0); }
     function reqOf(cat) { const v = state.hsReq[cat.id]; return v === undefined || v === '' ? cat.req : +v; }
 
     // Local search: start from an assignment and improve with single (and optionally pair) moves.
@@ -341,7 +343,7 @@
       const r = sol.hsR;
       HS_CATS.forEach(cat => {
         const x = r.r[cat.id], rs = sum(r.lists[cat.id].map(c => ({ credits: c.hsCr })));
-        $('hs-rs-' + cat.id).textContent = fmt(rs) + (cat.id === 'elec' && x.have - rs - (+state.hsPrior.elec || 0) > 0.001 ? ` +${fmt(x.have - rs - (+state.hsPrior.elec || 0))} overflow` : '');
+        $('hs-rs-' + cat.id).textContent = fmt(rs) + (cat.id === 'elec' && x.have - rs - priorCr('elec') > 0.001 ? ` +${fmt(x.have - rs - priorCr('elec'))} overflow` : '');
         $('hs-pr-' + cat.id).innerHTML = bar(x.have, x.req) + `<span class="${x.have >= x.req ? 'ok' : ''}">${fmt(x.have)} / ${fmt(x.req)}</span>`;
         $('hs-cs-' + cat.id).innerHTML = r.lists[cat.id].map(c => `<span class="tag hs">${escapeHtml(c.code)}</span>`).join('');
       });
@@ -432,7 +434,7 @@
     function renderHSTable() {
       $('hsTable').querySelector('tbody').innerHTML = HS_CATS.map(c => `<tr><td>${c.name}</td>
         <td><input type="number" step="0.5" min="0" data-req="${c.id}" value="${reqOf(c)}"></td>
-        <td><input type="number" step="0.5" min="0" data-prior="${c.id}" value="${state.hsPrior[c.id] || 0}"></td>
+        <td><input type="number" step="1" min="0" data-prior="${c.id}" value="${state.hsSem[c.id] || 0}"> <span class="muted" id="hs-sc-${c.id}">= ${fmt(priorCr(c.id))} cr</span></td>
         <td id="hs-rs-${c.id}"></td><td id="hs-pr-${c.id}" style="min-width:110px"></td><td id="hs-cs-${c.id}"></td></tr>`).join('');
     }
 
@@ -478,6 +480,8 @@
       if (!json) { try { json = localStorage.getItem('running-start-planner'); } catch (e) { } }
       if (json) { try { Object.assign(state, JSON.parse(json)); } catch (e) { } }
       if (!Array.isArray(state.courses)) state.courses = [];
+      if (!state.hsSem) state.hsSem = {};
+      if (state.hsPrior) { for (const k in state.hsPrior) if (state.hsSem[k] === undefined) state.hsSem[k] = Math.round(2 * state.hsPrior[k]); delete state.hsPrior; }
     }
 
     // ---------- Events ----------
@@ -510,7 +514,7 @@
     $('hsTable').addEventListener('change', e => {
       const t = e.target;
       if (t.dataset.req) state.hsReq[t.dataset.req] = t.value;
-      if (t.dataset.prior) state.hsPrior[t.dataset.prior] = +t.value || 0;
+      if (t.dataset.prior) { state.hsSem[t.dataset.prior] = Math.max(0, Math.round(+t.value || 0)); t.value = state.hsSem[t.dataset.prior]; $('hs-sc-' + t.dataset.prior).textContent = '= ' + fmt(priorCr(t.dataset.prior)) + ' cr'; }
       compute();
     });
     $('wah').onchange = e => { state.wah = e.target.checked; compute(); };
