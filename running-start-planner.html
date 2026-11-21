@@ -128,12 +128,22 @@
   </section>
 
   <h2>2. Your courses &amp; status</h2>
-  <p class="muted">Add Running Start/college courses you've taken, are taking, or plan to take. Enter codes like <code>ENGL&amp; 101</code>, <code>HIST 146</code>, or <code>BIOL 100 5</code> (credits default to 5). Separate several with commas or new lines. Classes taken at the high school go in the "HS semesters" boxes in section 1. Update each course's status (Planned → In progress → Completed) as you go.</p>
+  <p class="muted">Add Running Start/college courses you've taken, are taking, or plan to take. Enter codes like <code>ENGL&amp; 101</code>, <code>HIST 146</code>, or <code>BIOL 100 5</code> (credits default to 5). Separate several with commas or new lines. Classes taken at the high school go in the "HS semesters" boxes in section 1. Update each course's status (Planned → In progress → Completed) as you go. AP exam credit goes in the box below.</p>
   <div class="row">
     <textarea id="quick" rows="2" style="flex:1;min-width:220px" placeholder="ENGL 101, MATH 141, HIST 146"></textarea>
     <select id="quickStatus"><option value="done">Completed</option><option value="prog">In progress</option><option value="plan" selected>Planned</option></select>
     <input id="quickTerm" class="term" placeholder="Term (e.g. Fall 2026)">
     <button class="primary" id="addBtn">Add</button>
+  </div>
+  <div class="card apbox">
+    <b>AP exam credit</b>
+    <p class="muted">An AP <em>class</em> counts toward the diploma like any Cedarcrest class, so enter it as semesters in section 1 (e.g. AP US History = 2 semesters of US History). An AP <em>exam score</em> can also earn Bellevue College credit per the <a href="https://www.bellevuecollege.edu/wp-content/uploads/2024/02/Advanced-Placement-AP-Chart.pdf" target="_blank" rel="noopener">BC AP chart</a> (Feb 2024). Add it here: it counts toward the AA only (no extra HS credit), is graded "S", and a score of 3+ on an OSPI-approved exam also meets that part of the Graduation Pathway.</p>
+    <div class="row">
+      <select id="apExam" aria-label="AP exam"></select>
+      <select id="apScore" aria-label="AP score"><option>5</option><option>4</option><option selected>3</option><option>2</option><option>1</option></select>
+      <button class="primary" id="apAdd">Add AP credit</button>
+    </div>
+    <div id="apPreview" class="muted"></div>
   </div>
   <div class="scroll"><table id="courseTable">
     <thead><tr><th>Course</th><th>Cr</th><th>Status</th><th>Term</th><th>Counts toward</th><th></th></tr></thead>
@@ -176,6 +186,57 @@
     const NS_SRC = `ANTH 205,215L; ASTR 100,101L,201L; BIOL 100L,108L,112L,125,135,150L,160L,162L,211L,212L,213L,241L,242L,260L,275L,276L; BOTAN 110L,113L,120L; CHEM 100,110L,121L,131L,140L,161L,162L,163L,261L,262L,263L,272L,275L; ENVS 100,105,107L,110,150L; GEOG 108,205,206L; GEOL 101L,103L,107,208L; METR 101,102L,111; NUTR 100,101; OCEA 101L,110; PHYS 100,104L,105L,109L,114L,115L,116L,121L,122L,123L,225; PSYC 202; ` + MATH_SRC;
     const EXTRA_SRC = `ACCT 201,202,203; ART 108; BIOL 145,159; BUS 201; BA 240; CHEM 272,275; CS 101,210,211,212,250; CJ 101,105,106,110,112,240; DEV 110; DRMA 230; EDUC 115,130,150,202,204; ENGR 114,204,214,215,224,225; HLTH 220,222,230,250,260,292; INDES 140,201; ENGL 101,201,235,271,272`;
     const DIV_SRC = `ANTH 100,108,180,206,208,219,220,222,224,235; BA 180,241; BUS 120,241; CES 100,104,109,115,120,140,150,170,181,200,201,210,211,234,257; CJ 242; CMST 250,252,254,280; EDUC 150,240; ENGL 260,261; HD 140; HIST 173,185; INDES 255; INTST 150; MKTG 200; PHIL 102,260,265; POLS 210; PSYC 250; SOC 101,105,240,249,253,254,256,257,258,262,264,278`;
+
+    // ---------- BC AP chart (Evaluations Office, Feb 2024) ----------
+    // [exam, scores, BC equivalents, credits, note]. 'ELECT 1XX' = general elective; '1XX' = no BC equivalent.
+    const AP_CHART = [
+      ['African American Studies', '345', 'CES 140', 5], ['Art History', '345', 'ART 105', 5], ['Studio Art: 2D Design', '345', 'ART 110', 5],
+      ['Studio Art: 3D Design', '345', 'ART 112', 5], ['Studio Art: Drawing', '345', 'ART 120', 5],
+      ['Biology', '3', 'BIOL 100, BIOL 160', 6], ['Biology', '45', 'BIOL 100, BIOL 160', 12],
+      ['Calculus AB', '2', '', 0, 'No credit; placement in MATH& 151'], ['Calculus AB', '34', 'MATH 151', 5], ['Calculus AB', '5', 'MATH 151, MATH 152', 10],
+      ['Calculus BC', '2', '', 0, 'No credit; placement in MATH& 151'], ['Calculus BC', '3', 'MATH 151, MATH 152', 5], ['Calculus BC', '45', 'MATH 151, MATH 152', 10],
+      ['Chemistry', '34', 'CHEM 121, CHEM 161', 6], ['Chemistry', '5', 'CHEM 121, CHEM 161, CHEM 162', 12],
+      ['Chinese Language and Culture', '3', 'CHIN 123', 5], ['Chinese Language and Culture', '4', 'CHIN 123, CHIN 221', 10], ['Chinese Language and Culture', '5', 'CHIN 123, CHIN 221, CHIN 222', 15],
+      ['Computer Science A', '3', 'ELECT 1XX', 5, 'General elective'], ['Computer Science A', '45', 'CS 210', 5],
+      ['Computer Science Principles', '345', 'ELECT 1XX', 5, 'General elective'],
+      ['Microeconomics', '345', 'ECON 201', 5], ['Macroeconomics', '345', 'ECON 202', 5],
+      ['English Language and Composition', '3', 'ELECT 1XX', 5, 'General elective; placement in ENGL& 101'],
+      ['English Language and Composition', '45', 'ENGL 101', 5, 'Some 4-year universities do not accept AP credit for ENGL& 101'],
+      ['English Literature and Composition', '345', 'ENGL 111', 5], ['Environmental Science', '345', 'ENVS 100', 5], ['European History', '345', 'HIST 103', 5],
+      ['French Language and Culture', '3', 'FRCH 221', 5], ['French Language and Culture', '4', 'FRCH 221, FRCH 222', 10], ['French Language and Culture', '5', 'FRCH 221, FRCH 222, FRCH 223', 15],
+      ['German Language and Culture', '3', 'GERM 221', 5], ['German Language and Culture', '4', 'GERM 221, GERM 222', 10], ['German Language and Culture', '5', 'GERM 221, GERM 222, GERM 223', 15],
+      ['US Government and Politics', '345', 'POLS 202', 5],
+      ['Comparative Government and Politics', '34', 'POLS 101', 5], ['Comparative Government and Politics', '5', 'POLS 101, POLS 201', 5],
+      ['Human Geography', '345', 'GEOG 200', 5],
+      ['Italian Language and Culture', '3', 'ITAL 121', 5], ['Italian Language and Culture', '4', 'ITAL 121, ITAL 122', 10], ['Italian Language and Culture', '5', 'ITAL 121, ITAL 122, ITAL 123', 15],
+      ['Japanese Language and Culture', '3', 'JAPN 123', 5], ['Japanese Language and Culture', '4', 'JAPN 123, JAPN 221', 10], ['Japanese Language and Culture', '5', 'JAPN 123, JAPN 221, JAPN 222', 15],
+      ['Latin', '345', 'HUMAN 1XX', 5, 'Humanities distribution'],
+      ['Music Theory', '3', 'MUSC 110', 5], ['Music Theory', '45', 'MUSC 110, MUSC 111', 5],
+      ['Physics 1', '345', 'PHYS 114', 6], ['Physics 2', '345', 'PHYS 115', 6],
+      ['Physics C: Mechanics', '3', 'PHYS 114', 6], ['Physics C: Mechanics', '45', 'PHYS 121', 6],
+      ['Physics C: Electricity and Magnetism', '3', 'PHYS 115', 6], ['Physics C: Electricity and Magnetism', '45', 'PHYS 122', 6],
+      ['Precalculus', '3', 'MATH 141', 5], ['Precalculus', '45', 'MATH 141, MATH 142', 10],
+      ['Psychology', '345', 'PSYC 100', 5], ['Research', '345', 'ELECT 1XX', 5, 'General elective'], ['Seminar', '345', 'ELECT 1XX', 5, 'General elective'],
+      ['Spanish Language and Culture', '3', 'SPAN 221', 5], ['Spanish Language and Culture', '4', 'SPAN 221, SPAN 222', 10], ['Spanish Language and Culture', '5', 'SPAN 221, SPAN 222, SPAN 223', 15],
+      ['Spanish Literature and Culture', '3', 'SPAN 121', 5], ['Spanish Literature and Culture', '4', 'SPAN 121, SPAN 122', 5], ['Spanish Literature and Culture', '5', 'SPAN 121, SPAN 122, SPAN 123', 10],
+      ['Statistics', '345', 'MATH 130, BA 240', 5, 'MATH 130 or BA 240; no credit if either is completed at BC'],
+      ['US History', '34', 'HIST 146, HIST 147', 5], ['US History', '5', 'HIST 146, HIST 147', 10],
+      ['World History: Modern', '345', 'HIST 120', 5]
+    ];
+    // OSPI Class of 2027 toolkit p. 19: AP exams (score 3+) approved for the Dual Credit Graduation Pathway.
+    const AP_PATHWAY_ELA = ['African American Studies', 'Comparative Government and Politics', 'English Language and Composition', 'English Literature and Composition', 'European History', 'Human Geography', 'Macroeconomics', 'Microeconomics', 'Psychology', 'Research', 'Seminar', 'US History', 'US Government and Politics', 'World History: Modern'];
+    const AP_PATHWAY_MATH = ['Statistics', 'Calculus AB', 'Calculus BC', 'Computer Science A', 'Computer Science Principles', 'Precalculus'];
+    // When the chart lists more courses than its credit total covers (e.g. "HIST 146, 147 = 5 cr"), award the first
+    // course(s) that fit; BC Evaluations makes the final call.
+    function apAward(exam, score) {
+      const row = AP_CHART.find(r => r[0] === exam && r[1].includes(String(score)));
+      if (!row || !row[3]) return { courses: [], note: row ? row[4] : 'No BC credit for this score' };
+      const list = row[2].split(',').map(x => x.trim());
+      const k = row[3] / list.length >= 5 ? list.length : Math.max(1, Math.floor(row[3] / 5));
+      const each = Math.round(row[3] / k * 10) / 10;
+      return { courses: list.slice(0, k).map(code => ({ code, credits: each })), note: row[4] || (k < list.length ? `Chart lists ${row[2]} for ${row[3]} cr` : '') };
+    }
+    const GENERIC = { 'HUMAN 1XX': 'HUM', 'PHYS 1XX': 'NS', 'ELECT 1XX': null };
 
     function parseList(src) {
       const m = new Map();
@@ -226,9 +287,10 @@
 
     function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function parseCode(s) {
-      const m = String(s).toUpperCase().replace(/&/g, '').match(/^\s*([A-Z]+)\s*(\d{2,3})/);
+      const m = String(s).toUpperCase().replace(/&/g, '').match(/^\s*([A-Z]+)\s*(\d{2,3}|[12]XX)\b/);
       if (!m) return null;
       const dept = ALIAS[m[1]] || m[1];
+      if (/XX$/.test(m[2])) return { dept, num: m[2][0] * 100, code: dept + ' ' + m[2], generic: true };
       return { dept, num: +m[2], code: dept + ' ' + m[2] };
     }
 
@@ -243,8 +305,9 @@
       if (NS.has(k)) aa.push('NS');
       if (SS.has(k)) aa.push('SS');
       if (HUM.has(k)) aa.push('HUM');
+      if (GENERIC[k]) aa.push(GENERIC[k]);
       aa.push('ELEC');
-      const listed = aa.length > 1 || EXTRA.has(k);
+      const listed = aa.length > 1 || EXTRA.has(k) || k in GENERIC;
       const series = DIST_DEPTS.has(d) && ((n >= 190 && n <= 199) || (n >= 280 && n <= 299));
       const transferable = n >= 100 && (listed || series || d === 'PE');
       const hs = [];
@@ -262,8 +325,11 @@
       if (['HIST', 'POLS', 'ECON', 'PSYC', 'GEOG'].includes(d)) hs.push('ssx');
       if (n >= 100) hs.push('elec');
       if (!hs.length) hs.push('none');
+      // AP exam credit: AA only. The AP class already earned HS credit (entered as semesters), so no HS credit here.
+      const isAP = c.status === 'ap', exam = isAP && c.ap ? c.ap.exam : '', score = isAP && c.ap ? +c.ap.score : 0;
       return {
-        ...p, credits: cr, hsCr: Math.round(cr * 0.2 * 100) / 100, aa, hs,
+        ...p, credits: cr, hsCr: isAP ? 0 : Math.round(cr * 0.2 * 100) / 100, aa, hs: isAP ? ['none'] : hs,
+        sgrade: isAP, apExam: exam, apEla: score >= 3 && AP_PATHWAY_ELA.includes(exam), apMath: score >= 3 && AP_PATHWAY_MATH.includes(exam),
         perf: !!(HUM.get(k) || {}).perf, lab: !!(NS.get(k) || {}).lab, wl100: WL.includes(d) && n < 200,
         mathy: QSR.has(k), transferable, restricted: n >= 100 && !transferable, pe: d === 'PE', div: DIV.has(k),
         status: c.status, term: c.term
@@ -301,11 +367,16 @@
       const pe = sum(cs.filter(c => c.transferable && c.pe));
       const tr = sum(cs.filter(c => c.transferable && !c.pe)) + Math.min(pe, 3);
       const rs = sum(cs.filter(c => c.restricted));
-      const total = tr + Math.min(rs, 15);
+      // BC worksheet: max 15 elective credits with a P or S grade (AP exam credit is graded S).
+      const sElec = cs.reduce((s, c, i) => s + (c.sgrade && a[i] === 'ELEC' && c.num >= 100 ? c.credits : 0), 0);
+      const total = tr + Math.min(rs, 15) - Math.max(0, sElec - 15);
       def += 0.2 * Math.max(0, 90 - total);
+      // At least 30 of the 90 credits must be completed at BC (anything not exam credit, in this tool).
+      const atBC = sum(cs.filter(c => !c.sgrade && c.num >= 100));
+      def += 0.2 * Math.max(0, 30 - atBC);
       const div = cs.some(c => c.div);
       if (!div) def += 2;
-      return { def, r, total, rs, pe, div };
+      return { def, r, total, rs, pe, div, sElec, atBC };
     }
 
     function hsEval(cs, a) {
@@ -330,8 +401,8 @@
       const wahOk = state.wah || cs.some(c => c.code === 'HIST 214');
       if (!wahOk) def += 2;
       // OSPI Dual Credit Graduation Pathway: >= 1.0 HS credit in a 100+ course credited as English (ELA) / math.
-      const pwElaRS = cs.find(c => c.dept === 'ENGL' && c.num >= 101 && c.hsCr >= 1);
-      const pwMathRS = cs.find(c => c.dept === 'MATH' && c.num >= 100 && c.hsCr >= 1);
+      const pwElaRS = cs.find(c => c.dept === 'ENGL' && c.num >= 101 && c.hsCr >= 1) || cs.find(c => c.apEla);
+      const pwMathRS = cs.find(c => c.dept === 'MATH' && c.num >= 100 && c.hsCr >= 1) || cs.find(c => c.apMath);
       const pwEla = state.pwEla || !!pwElaRS, pwMath = state.pwMath || !!pwMathRS;
       def += (pwEla ? 0 : 2) + (pwMath ? 0 : 2);
       const total = HS_CATS.filter(c => !c.sub).reduce((s, c) => s + have[c.id], 0);
@@ -419,11 +490,13 @@
         if (!c) { cell.innerHTML = '<span class="bad">Unrecognized code</span>'; return; }
         const aa = sol.aa[vi], hs = sol.hs[vi]; vi++;
         const aaLabel = aa === 'ELEC' ? (c.transferable ? 'Elective' : c.restricted ? 'Restricted elective' : 'Not degree-applicable (<100)') : AA_NAMES[aa];
-        const hsLabel = hs === 'none' ? 'No HS credit' : `${HS_NAME[hs]} (${fmt(c.hsCr)})`;
-        cell.innerHTML = `<span class="tag hs">HS: ${escapeHtml(hsLabel)}</span><span class="tag">AA: ${escapeHtml(aaLabel)}</span>${c.div ? '<span class="tag">Diversity</span>' : ''}<span class="links">${courseLinks(c.code)}</span>`;
+        const hsLabel = c.sgrade ? 'none (AP class counts via semesters)' : hs === 'none' ? 'No HS credit' : `${HS_NAME[hs]} (${fmt(c.hsCr)})`;
+        cell.innerHTML = `<span class="tag hs">HS: ${escapeHtml(hsLabel)}</span><span class="tag">AA: ${escapeHtml(aaLabel)}</span>${c.div ? '<span class="tag">Diversity</span>' : ''}${c.sgrade ? `<span class="tag st-plan">AP ${escapeHtml(c.apExam)} · S grade</span>` : ''}${c.generic ? '' : `<span class="links">${courseLinks(c.code)}</span>`}`;
       });
-      const dups = valid.map(c => c.code).filter((c, i, a) => a.indexOf(c) !== i);
-      $('courseMsg').textContent = dups.length ? 'Duplicate course(s): ' + [...new Set(dups)].join(', ') + '. Repeats usually earn credit only once.' : '';
+      const dups = valid.filter(c => !c.generic).map(c => c.code).filter((c, i, a) => a.indexOf(c) !== i);
+      const apDup = [...new Set(dups)].filter(k => valid.some(c => c.code === k && c.sgrade) && valid.some(c => c.code === k && !c.sgrade));
+      $('courseMsg').textContent = (apDup.length ? `BC gives no AP credit for a course you also take at BC: ${apDup.join(', ')}. Drop one of them. ` : '') +
+        (dups.length > apDup.length ? 'Duplicate course(s): ' + [...new Set(dups)].filter(k => !apDup.includes(k)).join(', ') + '. Repeats usually earn credit only once.' : '');
       renderHS(valid); renderAA(); renderSummary(); renderSuggestions(valid); renderTerms(valid); save();
     }
 
@@ -446,7 +519,7 @@
         const aa = c.aa.filter(x => x !== 'ELEC').map(x => AA_NAMES[x]);
         return `${c.code} (5 cr = 1.0 HS credit). HS: ${hs.join(', ') || 'elective'}. AA: ${aa.join(', ') || (c.transferable ? 'elective' : 'restricted elective')}${c.div ? '. Meets Diversity' : ''}.`;
       };
-      let html = shown.map(x => `<button class="chip ${x.h ? 'here' : x.inPlan ? 'elsewhere' : ''}" data-chip="${escapeHtml(x.c.code)}" title="${escapeHtml(quals(x.c))}">${x.st === 'done' ? '✓ ' : x.st === 'prog' ? '◐ ' : ''}${escapeHtml(x.c.code)}${x.c.lab ? 'ᴸ' : ''}${x.c.perf ? '*' : ''}${isDouble(x.c) ? ' <b>2×</b>' : ''}</button>`).join('');
+      let html = shown.map(x => `<button class="chip ${x.h ? 'here' : x.inPlan ? 'elsewhere' : ''}" data-chip="${escapeHtml(x.c.code)}" title="${escapeHtml(quals(x.c))}">${x.st === 'done' ? '✓ ' : x.st === 'prog' ? '◐ ' : x.st === 'ap' ? 'AP ' : ''}${escapeHtml(x.c.code)}${x.c.lab ? 'ᴸ' : ''}${x.c.perf ? '*' : ''}${isDouble(x.c) ? ' <b>2×</b>' : ''}</button>`).join('');
       if (!q && info.length > CHIP_LIMIT) html += `<button class="more" data-expand="${cardId}">${open ? 'Show fewer' : 'Show all ' + info.length}</button>`;
       if (!info.length) html = '<span class="muted">No matching options.</span>';
       return { html, count: opts.length, opts };
@@ -506,6 +579,8 @@
       cards.push(`<div class="card" id="card-aa-TOT"><div class="ch"><b>Electives &amp; 90-credit total</b>${a.total >= 90 ? badge('met', '✓ Met') : badge('flex', `Flexible · ${fmt(90 - a.total)} cr, any course`)}</div>${bar(a.total, 90)}<span class="${a.total >= 90 ? 'ok' : ''}">${fmt(a.total)} / 90 credits</span>
         <div>Restricted electives: ${fmt(Math.min(a.rs, 15))}${a.rs > 15 ? ` <span class="warn">(${fmt(a.rs - 15)} over cap)</span>` : ''} / 15 max</div>
         <div>PE activity: ${fmt(a.pe)}${a.pe > 3 ? ' <span class="warn">(only 3 count)</span>' : ''} / 3 max</div>
+        ${a.sElec > 0 ? `<div>S-graded (AP) electives: ${fmt(Math.min(a.sElec, 15))}${a.sElec > 15 ? ` <span class="warn">(${fmt(a.sElec - 15)} over the 15-credit cap)</span>` : ''} / 15 max</div>` : ''}
+        <div>Taken at BC: <span class="${a.atBC >= 30 ? 'ok' : 'warn'}">${fmt(a.atBC)}</span> / 30 min${a.atBC < 30 ? ' <span class="muted">(AP exam credit doesn\'t count toward this)</span>' : ''}</div>
         <div>College Success course (FYS 101 etc.): ${csOk ? '<span class="ok">✓</span>' : badge('flex', 'Ask your advisor')} <span class="muted">Required for most new BC students.</span></div></div>`);
       $('aaAreas').innerHTML = cards.join('');
     }
@@ -524,14 +599,14 @@
       const hsDone = hsLeft < 0.01 && !todo.length;
       $('pwStatus').innerHTML = [['ELA', 'Ela'], ['Math', 'Math']].map(([k, key]) => {
         const rs = h['pw' + key + 'RS'], ok = h['pw' + key];
-        return `${k}: ` + (ok ? `<span class="ok">✓</span> ${rs ? 'via Running Start ' + escapeHtml(rs.code) : 'met another way'}` : '<span class="bad">not yet</span>');
+        return `${k}: ` + (ok ? `<span class="ok">✓</span> ${rs ? (rs.sgrade ? 'via AP ' + escapeHtml(rs.apExam) + ' exam' : 'via Running Start ' + escapeHtml(rs.code)) : 'met another way'}` : '<span class="bad">not yet</span>');
       }).join(' · ');
       const aaDistLeft = ['WCA', 'WCB', 'QSR', 'HUM', 'SS', 'NS'].reduce((s, id) => s + Math.max(0, a.r[id].req - a.r[id].have), 0);
-      const rsCr = sum(enriched.filter(Boolean));
+      const rsCr = sum(enriched.filter(c => c && !c.sgrade)), apCr = sum(enriched.filter(c => c && c.sgrade));
       $('summary').innerHTML = `
         <div class="card">HS diploma<div class="big ${hsDone ? 'ok' : ''}">${hsDone ? 'Complete ✓' : hsLeft < 0.01 ? 'Credits done' : fmt(hsLeft) + ' credits left'}</div><span class="muted">of ${fmt(hsReqTot)} required${todo.length ? '. Still needed: ' + escapeHtml(todo.join(', ')) : ''}</span></div>
         <div class="card">AA-DTA<div class="big ${a.def < 0.01 ? 'ok' : ''}">${a.def < 0.01 ? 'Complete ✓' : fmt(Math.max(0, 90 - a.total)) + ' credits left'}</div><span class="muted">${fmt(aaDistLeft)} distribution credits short${a.div ? '' : '. Diversity needed'}</span></div>
-        <div class="card">College credits entered<div class="big">${fmt(rsCr)}</div><span class="muted">= ${fmt(rsCr * 0.2)} HS credits</span></div>`;
+        <div class="card">College credits entered<div class="big">${fmt(rsCr + apCr)}</div><span class="muted">${fmt(rsCr)} Running Start = ${fmt(rsCr * 0.2)} HS credits${apCr ? ` · ${fmt(apCr)} AP exam (AA only)` : ''}</span></div>`;
     }
 
     function renderSuggestions(cs) {
@@ -561,10 +636,11 @@
 
     function renderTerms(cs) {
       const groups = {};
-      cs.forEach(c => { const t = (c.term || '').trim() || 'Unscheduled'; (groups[t] = groups[t] || []).push(c); });
+      cs.forEach(c => { const t = c.status === 'ap' ? 'AP exam credit' : (c.term || '').trim() || 'Unscheduled'; (groups[t] = groups[t] || []).push(c); });
       const order = termLabels();
       const keys = Object.keys(groups).sort((a, b) => {
         const ia = order.indexOf(a), ib = order.indexOf(b);
+        if (a === 'AP exam credit') return -1; if (b === 'AP exam credit') return 1;
         if (a === 'Unscheduled') return 1; if (b === 'Unscheduled') return -1;
         return (ia < 0 ? -1 : ia) - (ib < 0 ? -1 : ib) || a.localeCompare(b);
       });
@@ -578,7 +654,7 @@
       $('courseTable').querySelector('tbody').innerHTML = state.courses.map((c, i) => `<tr>
         <td data-label="Course"><input class="code" aria-label="Course code" data-i="${i}" data-f="code" value="${escapeHtml(c.code)}"></td>
         <td data-label="Credits"><input type="number" aria-label="Credits" min="0" max="15" step="1" data-i="${i}" data-f="credits" value="${escapeHtml(c.credits)}"></td>
-        <td data-label="Status"><select aria-label="Status" data-i="${i}" data-f="status">${[['done', 'Completed'], ['prog', 'In progress'], ['plan', 'Planned']].map(([v, l]) => `<option value="${v}" ${c.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
+        <td data-label="Status"><select aria-label="Status" data-i="${i}" data-f="status">${[['done', 'Completed'], ['prog', 'In progress'], ['plan', 'Planned'], ['ap', 'AP exam credit']].map(([v, l]) => `<option value="${v}" ${c.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
         <td data-label="Term"><input class="term" aria-label="Term" placeholder="e.g. Fall 2026" data-i="${i}" data-f="term" value="${escapeHtml(c.term || '')}"></td>
         <td class="counts" id="ct-${i}"></td>
         <td><button class="x" data-del="${i}" title="Remove">✕</button></td></tr>`).join('')
@@ -700,7 +776,7 @@
       let added = false;
       if (i < 0) { state.courses.push({ code, credits: 5, status: 'plan', term: '' }); added = true; }
       else if (state.courses[i].status === 'plan') { state.courses.splice(i, 1); toast(`Removed ${code} from your plan.`); }
-      else toast(`${code} is marked ${state.courses[i].status === 'done' ? 'Completed' : 'In progress'}. Change or remove it in "Your courses".`);
+      else toast(`${code} is marked ${{ done: 'Completed', prog: 'In progress', ap: 'AP exam credit' }[state.courses[i].status]}. Change or remove it in "Your courses".`);
       renderCourses();
       if (added) {
         const k = enriched.filter(Boolean).findIndex(c => c.code === code), hs = sol.hs[k], aa = sol.aa[k];
@@ -711,6 +787,24 @@
     }
     $('filterQ').oninput = e => { ui.q = e.target.value; compute(); };
     $('filterDbl').onchange = e => { ui.dbl = e.target.checked; compute(); };
+    // AP exam entry
+    $('apExam').innerHTML = [...new Set(AP_CHART.map(r => r[0]))].sort().map(e => `<option>${escapeHtml(e)}</option>`).join('');
+    function apPreview() {
+      const exam = $('apExam').value, score = +$('apScore').value, aw = apAward(exam, score);
+      const pw = score >= 3 && AP_PATHWAY_ELA.includes(exam) ? ' Meets the ELA Graduation Pathway.' : score >= 3 && AP_PATHWAY_MATH.includes(exam) ? ' Meets the math Graduation Pathway.' : '';
+      $('apPreview').textContent = (aw.courses.length ? '→ ' + aw.courses.map(c => `${c.code} (${c.credits} cr)`).join(', ') : '→ No BC credit') + (aw.note ? '. ' + aw.note : '') + '.' + pw;
+    }
+    $('apExam').onchange = apPreview; $('apScore').onchange = apPreview;
+    $('apAdd').onclick = () => {
+      const exam = $('apExam').value, score = +$('apScore').value, aw = apAward(exam, score);
+      state.courses = state.courses.filter(c => !(c.status === 'ap' && c.ap && c.ap.exam === exam)); // re-adding an exam replaces it
+      aw.courses.forEach(c => state.courses.push({ code: c.code, credits: c.credits, status: 'ap', term: '', ap: { exam, score } }));
+      // Pathway-only (no BC credit) entries are still worth recording for the Graduation Pathway.
+      if (!aw.courses.length && score >= 3) state.courses.push({ code: 'ELECT 1XX', credits: 0, status: 'ap', term: '', ap: { exam, score } });
+      renderCourses();
+      toast(aw.courses.length ? `AP ${exam} (${score}) → ${aw.courses.map(c => c.code).join(', ')}, AA credit only` : `AP ${exam} (${score}): no BC credit.`);
+    };
+    apPreview();
     $('planBtn').onclick = autoPlan;
     $('clearPlan').onclick = () => { state.courses = state.courses.filter(c => c.status !== 'plan'); renderCourses(); };
     $('shareBtn').onclick = () => {

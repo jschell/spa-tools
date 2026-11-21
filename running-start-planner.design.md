@@ -22,6 +22,8 @@ and let the plan be updated quarter by quarter as courses are completed.
 | HS credit totals | [Cedarcrest 2026–27 course catalog](https://ceb127e6-ce7f-4fb6-a881-d469edc65251.usrfiles.com/ugd/ceb127_e3bfdf274cc64d76851f93b64ac3a4e5.pdf), p. 5–6 | Classes of 2027–2030 table. The [CHS counseling page](https://www.chs.rsd407.org/counseling) points to the catalog and OSPI. |
 | State rules: credit conversion, Graduation Pathway, HSBP | [OSPI Class of 2027 graduation toolkit](https://ospi.k12.wa.us/sites/default/files/2026-09/classof2027graduationtoolkit.pdf), p. 12–18 | RCW 28A.230.740, WAC 180-51-050 |
 | Running Start → HS subject mapping | [Riverview Running Start course equivalencies](https://6140bf52-cefa-489a-82f8-e9b6a56edce1.filesusr.com/ugd/243013_0c41a1dc3b0d4f6b939995ac7d79394d.pdf) | Also linked from the CHS counseling page |
+| AP exam → BC credit | [BC Advanced Placement chart](https://www.bellevuecollege.edu/wp-content/uploads/2024/02/Advanced-Placement-AP-Chart.pdf) (Evaluations Office, Feb 2024) | Transcribed into `AP_CHART` |
+| AP exams approved for the Graduation Pathway | OSPI Class of 2027 toolkit, p. 19 | `AP_PATHWAY_ELA`, `AP_PATHWAY_MATH` |
 | AA-DTA rules and course lists | [BC AA-DTA worksheet 2025–26](https://www.bellevuecollege.edu/wp-content/uploads/2025/08/AssociateArtsScienceWorksheet_2025-26.pdf) | Course lists are transcribed into the page as `*_SRC` strings |
 
 When a new catalog or worksheet comes out, update the constants at the top of the `<script>` block (`HUM_SRC`, `SS_SRC`,
@@ -49,6 +51,12 @@ When a new catalog or worksheet comes out, update the constants at the top of th
 | 16 | 2026-11-21 | State is saved in `localStorage` **and** the URL hash, so a shared link carries the whole plan | No accounts or servers. A link can be shared with a counselor or parent. |
 | 17 | 2026-11-21 | Suggestions and auto-fill use a curated ~60-course catalog, rank by requirements filled, honor simple prerequisites (ENGL 101 → 2xx, language and math sequences), and cap credits per quarter (default 15; Fall, Winter and Spring only) | Running Start funding norms. Not a substitute for placement or advising. |
 | 18 | 2026-11-21 | **Mobile and tablet are first-class:** stacked course cards under 640px, 16px inputs (no iOS zoom), larger tap targets on touch screens, a filter bar pinned only within the requirement map, a toast explaining where a tapped course counts (hover tooltips don't exist on touch), and chips that act on pointer-up so a redraw mid-tap can't swallow the tap | User requirement. Tested on emulated iPhone 13 and iPad (portrait and landscape). |
+| 20 | 2026-11-21 | **AP is split into two things.** The AP *class* counts toward the diploma as Cedarcrest semesters, like any HS class. The AP *exam score* is entered separately (exam + score) and becomes BC courses with status "AP exam credit". | User asked to cover AP. Keeping them separate avoids double-counting HS credit, because the class already earned it. |
+| 21 | 2026-11-21 | AP exam credit counts toward the **AA only** (0 HS credit) and is graded "S" | BC AP chart. Exam credit appears on the BC transcript as S and doesn't affect GPA. |
+| 22 | 2026-11-21 | Score → course mapping follows the BC chart. Where the chart lists more courses than its credit total covers (e.g. US History 3/4: "HIST 146, 147 = 5 cr"; Statistics: "MATH 130, BA 240 = 5 cr"), the tool awards the first course(s) that fit and shows the chart's note. "Elective" awards become `ELECT 1XX`, and "no BC equivalent" becomes `HUMAN 1XX` / `PHYS 1XX` in the chart's stated distribution. | The chart is ambiguous there; BC Evaluations decides the final course |
+| 23 | 2026-11-21 | Enforce **max 15 elective credits with a P/S grade** and **≥30 credits completed at BC** (AP exam credit doesn't count toward the 30) | BC AA-DTA worksheet |
+| 24 | 2026-11-21 | Warn when the same course is both AP-awarded and taken at BC, and don't suggest courses already covered by AP | BC chart: "No credit will be given if the same course is taken at BC" |
+| 25 | 2026-11-21 | An AP exam score of 3+ on an OSPI-approved ELA or math exam marks that part of the Graduation Pathway as met automatically. The course-based AP route (C+ each term) stays a manual checkbox, since the tool doesn't track HS grades. | OSPI toolkit p. 18–19 |
 | 19 | 2026-11-21 | Course availability by quarter is a **future goal**. For now each course links to the BC catalog and to ctcLink class search. | See the roadmap below |
 
 ## How it works (implementation notes)
@@ -60,6 +68,9 @@ When a new catalog or worksheet comes out, update the constants at the top of th
 - **Option lists:** `universe()` is every course code named on the BC worksheet or the RS sheet. Requirement cards filter it, and user-entered courses outside it are merged in.
 
 ## Known limitations
+
+- IB and Cambridge exam credit aren't modeled yet. BC publishes an IB chart, and OSPI lists approved IB/Cambridge exams, so the same pattern as AP would work.
+- AP credit is accepted differently at 4-year universities (BC's chart warns about ENGL& 101 in particular). The tool shows BC's treatment only.
 
 - The tool doesn't check Cedarcrest's math sequence rule (Algebra 1 + Geometry, third credit aligned to the HSBP) or the CADR college-admission columns.
 - Credits are assumed to be 5 per course. Edit the course list for exceptions such as PE activity courses.
@@ -111,3 +122,4 @@ let auto-fill respect that.
 - Chip tap adds and removes a course, including right after editing a number field (blur re-render case).
 - Phone (390px) and tablet (810px and 1080px) have no horizontal scroll, and chips are ≥40px tall on touch.
 - Old share links that used `hsPrior` credits still load (they're migrated to semesters).
+- AP: Calculus AB 5 → MATH 151 + 152 (10 cr) and meets the math pathway. English Lang 4 → ENGL 101 and meets ELA. Adding ENGL 101 at BC too shows the no-double-credit warning. More than 15 cr of AP electives is capped at 15.
