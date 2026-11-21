@@ -59,6 +59,8 @@ When a new catalog or worksheet comes out, update the constants at the top of th
 | 24 | 2026-11-21 | Warn when the same course is both AP-awarded and taken at BC, and don't suggest courses already covered by AP | BC chart: "No credit will be given if the same course is taken at BC" |
 | 25 | 2026-11-21 | An AP exam score of 3+ on an OSPI-approved ELA or math exam marks that part of the Graduation Pathway as met automatically. The course-based AP route (C+ each term) stays a manual checkbox, since the tool doesn't track HS grades. | OSPI toolkit p. 18–19 |
 | 26 | 2026-11-21 | **Cedarcrest classes are entered as a class list** (name, requirement, semesters, grade 9–12, status Completed / In progress / Committed, lab flag for science) instead of one semester total per subject. Requirement cards add the list up and show the in-progress and committed parts separately. The summary says "Complete" only when every contributing HS class and college course is completed, and "On track" when the plan meets everything but some items are still pending. Old per-subject totals are migrated to "Earlier HS classes" rows. | User asked for a place to record what's completed or committed for current HS sessions. Supersedes the input part of #3; 1 semester = 0.5 credit still applies. |
+| 27 | 2026-11-21 | **College Success requirement (FYS 101) is a required AA item,** not advisory. Its own card offers FYS 101 (3 cr), FYS 102 and HD 120/125/173, and also recognizes HD 103 and the STEM/CEO/EXPRL pairs. The card warns if it isn't in the student's first or second BC quarter, has an Exempt checkbox, and auto-fill places FYS 101 in the first quarter. It counts as a restricted elective (0.6 HS elective credit). | Reported missing by the user on a printed plan. Sources: BC AA-DTA worksheet p. 2 and [bellevuecollege.edu/fys](https://www.bellevuecollege.edu/fys/) (FYS 101 is 3 credits with a Running Start section; required in the first or second quarter; only Running Start students who began at BC before summer 2022 are exempt). |
+| 28 | 2026-11-21 | Financial literacy is met automatically by a Cedarcrest class whose name contains "finance" (e.g. Personal Finance, Financial Literacy), as well as by the checkbox | The user's plan listed "Financial Literacy" as a class but the requirement still showed as needed |
 
 ## How it works (implementation notes)
 
@@ -76,7 +78,6 @@ When a new catalog or worksheet comes out, update the constants at the top of th
 - The tool doesn't check Cedarcrest's math sequence rule (Algebra 1 + Geometry, third credit aligned to the HSBP) or the CADR college-admission columns.
 - Credits are assumed to be 5 per course. Edit the course list for exceptions such as PE activity courses.
 - Cross-listed BC courses (e.g. PHIL 201 = POLS 201) aren't detected, so don't enter both.
-- The BC College Success requirement (FYS 101, etc.) is only shown as advisory; whether it applies to Running Start students is unconfirmed.
 - The page is longer than the repo's ~300-line guideline because it carries the full requirement data. Splitting the auto-planner into its own tool is an option.
 
 ## Roadmap: course availability by quarter (future goal)
@@ -123,5 +124,6 @@ let auto-fill respect that.
 - Chip tap adds and removes a course, including right after editing a number field (blur re-render case).
 - Phone (390px) and tablet (810px and 1080px) have no horizontal scroll, and chips are ≥40px tall on touch.
 - Old share links that used `hsPrior` credits or `hsSem` semesters still load (they're migrated to "Earlier HS classes" rows).
+- With no FYS 101 in the plan, the AA card says "Requirements left" and the College Success card is Required. Auto-fill puts FYS 101 (3 cr) in the first quarter, and moving it to quarter 3+ shows a timing warning.
 - A Cedarcrest class marked In progress or Committed shows separately on its card, and the summary says "On track" (not "Complete") until it's marked Completed.
 - AP: Calculus AB 5 → MATH 151 + 152 (10 cr) and meets the math pathway. English Lang 4 → ENGL 101 and meets ELA. Adding ENGL 101 at BC too shows the no-double-credit warning. More than 15 cr of AP electives is capped at 15.

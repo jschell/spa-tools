@@ -120,7 +120,7 @@
   <h4>Non-credit requirements</h4>
   <div class="checks">
     <label><input type="checkbox" id="wah"> Washington State History. Riverview students complete it in 7th grade, and HIST 214 also counts.</label>
-    <label><input type="checkbox" id="finlit"> Financial literacy, met by Personal Finance (usually 9th grade) or an equivalent.</label>
+    <label><input type="checkbox" id="finlit"> Financial literacy, met by Personal Finance (usually 9th grade) or an equivalent. A Cedarcrest class with "finance" in its name counts automatically. <span id="finlitStatus"></span></label>
     <label><input type="checkbox" id="hsbp"> High School and Beyond Plan complete.</label>
     <div><b>Graduation Pathway</b> (an ELA option and a math option): <span id="pwStatus"></span></div>
     <label class="sub"><input type="checkbox" id="pwEla"> ELA met another way (state test, SAT/ACT, AP/IB score, CTE sequence…)</label>
@@ -259,6 +259,20 @@
     }
     const GENERIC = { 'HUMAN 1XX': 'HUM', 'PHYS 1XX': 'NS', 'ELECT 1XX': null };
 
+    // ---------- BC College Success requirement (formerly First-Year Seminar) ----------
+    // AA-DTA worksheet p. 2 + bellevuecollege.edu/fys: one course (or pair) in the first or second quarter at BC.
+    // FYS 101 is 3 credits and has a Running Start section. Running Start students who started at BC before summer 2022 are exempt.
+    const CS_SINGLE = ['FYS 101', 'FYS 102', 'HD 103', 'HD 120', 'HD 125', 'HD 173'];
+    const CS_PAIRS = [['STEM 101', 'STEM 102'], ['CEO 101', 'CEO 102'], ['EXPRL 170', 'EXPRL 171']];
+    const CREDIT_DEFAULT = { 'FYS 101': 3, 'FYS 102': 3 };
+    const creditsFor = code => CREDIT_DEFAULT[code] || 5;
+    function csCourses(cs) {
+      const one = cs.find(c => CS_SINGLE.includes(c.code));
+      if (one) return [one];
+      const pair = CS_PAIRS.find(p => p.every(k => cs.some(c => c.code === k)));
+      return pair ? pair.map(k => cs.find(c => c.code === k)) : null;
+    }
+
     function parseList(src) {
       const m = new Map();
       src.split(';').forEach(part => {
@@ -294,8 +308,8 @@
     let UNIVERSE = null;
     function universe() {
       if (!UNIVERSE) {
-        const codes = new Set([...HUM.keys(), ...SS.keys(), ...NS.keys(), ...EXTRA.keys(), ...DIV.keys(), 'HIST 128', 'HIST 214', 'POLS 202', 'HLTH 250']);
-        UNIVERSE = [...codes].map(k => enrich({ code: k, credits: 5 })).filter(Boolean).sort(byCode);
+        const codes = new Set([...HUM.keys(), ...SS.keys(), ...NS.keys(), ...EXTRA.keys(), ...DIV.keys(), 'HIST 128', 'HIST 214', 'POLS 202', 'HLTH 250', 'FYS 101', 'FYS 102', 'HD 120', 'HD 125', 'HD 173']);
+        UNIVERSE = [...codes].map(k => enrich({ code: k, credits: creditsFor(k) })).filter(Boolean).sort(byCode);
       }
       return UNIVERSE;
     }
@@ -397,7 +411,9 @@
       def += 0.2 * Math.max(0, 30 - atBC);
       const div = cs.some(c => c.div);
       if (!div) def += 2;
-      return { def, r, total, rs, pe, div, sElec, atBC };
+      const csOk = !!state.csExempt || !!csCourses(cs);
+      if (!csOk) def += 3;
+      return { def, r, total, rs, pe, div, sElec, atBC, csOk };
     }
 
     function hsEval(cs, a) {
@@ -475,7 +491,7 @@
     }
 
     // ---------- Suggestion catalog ----------
-    const BASE_CATALOG = `ENGL 101; ENGL 201>ENGL 101; ENGL 235>ENGL 101; ENGL 271>ENGL 101; ENGL 272>ENGL 101; ENGL 111; ENGL 112; ENGL 113; ENGL 260>ENGL 101;
+    const BASE_CATALOG = `ENGL 101; ENGL 201>ENGL 101; ENGL 235>ENGL 101; ENGL 271>ENGL 101; ENGL 272>ENGL 101; ENGL 111; ENGL 112; ENGL 113; ENGL 260>ENGL 101; FYS 101;
       MATH 130; MATH 138; MATH 141; MATH 142>MATH 141; MATH 148; MATH 151>MATH 142; HIST 146; HIST 147; HIST 148; HIST 101; HIST 102; HIST 103; HIST 214; POLS 202; POLS 101;
       BIOL 100; CHEM 110; CHEM 121; ASTR 100; ASTR 101; GEOL 101; OCEA 101; PHYS 114; ENVS 100; METR 101; NUTR 101; ART 101; ART 110; MUSC 105; DRMA 101; DANCE 100;
       HLTH 250; ECON 201; ECON 202; BUS 101; CS 101; CJ 101; EDUC 150; PSYC 100; SOC 101; ANTH 100; GEOG 100; PHIL 101; PHIL 102; CMST 220; CMST 101`;
@@ -485,7 +501,7 @@
       const wl = `${L} 121; ${L} 122>${L} 121; ${L} 123>${L} 122` + (HUM.has(L + ' 221') ? `; ${L} 221>${L} 123` : '');
       return (BASE_CATALOG + ';' + wl).split(';').map(s => s.trim()).filter(Boolean).map(s => {
         const [code, pre] = s.split('>');
-        return { code: code.trim(), credits: 5, pre: pre && pre.trim() };
+        return { code: code.trim(), credits: creditsFor(code.trim()), pre: pre && pre.trim() };
       });
     }
     function gainOf(cs, base, item) {
@@ -545,7 +561,7 @@
       const quals = c => {
         const hs = c.hs.filter(x => x !== 'elec' && x !== 'none').map(x => HS_NAME[x]);
         const aa = c.aa.filter(x => x !== 'ELEC').map(x => AA_NAMES[x]);
-        return `${c.code} (5 cr = 1.0 HS credit). HS: ${hs.join(', ') || 'elective'}. AA: ${aa.join(', ') || (c.transferable ? 'elective' : 'restricted elective')}${c.div ? '. Meets Diversity' : ''}.`;
+        return `${c.code} (${c.credits} cr = ${fmt(c.hsCr)} HS credit). HS: ${hs.join(', ') || 'elective'}. AA: ${aa.join(', ') || (c.transferable ? 'elective' : 'restricted elective')}${c.div ? '. Meets Diversity' : ''}.`;
       };
       let html = shown.map(x => `<button class="chip ${x.h ? 'here' : x.inPlan ? 'elsewhere' : ''}" data-chip="${escapeHtml(x.c.code)}" title="${escapeHtml(quals(x.c))}">${x.st === 'done' ? '✓ ' : x.st === 'prog' ? '◐ ' : x.st === 'ap' ? 'AP ' : ''}${escapeHtml(x.c.code)}${x.c.lab ? 'ᴸ' : ''}${x.c.perf ? '*' : ''}${isDouble(x.c) ? ' <b>2×</b>' : ''}</button>`).join('');
       if (!q && info.length > CHIP_LIMIT) html += `<button class="more" data-expand="${cardId}">${open ? 'Show fewer' : 'Show all ' + info.length}</button>`;
@@ -563,6 +579,9 @@
     }
     const badge = (kind, text) => `<span class="badge ${kind}">${escapeHtml(text)}</span>`;
 
+    // Financial literacy is met by Personal Finance (or equivalent); detect it from Cedarcrest class names too.
+    const finlitClass = () => state.hsClasses.find(c => /financ/i.test(c.name || ''));
+    const finlitMet = () => !!state.finlit || !!finlitClass();
     function hsBreak(id) {
       const d = priorCr(id, 'done'), p = priorCr(id, 'prog'), c = priorCr(id, 'commit');
       return fmt(d) + (p ? ` <span class="pend">+ ${fmt(p)} in progress</span>` : '') + (c ? ` <span class="pend">+ ${fmt(c)} committed</span>` : '');
@@ -592,6 +611,16 @@
       });
     }
 
+    // Where the College Success course sits among the student's BC quarters (must be 1st or 2nd).
+    function csTiming(cs, list) {
+      if (!list || state.csExempt) return '';
+      const labels = termLabels(), pos = t => { const i = labels.indexOf(t); return i < 0 ? -1 : i; };
+      const terms = [...new Set(cs.filter(c => !c.sgrade && (c.term || '').trim()).map(c => c.term.trim()))].sort((x, y) => pos(x) - pos(y));
+      const t = list.map(c => (c.term || '').trim());
+      if (t.some(x => !x)) return 'Not scheduled yet. Put it in your first or second quarter at BC.';
+      const n = Math.max(...t.map(x => terms.indexOf(x))) + 1;
+      return n > 2 ? `Planned for your quarter #${n} at BC; BC expects it in the first or second.` : '';
+    }
     function renderAA() {
       const a = sol.aaR, cs = enriched.filter(Boolean);
       const aaAssign = new Map(cs.map((c, i) => [c.code, sol.aa[i]]));
@@ -606,14 +635,19 @@
       const dv = chips('aa-DIV', c => c.div, c => c.div);
       cards.push(`<div class="card" id="card-aa-DIV"><div class="ch"><b>Diversity requirement</b>${a.div ? badge('met', '✓ Met') : badge('req', 'Required · pick 1 from list')}</div>
         <div class="muted">This course also counts in a distribution area or as an elective, so it doesn't add credits by itself.</div><div class="chips">${dv.html}</div></div>`);
-      const csOk = enriched.some(c => c && ['FYS 101', 'HD 103', 'HD 120', 'HD 125', 'HD 173'].includes(c.code)) ||
-        [['STEM 101', 'STEM 102'], ['CEO 101', 'CEO 102'], ['EXPRL 170', 'EXPRL 171']].some(p => p.every(k => enriched.some(c => c && c.code === k)));
+      const csList = csCourses(cs), csTime = csTiming(cs, csList);
+      const csch = chips('aa-CS', c => CS_SINGLE.includes(c.code) || CS_PAIRS.some(p => p.includes(c.code)), c => !!csList && csList.some(x => x.code === c.code));
+      cards.push(`<div class="card" id="card-aa-CS"><div class="ch"><b>College Success (FYS 101)</b>${a.csOk ? badge('met', state.csExempt && !csList ? '✓ Exempt' : '✓ Met') : badge('req', 'Required · FYS 101, 3 cr')}</div>
+        <div class="muted">Required for the AA-DTA. Take it in your <b>first or second quarter at BC</b>. FYS 101 (3 cr) has a Running Start section, and HD 120, HD 125, HD 173 or FYS 102 also qualify. It counts as a restricted elective (and 0.6 HS elective credit).</div>
+        ${csTime ? `<div class="warn">⚠ ${escapeHtml(csTime)}</div>` : ''}
+        <label class="muted"><input type="checkbox" id="csExempt" ${state.csExempt ? 'checked' : ''}> Exempt (e.g. started Running Start at BC before summer 2022, or an approved transfer course; confirm with BC)</label>
+        <div class="chips">${csch.html}</div></div>`);
       cards.push(`<div class="card" id="card-aa-TOT"><div class="ch"><b>Electives &amp; 90-credit total</b>${a.total >= 90 ? badge('met', '✓ Met') : badge('flex', `Flexible · ${fmt(90 - a.total)} cr, any course`)}</div>${bar(a.total, 90)}<span class="${a.total >= 90 ? 'ok' : ''}">${fmt(a.total)} / 90 credits</span>
         <div>Restricted electives: ${fmt(Math.min(a.rs, 15))}${a.rs > 15 ? ` <span class="warn">(${fmt(a.rs - 15)} over cap)</span>` : ''} / 15 max</div>
         <div>PE activity: ${fmt(a.pe)}${a.pe > 3 ? ' <span class="warn">(only 3 count)</span>' : ''} / 3 max</div>
         ${a.sElec > 0 ? `<div>S-graded (AP) electives: ${fmt(Math.min(a.sElec, 15))}${a.sElec > 15 ? ` <span class="warn">(${fmt(a.sElec - 15)} over the 15-credit cap)</span>` : ''} / 15 max</div>` : ''}
         <div>Taken at BC: <span class="${a.atBC >= 30 ? 'ok' : 'warn'}">${fmt(a.atBC)}</span> / 30 min${a.atBC < 30 ? ' <span class="muted">(AP exam credit doesn\'t count toward this)</span>' : ''}</div>
-        <div>College Success course (FYS 101 etc.): ${csOk ? '<span class="ok">✓</span>' : badge('flex', 'Ask your advisor')} <span class="muted">Required for most new BC students.</span></div></div>`);
+</div>`);
       $('aaAreas').innerHTML = cards.join('');
     }
 
@@ -626,12 +660,14 @@
       if (labShort > 0.001) todo.push(fmt(labShort) + ' lab science');
       if (!h.wahOk) todo.push('WA State History');
       if (!h.pwEla || !h.pwMath) todo.push('Graduation Pathway (' + [!h.pwEla && 'ELA', !h.pwMath && 'math'].filter(Boolean).join(' + ') + ')');
-      if (!state.finlit) todo.push('financial literacy');
+      if (!finlitMet()) todo.push('financial literacy');
       if (!state.hsbp) todo.push('HSBP');
       const hsMet = hsLeft < 0.01 && !todo.length;
       const hsPending = state.hsClasses.filter(c => c.status !== 'done').length + enriched.filter(c => c && c.hsCr > 0 && c.status !== 'done').length;
       const aaPending = enriched.filter(c => c && c.status !== 'done' && c.status !== 'ap').length;
       const hsDone = hsMet && !hsPending, aaMet = a.def < 0.01, aaDone = aaMet && !aaPending;
+      const fc = finlitClass();
+      $('finlitStatus').innerHTML = fc ? `<span class="ok">✓ via ${escapeHtml(fc.name)}</span>` : '';
       $('pwStatus').innerHTML = [['ELA', 'Ela'], ['Math', 'Math']].map(([k, key]) => {
         const rs = h['pw' + key + 'RS'], ok = h['pw' + key];
         return `${k}: ` + (ok ? `<span class="ok">✓</span> ${rs ? (rs.sgrade ? 'via AP ' + escapeHtml(rs.apExam) + ' exam' : 'via Running Start ' + escapeHtml(rs.code)) : 'met another way'}` : '<span class="bad">not yet</span>');
@@ -640,7 +676,7 @@
       const rsCr = sum(enriched.filter(c => c && !c.sgrade)), apCr = sum(enriched.filter(c => c && c.sgrade));
       $('summary').innerHTML = `
         <div class="card">HS diploma<div class="big ${hsDone ? 'ok' : ''}">${hsDone ? 'Complete ✓' : hsMet ? 'On track' : hsLeft < 0.01 ? 'Credits planned' : fmt(hsLeft) + ' credits left'}</div><span class="muted">of ${fmt(hsReqTot)} required${todo.length ? '. Still needed: ' + escapeHtml(todo.join(', ')) : ''}${hsPending ? `. ${hsPending} class${hsPending > 1 ? 'es' : ''} not yet completed` : ''}</span></div>
-        <div class="card">AA-DTA<div class="big ${aaDone ? 'ok' : ''}">${aaDone ? 'Complete ✓' : aaMet ? 'On track' : fmt(Math.max(0, 90 - a.total)) + ' credits left'}</div><span class="muted">${fmt(aaDistLeft)} distribution credits short${a.div ? '' : '. Diversity needed'}${aaPending ? `. ${aaPending} course${aaPending > 1 ? 's' : ''} not yet completed` : ''}</span></div>
+        <div class="card">AA-DTA<div class="big ${aaDone ? 'ok' : ''}">${aaDone ? 'Complete ✓' : aaMet ? 'On track' : a.total < 90 ? fmt(90 - a.total) + ' credits left' : 'Requirements left'}</div><span class="muted">${fmt(aaDistLeft)} distribution credits short${a.div ? '' : '. Diversity needed'}${a.csOk ? '' : '. College Success (FYS 101) needed'}${aaPending ? `. ${aaPending} course${aaPending > 1 ? 's' : ''} not yet completed` : ''}</span></div>
         <div class="card">College credits entered<div class="big">${fmt(rsCr + apCr)}</div><span class="muted">${fmt(rsCr)} Running Start = ${fmt(rsCr * 0.2)} HS credits${apCr ? ` · ${fmt(apCr)} AP exam (AA only)` : ''}</span></div>`;
     }
 
@@ -742,6 +778,11 @@
       const load = labels.map(() => 0);
       state.courses.forEach(c => { const i = idxOf(c); if (i >= 0) load[i] += +c.credits || 0; });
       let added = 0;
+      // College Success must be in the first or second BC quarter, so place FYS 101 first.
+      if (!state.csExempt && !csCourses(state.courses.map(enrich).filter(Boolean))) {
+        const q = load.findIndex(l => l + 3 <= state.cap);
+        if (q >= 0 && q < 2) { state.courses.push({ code: 'FYS 101', credits: 3, status: 'plan', term: labels[q] }); load[q] += 3; added++; }
+      }
       for (let step = 0; step < 40; step++) {
         const cs = state.courses.map(enrich).filter(Boolean);
         const base = solve(cs);
@@ -819,6 +860,7 @@
       const d = e.target.dataset.del;
       if (d !== undefined) { state.courses.splice(+d, 1); renderCourses(); }
     });
+    $('aaAreas').addEventListener('change', e => { if (e.target.id === 'csExempt') { state.csExempt = e.target.checked; compute(); } });
     $('hsAdd').onclick = () => addHsClass('eng');
     $('hsClassTable').addEventListener('change', e => {
       const t = e.target, i = t.dataset.h, f = t.dataset.f;
@@ -863,13 +905,13 @@
     function toggleChip({ code, cardId, y0 }) {
       const i = state.courses.findIndex(c => (parseCode(c.code) || {}).code === code);
       let added = false;
-      if (i < 0) { state.courses.push({ code, credits: 5, status: 'plan', term: '' }); added = true; }
+      if (i < 0) { state.courses.push({ code, credits: creditsFor(code), status: 'plan', term: '' }); added = true; }
       else if (state.courses[i].status === 'plan') { state.courses.splice(i, 1); toast(`Removed ${code} from your plan.`); }
       else toast(`${code} is marked ${{ done: 'Completed', prog: 'In progress', ap: 'AP exam credit' }[state.courses[i].status]}. Change or remove it in "Your courses".`);
       renderCourses();
       if (added) {
         const k = enriched.filter(Boolean).findIndex(c => c.code === code), hs = sol.hs[k], aa = sol.aa[k];
-        toast(`Added ${code} (planned) → HS: ${hs === 'none' ? 'no credit' : HS_NAME[hs]} · AA: ${aa === 'ELEC' ? 'elective' : AA_NAMES[aa]}`);
+        toast(`Added ${code} (planned) → HS: ${hs === 'none' ? 'no credit' : HS_NAME[hs]} · AA: ${aa === 'ELEC' ? (enriched.filter(Boolean)[k].restricted ? 'restricted elective' : 'elective') : AA_NAMES[aa]}`);
       }
       const card2 = cardId && $(cardId);
       if (card2) window.scrollBy(0, card2.getBoundingClientRect().top - y0);
