@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running Start Planner</title>
+  <meta name="description" content="Track Riverview (Cedarcrest) high school graduation and Bellevue College AA-DTA requirements together and get course suggestions that count for both.">
+  <style>
+    :root { --ok: #1a7f37; --warn: #b35900; --bad: #c62828; --muted: #666; --line: #ddd; --bg2: #f6f7f9; --accent: #2457c5; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; line-height: 1.45; color: #222; background: #fff; }
+    h2 { margin-top: 2rem; border-bottom: 2px solid var(--line); padding-bottom: .25rem; }
+    .note { background: #fff8e1; border: 1px solid #f0d58a; padding: .6rem .8rem; border-radius: 6px; font-size: .9rem; }
+    .muted { color: var(--muted); font-size: .88rem; }
+    table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+    th, td { border-bottom: 1px solid var(--line); padding: .35rem .4rem; text-align: left; vertical-align: top; }
+    th { background: var(--bg2); font-weight: 600; }
+    input, select, button { font: inherit; }
+    input[type=number] { width: 4.5rem; }
+    input.code { width: 7rem; text-transform: uppercase; }
+    input.term { width: 7.5rem; }
+    button { cursor: pointer; border: 1px solid #bbb; background: #fff; border-radius: 5px; padding: .3rem .7rem; }
+    button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    button.x { padding: 0 .45rem; color: var(--bad); }
+    .row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .5rem 0; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .75rem; margin: 1rem 0; }
+    .card { border: 1px solid var(--line); border-radius: 8px; padding: .7rem .9rem; background: var(--bg2); }
+    .card .big { font-size: 1.5rem; font-weight: 700; }
+    .bar { height: 7px; background: #e3e6ea; border-radius: 4px; overflow: hidden; margin: .25rem 0; min-width: 60px; }
+    .bar > span { display: block; height: 100%; background: var(--accent); }
+    .bar.done > span { background: var(--ok); }
+    .ok { color: var(--ok); font-weight: 600; }
+    .bad { color: var(--bad); font-weight: 600; }
+    .warn { color: var(--warn); }
+    .areas { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: .75rem; }
+    .tag { display: inline-block; background: #e8eefc; color: #1d3f8f; border-radius: 4px; padding: 0 .35rem; margin: 1px 2px; font-size: .82rem; white-space: nowrap; }
+    .tag.hs { background: #e6f4ea; color: #145c2a; }
+    .tag.st-plan { background: #f1f1f1; color: #555; }
+    .sugg li { margin: .3rem 0; }
+    .terms { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .6rem; }
+    .scroll { overflow-x: auto; }
+    footer { margin-top: 3rem; border-top: 1px solid var(--line); }
+    @media (max-width: 600px) { th, td { padding: .3rem .2rem; } input.term { width: 5.5rem; } }
+  </style>
+</head>
+<body>
+  <p><a href="index.html">&larr; All tools</a></p>
+  <h1>Running Start Planner</h1>
+  <p>Track Riverview School District (Cedarcrest) graduation requirements and the Bellevue College Associate in Arts &amp; Sciences (DTA) together, and find courses that count toward both.</p>
+  <p class="note">Advising aid only. College courses map to high school credit using the Riverview Running Start equivalency sheet (5 college credits = 1.0 HS credit) and the BC 2025–26 AA-DTA worksheet. The HS credit totals below are Washington's 24-credit framework defaults, so edit them to match your class year. Check your plan with a Cedarcrest counselor and a BC advisor. Your data stays in this browser and in the share link.</p>
+
+  <div class="summary" id="summary"></div>
+
+  <h2>1. Your courses</h2>
+  <p class="muted">Add Running Start/college courses you've taken, are taking, or plan to take. Enter codes like <code>ENGL&amp; 101</code>, <code>HIST 146</code>, or <code>BIOL 100 5</code> (credits default to 5). Separate several with commas or new lines. Classes taken at the high school go in the "Earned at HS" column in section 2.</p>
+  <div class="row">
+    <textarea id="quick" rows="2" style="flex:1;min-width:220px" placeholder="ENGL 101, MATH 141, HIST 146"></textarea>
+    <select id="quickStatus"><option value="done">Completed</option><option value="prog">In progress</option><option value="plan" selected>Planned</option></select>
+    <input id="quickTerm" class="term" placeholder="Term (e.g. Fall 2026)">
+    <button class="primary" id="addBtn">Add</button>
+  </div>
+  <div class="scroll"><table id="courseTable">
+    <thead><tr><th>Course</th><th>Cr</th><th>Status</th><th>Term</th><th>Counts toward</th><th></th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p id="courseMsg" class="muted"></p>
+
+  <h2>2. Riverview HS graduation</h2>
+  <div class="scroll"><table id="hsTable">
+    <thead><tr><th>Requirement</th><th>Required</th><th>Earned at HS</th><th>From RS</th><th>Progress</th><th>Running Start courses that count</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <div class="row"><label><input type="checkbox" id="wah"> Washington State History already done (usually in middle school). If not, HIST 214 counts.</label></div>
+  <p class="muted">Equivalencies: English = any ENGL 101+; US History = HIST 146/147/148/150; Civics = POLS 202; World History = HIST 101/102/103/128; WA History = HIST 214; Math = any MATH (below 100 counts but isn't paid by Running Start); Science = ASTR, BIOL, BOTAN, CHEM, ENVS, GEOL, METR, NSCI, NUTR, OCEA, PHYS; World Language = ARAB, ASL, CHIN, FRCH, GERM, ITAL, JAPN, SPAN; Health = HLTH 250; PE = PE, DANCE, NUTR; Art = ART, DANCE, DRMA, MUSC; CTE = ACCT, AHE*, ASL, BA, BUS, BUSIT, BTS, CS, CJ, DBA, DMA, DEV, ECED, EDUC, ECON, ENGR, IMAGE, IT, INDES, MKTG, NSCOM, PROG, TECH; Electives = any 100+ course. Extra credits in any area spill into electives. "Other social studies" is assumed to accept HIST/POLS. Washington allows Personal Pathway substitutions for 1 Arts and 2 World Language credits, so lower those numbers if that applies to you.</p>
+
+  <h2>3. Bellevue College AA-DTA</h2>
+  <div class="areas" id="aaAreas"></div>
+  <p class="muted">Rules applied: each course counts in only one area. Humanities, Social Sciences and Natural Sciences each need two different subjects. Humanities allows at most 5 performance/skills (*) credits and 5 credits of one 100-level language. Natural Sciences needs a lab and allows at most 5 MATH/PHIL 120 credits. Electives allow at most 3 PE activity credits and 15 restricted credits. You also need one Diversity course and a 2.0 GPA, and at least 30 of the 90 credits must be taken at BC. Cross-listed courses (e.g. PHIL 201 / POLS 201) count only once, so don't enter both.</p>
+
+  <h2>4. Suggested next courses</h2>
+  <p class="muted">Ranked by how much of your remaining HS + AA requirements each course would fill. These are courses that "double-dip". Check prerequisites and placement in the BC catalog.</p>
+  <div class="row"><label>Preferred world language
+    <select id="lang"><option>SPAN</option><option>FRCH</option><option>JAPN</option><option>CHIN</option><option>GERM</option><option>ASL</option><option>ITAL</option><option>ARAB</option></select></label></div>
+  <ol class="sugg" id="sugg"></ol>
+
+  <h2>5. Build a plan</h2>
+  <div class="row">
+    <label>Start <select id="startQ"><option>Fall</option><option>Winter</option><option>Spring</option></select></label>
+    <input type="number" id="startY" min="2020" max="2040">
+    <label>Quarters <input type="number" id="nq" min="1" max="12"></label>
+    <label>Max credits/quarter <input type="number" id="cap" min="5" max="20"></label>
+  </div>
+  <div class="row">
+    <button class="primary" id="planBtn">Auto-fill quarters</button>
+    <button id="clearPlan">Remove planned courses</button>
+    <button id="shareBtn">Copy share link</button>
+  </div>
+  <p class="muted">Auto-fill adds the highest-value courses one at a time and places each in the earliest quarter that has room and meets its prerequisites, until both credentials are complete or the quarters are full. Running Start usually covers up to 15 college credits per quarter in Fall, Winter and Spring, and doesn't cover summer.</p>
+  <div class="terms" id="terms"></div>
+
+  <footer>
+    <p>Sources: <a href="https://6140bf52-cefa-489a-82f8-e9b6a56edce1.filesusr.com/ugd/243013_0c41a1dc3b0d4f6b939995ac7d79394d.pdf">Riverview SD Running Start course equivalencies</a> · <a href="https://www.bellevuecollege.edu/wp-content/uploads/2025/08/AssociateArtsScienceWorksheet_2025-26.pdf">BC AA-DTA worksheet 2025–26</a></p>
+    <p><a href="https://github.com/jschell/spa-tools/blob/main/running-start-planner.html">View source</a></p>
+  </footer>
+
+  <script>
+    // ---------- Requirement data (BC AA-DTA 2025-26 worksheet) ----------
+    const HUM_SRC = `ANTH 208; ART 101,103,105,110*,111*,112*,120*,121*,150*,151*,153*,154*,201,202,203,205,206,207,208,221*,222*,230*,235*,240*,242*,245*,247*,253*,254*,260*,261*,280*,281*; CMST 101,115,116,119,120,121,131,132,133,134,136,138,141,143,144,145,146,151,161,163,202,210,216,220,250,252,260,261,280,285; CES 100,104,115,120,121,130,140,150,170,181,200,201,210,211,257,285,286; DANCE 100,130*,131*,140*,141*,151*,152*,170,171,202*,203*; DRMA 101,106,141,151*,154*,159*,161*,210,212,215,224,241,251*,252*,254*,256*,270,280*,281*,284*,285*; ENGL 111,112,113,114,115,210,215,219,220,221,223,224,226,228,237,238,239,244,245,246,247,248,249,253,254,255,260,261,266,276,279; HIST 101,102,103,120,146,147,148,150,185,205,210,212,214,223,230,236,245,246,250,261,280; HUMAN 205,220; MUSC 100*,101*,102*,103*,105,106*,107,109*,110,111,112,113,114,115,116,117,118,120*,130*,131*,132*,135*,136*,137*,140*,143*,150,156,157,158,165*,200*,203*,205*,206*,210,211,212,240*,243*; PHIL 101,102,112,115,122,145,201,206,248,260,265,267; ARAB 121,122,123; ASL 121,122,123,221,222,223; CHIN 121,122,123,221,222,223; FRCH 121,122,123,131,132,133,221,222,223,231,232,233; GERM 121,122,123,221,222,223; ITAL 121,122,123; JAPN 121,122,123,221,222,223; SPAN 121,122,123,221,222,223,231,232,233`;
+    const SS_SRC = `ANTH 100,107,108,180,204,206,208,219,220,222,224,230,232,234,235,236; BUS 101; CMST 102,230; CES 100,104,109,115,120,121,125,130,140,150,170,181,200,201,210,211,257,263,285,286; ECON 100,201,202,250,260; GEOG 100,102,105,123,200,250,258; HIST 101,102,103,120,146,147,148,150,185,205,210,212,214,223,230,236,245,246,250,261,280; INTST 105,123,150,200,201,202,204,227; PHIL 102,112,122,160,201,206,248,260,263,265; POLS 101,121,122,123,125,155,160,175,201,202,203,204,206,210,220,221,222,223,227,230,250; PSYC 100,109,110,200,203,205,209,210,220,225,240,250,257,260; SOC 101,105,122,150,201,210,215,222,230,240,244,246,248,249,250,252,253,254,255,256,257,258,260,262,264,265,268,270,275,278`;
+    const MATH_SRC = `MATH 107,130,131,132,138,141,142,148,150,151,152,153,208,238,240,254,255,270; PHIL 120`;
+    const NS_SRC = `ANTH 205,215L; ASTR 100,101L,201L; BIOL 100L,108L,112L,125,135,150L,160L,162L,211L,212L,213L,241L,242L,260L,275L,276L; BOTAN 110L,113L,120L; CHEM 100,110L,121L,131L,140L,161L,162L,163L,261L,262L,263L,272L,275L; ENVS 100,105,107L,110,150L; GEOG 108,205,206L; GEOL 101L,103L,107,208L; METR 101,102L,111; NUTR 100,101; OCEA 101L,110; PHYS 100,104L,105L,109L,114L,115L,116L,121L,122L,123L,225; PSYC 202; ` + MATH_SRC;
+    const EXTRA_SRC = `ACCT 201,202,203; ART 108; BIOL 145,159; BUS 201; BA 240; CHEM 272,275; CS 101,210,211,212,250; CJ 101,105,106,110,112,240; DEV 110; DRMA 230; EDUC 115,130,150,202,204; ENGR 114,204,214,215,224,225; HLTH 220,222,230,250,260,292; INDES 140,201; ENGL 101,201,235,271,272`;
+    const DIV_SRC = `ANTH 100,108,180,206,208,219,220,222,224,235; BA 180,241; BUS 120,241; CES 100,104,109,115,120,140,150,170,181,200,201,210,211,234,257; CJ 242; CMST 250,252,254,280; EDUC 150,240; ENGL 260,261; HD 140; HIST 173,185; INDES 255; INTST 150; MKTG 200; PHIL 102,260,265; POLS 210; PSYC 250; SOC 101,105,240,249,253,254,256,257,258,262,264,278`;
+
+    function parseList(src) {
+      const m = new Map();
+      src.split(';').forEach(part => {
+        const [dept, ...rest] = part.trim().split(/\s+/);
+        if (!dept) return;
+        rest.join('').split(',').forEach(tok => {
+          const t = tok.match(/^(\d+)(\*)?(L)?$/);
+          if (t) m.set(dept + ' ' + t[1], { perf: !!t[2], lab: !!t[3] });
+        });
+      });
+      return m;
+    }
+    const HUM = parseList(HUM_SRC), SS = parseList(SS_SRC), NS = parseList(NS_SRC), QSR = parseList(MATH_SRC);
+    const EXTRA = parseList(EXTRA_SRC), DIV = parseList(DIV_SRC);
+    const WCB = new Set(['ENGL 201', 'ENGL 235', 'ENGL 271', 'ENGL 272']);
+    const DIST_DEPTS = new Set([...HUM.keys(), ...SS.keys(), ...NS.keys()].map(k => k.split(' ')[0]));
+    const WL = ['ARAB', 'ASL', 'CHIN', 'FRCH', 'GERM', 'ITAL', 'JAPN', 'SPAN'];
+    const SCI = ['ASTR', 'BIOL', 'BOTAN', 'CHEM', 'ENVS', 'GEOL', 'METR', 'NSCI', 'NUTR', 'OCEA', 'PHYS'];
+    const CTE = ['ACCT', 'ASL', 'BA', 'BUSIT', 'BUS', 'BTS', 'CS', 'CJ', 'DBA', 'DMA', 'DEV', 'ECED', 'EDUC', 'ECON', 'ENGR', 'IMAGE', 'IT', 'INDES', 'MKTG', 'NSCOM', 'PROG', 'TECH'];
+    const ALIAS = { DRAMA: 'DRMA', MUSIC: 'MUSC', FREN: 'FRCH' };
+    const AA_NAMES = { WCA: 'Written Comm. A (ENGL 101)', WCB: 'Written Comm. B', QSR: 'Quantitative/Symbolic', HUM: 'Humanities', SS: 'Social Sciences', NS: 'Natural Sciences', ELEC: 'Elective' };
+
+    // ---------- Riverview HS categories (editable defaults: WA 24-credit framework) ----------
+    const HS_CATS = [
+      ['eng', 'English', 4], ['math', 'Math', 3], ['sci', 'Science', 3], ['ush', 'US History', 1], ['wh', 'World History', 1],
+      ['civ', 'Civics', 0.5], ['ssx', 'Other social studies', 0.5], ['art', 'Arts', 2], ['wl', 'World Language', 2],
+      ['hlth', 'Health', 0.5], ['pe', 'Physical Education', 1.5], ['cte', 'Career & Technical Ed', 1], ['elec', 'Electives', 4]
+    ].map(([id, name, req]) => ({ id, name, req }));
+    const HS_NAME = Object.fromEntries(HS_CATS.map(c => [c.id, c.name]));
+
+    // ---------- State ----------
+    let state = { courses: [], hsReq: {}, hsPrior: {}, wah: false, lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 };
+
+    function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function parseCode(s) {
+      const m = String(s).toUpperCase().replace(/&/g, '').match(/^\s*([A-Z]+)\s*(\d{2,3})/);
+      if (!m) return null;
+      const dept = ALIAS[m[1]] || m[1];
+      return { dept, num: +m[2], code: dept + ' ' + m[2] };
+    }
+
+    function enrich(c) {
+      const p = parseCode(c.code);
+      if (!p) return null;
+      const k = p.code, d = p.dept, n = p.num, cr = +c.credits || 0;
+      const aa = [];
+      if (k === 'ENGL 101') aa.push('WCA');
+      if (WCB.has(k)) aa.push('WCB');
+      if (QSR.has(k)) aa.push('QSR');
+      if (NS.has(k)) aa.push('NS');
+      if (SS.has(k)) aa.push('SS');
+      if (HUM.has(k)) aa.push('HUM');
+      aa.push('ELEC');
+      const listed = aa.length > 1 || EXTRA.has(k);
+      const series = DIST_DEPTS.has(d) && ((n >= 190 && n <= 199) || (n >= 280 && n <= 299));
+      const transferable = n >= 100 && (listed || series || d === 'PE');
+      const hs = [];
+      if (k === 'HLTH 250') hs.push('hlth');
+      if (k === 'POLS 202') hs.push('civ');
+      if (d === 'HIST' && [146, 147, 148, 150].includes(n)) hs.push('ush');
+      if (d === 'HIST' && [101, 102, 103, 128].includes(n)) hs.push('wh');
+      if (d === 'ENGL' && n >= 101) hs.push('eng');
+      if (d === 'MATH') hs.push('math');
+      if (SCI.includes(d)) hs.push('sci');
+      if (WL.includes(d)) hs.push('wl');
+      if (['ART', 'DANCE', 'DRMA', 'MUSC'].includes(d)) hs.push('art');
+      if (['PE', 'DANCE', 'NUTR'].includes(d)) hs.push('pe');
+      if (CTE.includes(d) || /^AHE/.test(d)) hs.push('cte');
+      if (d === 'HIST' || d === 'POLS') hs.push('ssx');
+      if (n >= 100) hs.push('elec');
+      if (!hs.length) hs.push('none');
+      return {
+        ...p, credits: cr, hsCr: Math.round(cr * 0.2 * 100) / 100, aa, hs,
+        perf: !!(HUM.get(k) || {}).perf, lab: !!(NS.get(k) || {}).lab, wl100: WL.includes(d) && n < 200,
+        mathy: QSR.has(k), transferable, restricted: n >= 100 && !transferable, pe: d === 'PE', div: DIV.has(k),
+        status: c.status, term: c.term
+      };
+    }
+
+    // ---------- Evaluation ----------
+    const sum = l => l.reduce((s, c) => s + c.credits, 0);
+    function aaEval(cs, a) {
+      const ar = { WCA: [], WCB: [], QSR: [], HUM: [], SS: [], NS: [] };
+      cs.forEach((c, i) => { if (ar[a[i]]) ar[a[i]].push(c); });
+      const r = {}; let def = 0;
+      for (const id of ['WCA', 'WCB', 'QSR']) { const h = sum(ar[id]); r[id] = { have: h, req: 5, list: ar[id], warn: [] }; def += Math.max(0, 5 - h); }
+      for (const id of ['HUM', 'SS', 'NS']) {
+        const l = ar[id], warn = [];
+        let have;
+        if (id === 'HUM') {
+          let perf = 0, other = 0; const wl = {};
+          l.forEach(c => { if (c.perf) perf += c.credits; else if (c.wl100) wl[c.dept] = (wl[c.dept] || 0) + c.credits; else other += c.credits; });
+          const wlBest = Math.max(0, ...Object.values(wl));
+          have = other + Math.min(perf, 5) + Math.min(wlBest, 5);
+          if (perf > 5) warn.push('only 5 performance (*) credits count');
+          if (wlBest > 5 || Object.keys(wl).length > 1) warn.push('only 5 credits of one 100-level language count');
+        } else if (id === 'NS') {
+          const m = sum(l.filter(c => c.mathy));
+          have = sum(l) - m + Math.min(m, 5);
+          if (m > 5) warn.push('max 5 MATH/PHIL 120 credits');
+          if (!l.some(c => c.lab)) { warn.push('needs a lab course'); def += 3; }
+        } else have = sum(l);
+        const subj = new Set(l.map(c => c.dept)).size;
+        if (subj < 2) { warn.push('needs 2 different subjects'); def += 3 * (2 - subj); }
+        def += Math.max(0, 15 - have);
+        r[id] = { have, req: 15, list: l, warn };
+      }
+      const pe = sum(cs.filter(c => c.transferable && c.pe));
+      const tr = sum(cs.filter(c => c.transferable && !c.pe)) + Math.min(pe, 3);
+      const rs = sum(cs.filter(c => c.restricted));
+      const total = tr + Math.min(rs, 15);
+      def += 0.2 * Math.max(0, 90 - total);
+      const div = cs.some(c => c.div);
+      if (!div) def += 2;
+      return { def, r, total, rs, pe, div };
+    }
+
+    function hsEval(cs, a) {
+      const have = {}; HS_CATS.forEach(c => have[c.id] = +(state.hsPrior[c.id] || 0));
+      const lists = {}; HS_CATS.forEach(c => lists[c.id] = []);
+      cs.forEach((c, i) => { if (have[a[i]] !== undefined) { have[a[i]] += c.hsCr; lists[a[i]].push(c); } });
+      let def = 0, overflow = 0; const r = {};
+      HS_CATS.forEach(cat => {
+        const req = reqOf(cat);
+        if (cat.id === 'elec') return;
+        def += 5 * Math.max(0, req - have[cat.id]);
+        overflow += Math.max(0, have[cat.id] - req);
+        r[cat.id] = { have: have[cat.id], req };
+      });
+      const er = reqOf(HS_CATS.find(c => c.id === 'elec'));
+      r.elec = { have: have.elec + overflow, req: er };
+      def += 5 * Math.max(0, er - have.elec - overflow);
+      const wahOk = state.wah || cs.some(c => c.code === 'HIST 214');
+      if (!wahOk) def += 2;
+      const total = Object.values(have).reduce((s, v) => s + v, 0);
+      return { def, r, lists, wahOk, total };
+    }
+    function reqOf(cat) { const v = state.hsReq[cat.id]; return v === undefined || v === '' ? cat.req : +v; }
+
+    // Local search: start from an assignment and improve with single (and optionally pair) moves.
+    function optimize(cs, key, evalFn, init, pairs) {
+      const a = init ? init.slice() : cs.map(c => c[key][0]);
+      let best = evalFn(cs, a).def, improved = true, guard = 0;
+      while (improved && guard++ < 40) {
+        improved = false;
+        for (let i = 0; i < cs.length; i++) for (const o of cs[i][key]) {
+          if (o === a[i]) continue;
+          const old = a[i]; a[i] = o;
+          const d = evalFn(cs, a).def;
+          if (d < best - 1e-9) { best = d; improved = true; } else a[i] = old;
+        }
+        if (!improved && pairs) {
+          outer: for (let i = 0; i < cs.length; i++) for (let j = i + 1; j < cs.length; j++) {
+            if (cs[i][key].length < 2 || cs[j][key].length < 2) continue;
+            const oi = a[i], oj = a[j];
+            for (const x of cs[i][key]) for (const y of cs[j][key]) {
+              if (x === oi && y === oj) continue;
+              a[i] = x; a[j] = y;
+              const d = evalFn(cs, a).def;
+              if (d < best - 1e-9) { best = d; improved = true; break outer; }
+              a[i] = oi; a[j] = oj;
+            }
+          }
+        }
+      }
+      return a;
+    }
+    function solve(cs, warm) {
+      const aaA = optimize(cs, 'aa', aaEval, warm && warm.aa, !warm);
+      const hsA = optimize(cs, 'hs', hsEval, warm && warm.hs, !warm);
+      return { aa: aaA, hs: hsA, aaR: aaEval(cs, aaA), hsR: hsEval(cs, hsA) };
+    }
+
+    // ---------- Suggestion catalog ----------
+    const BASE_CATALOG = `ENGL 101; ENGL 201>ENGL 101; ENGL 235>ENGL 101; ENGL 271>ENGL 101; ENGL 272>ENGL 101; ENGL 111; ENGL 112; ENGL 113; ENGL 260;
+      MATH 130; MATH 138; MATH 141; MATH 142>MATH 141; MATH 148; MATH 151>MATH 142; HIST 146; HIST 147; HIST 148; HIST 101; HIST 102; HIST 103; HIST 214; POLS 202; POLS 101;
+      BIOL 100; CHEM 110; CHEM 121; ASTR 100; ASTR 101; GEOL 101; OCEA 101; PHYS 114; ENVS 100; METR 101; NUTR 101; ART 101; ART 110; MUSC 105; DRMA 101; DANCE 100;
+      HLTH 250; ECON 201; ECON 202; BUS 101; CS 101; CJ 101; EDUC 150; PSYC 100; SOC 101; ANTH 100; GEOG 100; PHIL 101; PHIL 102; CMST 220; CMST 101`;
+    function catalog(cs) {
+      const used = cs.find(c => WL.includes(c.dept));
+      const L = used ? used.dept : state.lang;
+      const wl = `${L} 121; ${L} 122>${L} 121; ${L} 123>${L} 122` + (HUM.has(L + ' 221') ? `; ${L} 221>${L} 123` : '');
+      return (BASE_CATALOG + ';' + wl).split(';').map(s => s.trim()).filter(Boolean).map(s => {
+        const [code, pre] = s.split('>');
+        return { code: code.trim(), credits: 5, pre: pre && pre.trim() };
+      });
+    }
+    function gainOf(cs, base, item) {
+      const c = enrich({ code: item.code, credits: item.credits, status: 'plan' });
+      const cs2 = cs.concat([c]);
+      const s = solve(cs2, { aa: base.aa.concat([c.aa[0]]), hs: base.hs.concat([c.hs[0]]) });
+      return { gain: (base.aaR.def - s.aaR.def) + (base.hsR.def - s.hsR.def), s, c };
+    }
+    function suggestions(cs, base, n) {
+      const have = new Set(cs.map(c => c.code));
+      return catalog(cs).filter(it => !have.has(it.code) && (!it.pre || have.has(it.pre)))
+        .map(it => ({ it, ...gainOf(cs, base, it) }))
+        .filter(x => x.gain > 1e-6)
+        .sort((x, y) => y.gain - x.gain).slice(0, n);
+    }
+
+    // ---------- Rendering ----------
+    let enriched = [], sol = null;
+    const $ = id => document.getElementById(id);
+    const fmt = n => (Math.round(n * 100) / 100).toString();
+    const bar = (h, r) => `<div class="bar ${h >= r ? 'done' : ''}"><span style="width:${r ? Math.min(100, 100 * h / r) : 100}%"></span></div>`;
+
+    function compute() {
+      enriched = state.courses.map(enrich);
+      const valid = enriched.filter(Boolean);
+      sol = solve(valid);
+      let vi = 0;
+      enriched.forEach((c, i) => {
+        const cell = $('ct-' + i); if (!cell) return;
+        if (!c) { cell.innerHTML = '<span class="bad">Unrecognized code</span>'; return; }
+        const aa = sol.aa[vi], hs = sol.hs[vi]; vi++;
+        const aaLabel = aa === 'ELEC' ? (c.transferable ? 'Elective' : c.restricted ? 'Restricted elective' : 'Not degree-applicable (<100)') : AA_NAMES[aa];
+        const hsLabel = hs === 'none' ? 'No HS credit' : `${HS_NAME[hs]} (${fmt(c.hsCr)})`;
+        cell.innerHTML = `<span class="tag hs">HS: ${escapeHtml(hsLabel)}</span><span class="tag">AA: ${escapeHtml(aaLabel)}</span>${c.div ? '<span class="tag">Diversity</span>' : ''}`;
+      });
+      const dups = valid.map(c => c.code).filter((c, i, a) => a.indexOf(c) !== i);
+      $('courseMsg').textContent = dups.length ? 'Duplicate course(s): ' + [...new Set(dups)].join(', ') + '. Repeats usually earn credit only once.' : '';
+      renderHS(valid); renderAA(); renderSummary(); renderSuggestions(valid); renderTerms(valid); save();
+    }
+
+    function renderHS(cs) {
+      const r = sol.hsR;
+      HS_CATS.forEach(cat => {
+        const x = r.r[cat.id], rs = sum(r.lists[cat.id].map(c => ({ credits: c.hsCr })));
+        $('hs-rs-' + cat.id).textContent = fmt(rs) + (cat.id === 'elec' && x.have - rs - (+state.hsPrior.elec || 0) > 0.001 ? ` +${fmt(x.have - rs - (+state.hsPrior.elec || 0))} overflow` : '');
+        $('hs-pr-' + cat.id).innerHTML = bar(x.have, x.req) + `<span class="${x.have >= x.req ? 'ok' : ''}">${fmt(x.have)} / ${fmt(x.req)}</span>`;
+        $('hs-cs-' + cat.id).innerHTML = r.lists[cat.id].map(c => `<span class="tag hs">${escapeHtml(c.code)}</span>`).join('');
+      });
+    }
+
+    function renderAA() {
+      const a = sol.aaR;
+      const cards = ['WCA', 'WCB', 'QSR', 'HUM', 'SS', 'NS'].map(id => {
+        const x = a.r[id], ok = x.have >= x.req && !x.warn.some(w => /needs/.test(w));
+        return `<div class="card"><b>${AA_NAMES[id]}</b> <span class="${ok ? 'ok' : ''}">${fmt(x.have)} / ${x.req}${ok ? ' ✓' : ''}</span>${bar(x.have, x.req)}
+          <div>${x.list.map(c => `<span class="tag">${escapeHtml(c.code)}${c.lab ? ' (L)' : ''}${c.perf ? '*' : ''}</span>`).join('') || '<span class="muted">none yet</span>'}</div>
+          ${x.warn.map(w => `<div class="warn">⚠ ${escapeHtml(w)}</div>`).join('')}</div>`;
+      });
+      const csOk = enriched.some(c => c && ['FYS 101', 'HD 103', 'HD 120', 'HD 125', 'HD 173'].includes(c.code)) ||
+        [['STEM 101', 'STEM 102'], ['CEO 101', 'CEO 102'], ['EXPRL 170', 'EXPRL 171']].some(p => p.every(k => enriched.some(c => c && c.code === k)));
+      cards.push(`<div class="card"><b>Total &amp; other</b> <span class="${a.total >= 90 ? 'ok' : ''}">${fmt(a.total)} / 90 credits</span>${bar(a.total, 90)}
+        <div>Diversity course: ${a.div ? '<span class="ok">✓</span>' : '<span class="bad">needed</span>'}</div>
+        <div>Restricted electives: ${fmt(Math.min(a.rs, 15))}${a.rs > 15 ? ` <span class="warn">(${fmt(a.rs - 15)} over cap)</span>` : ''} / 15 max</div>
+        <div>PE activity: ${fmt(a.pe)}${a.pe > 3 ? ' <span class="warn">(only 3 count)</span>' : ''} / 3 max</div>
+        <div>College Success course: ${csOk ? '<span class="ok">✓</span>' : '<span class="muted">not listed. Required for most new BC students (FYS 101 etc.), so ask whether it applies to you.</span>'}</div></div>`);
+      $('aaAreas').innerHTML = cards.join('');
+    }
+
+    function renderSummary() {
+      const h = sol.hsR, a = sol.aaR;
+      const hsLeft = HS_CATS.reduce((s, c) => s + Math.max(0, h.r[c.id].req - h.r[c.id].have), 0);
+      const hsReqTot = HS_CATS.reduce((s, c) => s + reqOf(c), 0);
+      const aaDistLeft = ['WCA', 'WCB', 'QSR', 'HUM', 'SS', 'NS'].reduce((s, id) => s + Math.max(0, a.r[id].req - a.r[id].have), 0);
+      const rsCr = sum(enriched.filter(Boolean));
+      $('summary').innerHTML = `
+        <div class="card">HS diploma<div class="big ${hsLeft < 0.01 && h.wahOk ? 'ok' : ''}">${hsLeft < 0.01 && h.wahOk ? 'Complete ✓' : fmt(hsLeft) + ' credits left'}</div><span class="muted">of ${fmt(hsReqTot)} required${h.wahOk ? '' : '. WA History still needed'}</span></div>
+        <div class="card">AA-DTA<div class="big ${a.def < 0.01 ? 'ok' : ''}">${a.def < 0.01 ? 'Complete ✓' : fmt(Math.max(0, 90 - a.total)) + ' credits left'}</div><span class="muted">${fmt(aaDistLeft)} distribution credits short${a.div ? '' : '. Diversity needed'}</span></div>
+        <div class="card">College credits entered<div class="big">${fmt(rsCr)}</div><span class="muted">= ${fmt(rsCr * 0.2)} HS credits</span></div>`;
+    }
+
+    function renderSuggestions(cs) {
+      const list = suggestions(cs, sol, 10);
+      $('sugg').innerHTML = list.length ? list.map((x, i) => {
+        const k = x.s.aa.length - 1, aa = x.s.aa[k], hs = x.s.hs[k];
+        const aaL = aa === 'ELEC' ? 'elective' : AA_NAMES[aa];
+        return `<li><b>${escapeHtml(x.it.code)}</b> (${x.it.credits} cr${x.c.lab ? ', lab' : ''}): <span class="tag hs">HS ${escapeHtml(hs === 'none' ? '—' : HS_NAME[hs])}</span><span class="tag">AA ${escapeHtml(aaL)}</span>${x.c.div ? '<span class="tag">Diversity</span>' : ''}
+          <button data-add="${i}">Add</button></li>`;
+      }).join('') : '<li class="ok">Nothing left to suggest. Both credentials look complete!</li>';
+      $('sugg').querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
+        const x = list[+b.dataset.add];
+        state.courses.push({ code: x.it.code, credits: x.it.credits, status: 'plan', term: '' });
+        renderCourses();
+      });
+    }
+
+    function termLabels() {
+      const Q = ['Fall', 'Winter', 'Spring'], out = [];
+      let qi = Q.indexOf(state.startQ), y = +state.startY;
+      for (let i = 0; i < +state.nq; i++) {
+        out.push(Q[qi] + ' ' + y);
+        qi++; if (qi === 1) y++; if (qi === 3) qi = 0;
+      }
+      return out;
+    }
+
+    function renderTerms(cs) {
+      const groups = {};
+      cs.forEach(c => { const t = (c.term || '').trim() || 'Unscheduled'; (groups[t] = groups[t] || []).push(c); });
+      const order = termLabels();
+      const keys = Object.keys(groups).sort((a, b) => {
+        const ia = order.indexOf(a), ib = order.indexOf(b);
+        if (a === 'Unscheduled') return 1; if (b === 'Unscheduled') return -1;
+        return (ia < 0 ? -1 : ia) - (ib < 0 ? -1 : ib) || a.localeCompare(b);
+      });
+      $('terms').innerHTML = keys.map(t => {
+        const cr = sum(groups[t]);
+        return `<div class="card"><b>${escapeHtml(t)}</b> <span class="${cr > state.cap ? 'warn' : 'muted'}">${fmt(cr)} cr</span><div>${groups[t].map(c => `<span class="tag ${c.status === 'plan' ? 'st-plan' : ''}">${escapeHtml(c.code)}</span>`).join('')}</div></div>`;
+      }).join('');
+    }
+
+    function renderCourses() {
+      $('courseTable').querySelector('tbody').innerHTML = state.courses.map((c, i) => `<tr>
+        <td><input class="code" data-i="${i}" data-f="code" value="${escapeHtml(c.code)}"></td>
+        <td><input type="number" min="0" max="15" step="1" data-i="${i}" data-f="credits" value="${escapeHtml(c.credits)}"></td>
+        <td><select data-i="${i}" data-f="status">${[['done', 'Completed'], ['prog', 'In progress'], ['plan', 'Planned']].map(([v, l]) => `<option value="${v}" ${c.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
+        <td><input class="term" data-i="${i}" data-f="term" value="${escapeHtml(c.term || '')}"></td>
+        <td id="ct-${i}"></td>
+        <td><button class="x" data-del="${i}" title="Remove">✕</button></td></tr>`).join('')
+        || '<tr><td colspan="6" class="muted">No courses yet. Add some above, or use the suggestions and auto-fill below.</td></tr>';
+      compute();
+    }
+
+    function renderHSTable() {
+      $('hsTable').querySelector('tbody').innerHTML = HS_CATS.map(c => `<tr><td>${c.name}</td>
+        <td><input type="number" step="0.5" min="0" data-req="${c.id}" value="${reqOf(c)}"></td>
+        <td><input type="number" step="0.5" min="0" data-prior="${c.id}" value="${state.hsPrior[c.id] || 0}"></td>
+        <td id="hs-rs-${c.id}"></td><td id="hs-pr-${c.id}" style="min-width:110px"></td><td id="hs-cs-${c.id}"></td></tr>`).join('');
+    }
+
+    // ---------- Plan builder ----------
+    function autoPlan() {
+      const labels = termLabels();
+      const idxOf = c => labels.indexOf((c.term || '').trim());
+      const load = labels.map(() => 0);
+      state.courses.forEach(c => { const i = idxOf(c); if (i >= 0) load[i] += +c.credits || 0; });
+      let added = 0;
+      for (let step = 0; step < 40; step++) {
+        const cs = state.courses.map(enrich).filter(Boolean);
+        const base = solve(cs);
+        if (base.aaR.def < 1e-6 && base.hsR.def < 1e-6) break;
+        const have = new Map(cs.map(c => [c.code, idxOf(c)]));
+        const ranked = catalog(cs).filter(it => !have.has(it.code) && (!it.pre || have.has(it.pre)))
+          .map(it => ({ it, g: gainOf(cs, base, it).gain })).filter(x => x.g > 1e-6).sort((a, b) => b.g - a.g);
+        let placed = false;
+        for (const x of ranked) {
+          const minQ = x.it.pre ? have.get(x.it.pre) + 1 : 0;
+          const q = load.findIndex((l, i) => i >= minQ && l + x.it.credits <= state.cap);
+          if (q < 0) continue;
+          state.courses.push({ code: x.it.code, credits: x.it.credits, status: 'plan', term: labels[q] });
+          load[q] += x.it.credits; added++; placed = true; break;
+        }
+        if (!placed) break;
+      }
+      renderCourses();
+      const done = sol.aaR.def < 1e-6 && sol.hsR.def < 1e-6;
+      $('courseMsg').textContent = `Auto-fill added ${added} course(s). ` + (done ? 'Both credentials are complete in this plan.' : 'Requirements remain. Add quarters, raise credits per quarter, or enter HS credits earned.');
+    }
+
+    // ---------- Persistence ----------
+    function save() {
+      const json = JSON.stringify(state);
+      try { localStorage.setItem('running-start-planner', json); } catch (e) { }
+      try { history.replaceState(null, '', '#s=' + btoa(unescape(encodeURIComponent(json)))); } catch (e) { }
+    }
+    function load() {
+      let json = null;
+      const m = location.hash.match(/#s=([^&]+)/);
+      if (m) { try { json = decodeURIComponent(escape(atob(m[1]))); } catch (e) { } }
+      if (!json) { try { json = localStorage.getItem('running-start-planner'); } catch (e) { } }
+      if (json) { try { Object.assign(state, JSON.parse(json)); } catch (e) { } }
+      if (!Array.isArray(state.courses)) state.courses = [];
+    }
+
+    // ---------- Events ----------
+    function addQuick() {
+      const status = $('quickStatus').value, term = $('quickTerm').value.trim();
+      const bad = [];
+      $('quick').value.split(/[,\n;]+/).map(s => s.trim()).filter(Boolean).forEach(tok => {
+        const p = parseCode(tok);
+        if (!p) { bad.push(tok); return; }
+        const cr = tok.replace(/&/g, '').match(/^\s*[A-Za-z]+\s*\d{2,3}\s*L?\s+(\d+(?:\.\d+)?)/);
+        state.courses.push({ code: p.code, credits: cr ? +cr[1] : 5, status, term });
+      });
+      $('quick').value = bad.join(', ');
+      renderCourses();
+      if (bad.length) $('courseMsg').textContent = 'Could not parse: ' + bad.join(', ');
+    }
+    $('addBtn').onclick = addQuick;
+    $('quick').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addQuick(); } });
+    $('courseTable').addEventListener('change', e => {
+      const t = e.target, i = t.dataset.i, f = t.dataset.f;
+      if (i === undefined) return;
+      state.courses[i][f] = f === 'credits' ? +t.value : f === 'code' ? (parseCode(t.value) || { code: t.value.toUpperCase() }).code : t.value;
+      if (f === 'code') t.value = state.courses[i].code;
+      compute();
+    });
+    $('courseTable').addEventListener('click', e => {
+      const d = e.target.dataset.del;
+      if (d !== undefined) { state.courses.splice(+d, 1); renderCourses(); }
+    });
+    $('hsTable').addEventListener('change', e => {
+      const t = e.target;
+      if (t.dataset.req) state.hsReq[t.dataset.req] = t.value;
+      if (t.dataset.prior) state.hsPrior[t.dataset.prior] = +t.value || 0;
+      compute();
+    });
+    $('wah').onchange = e => { state.wah = e.target.checked; compute(); };
+    $('lang').onchange = e => { state.lang = e.target.value; compute(); };
+    [['startQ', 'value'], ['startY', 'value'], ['nq', 'value'], ['cap', 'value']].forEach(([id]) => $(id).onchange = e => {
+      state[id] = id === 'startQ' ? e.target.value : +e.target.value; compute();
+    });
+    $('planBtn').onclick = autoPlan;
+    $('clearPlan').onclick = () => { state.courses = state.courses.filter(c => c.status !== 'plan'); renderCourses(); };
+    $('shareBtn').onclick = () => {
+      save();
+      navigator.clipboard.writeText(location.href).then(() => {
+        $('shareBtn').textContent = 'Copied!'; setTimeout(() => $('shareBtn').textContent = 'Copy share link', 1500);
+      });
+    };
+
+    load();
+    $('wah').checked = !!state.wah; $('lang').value = state.lang;
+    $('startQ').value = state.startQ; $('startY').value = state.startY; $('nq').value = state.nq; $('cap').value = state.cap;
+    renderHSTable();
+    renderCourses();
+  </script>
+</body>
+</html>

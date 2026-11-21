@@ -19,15 +19,16 @@ These tools follow the design ethos described by [Simon Willison](https://web.ar
 <!-- tools-start -->
 | Tool | Description | Updated |
 |------|-------------|--------|
-| [EPUB Preparer](epub-preparer.html) | Edit EPUB metadata, strip Project Gutenberg boilerplate, and download the corrected file. | 2026-03-03 |
-| [F1 Race Tracker](f1-race-tracker.html) | Formula 1 race timing tower with live gaps, intervals, tyre data, and race control feed powered by OpenF1. | 2026-03-06 |
-| [F1 Tracker](f1-tracker.html) | Live Formula 1 countdown, circuit weather, standings, and news — all in one page. | 2026-10-28 |
-| [KQL Formatter](kql-formatter.html) | Paste a KQL query and get it back cleanly formatted with consistent indentation and operator alignment. | 2026-03-05 |
-| [KQL Playground](kql-playground.html) | Query CSV files locally using Kusto Query Language (KQL) — no data leaves your browser. | 2026-03-06 |
-| [Local Wikipedia Explorer](local-wikipedia.html) | Discover geotagged Wikipedia articles near a searched place on a map and in a list. | 2026-10-28 |
-| [Log Format Inspector](log-inspector.html) | Paste a CEF, LEEF, Syslog, JSON, or key=value log line and get it parsed into an annotated field table. | 2026-03-05 |
-| [SIGMA Rule Viewer](sigma-viewer.html) | Paste a SIGMA rule YAML and get a structured view with schema validation, Sentinel table mapping, and a KQL scaffold. | 2026-03-05 |
-| [Windows Event Log XML Parser](evtx-xml-parser.html) | Paste raw Windows Event Log XML and get a clean structured view with field annotations and a generated KQL query. | 2026-03-05 |
+| [EPUB Preparer](epub-preparer.html) | Edit EPUB metadata, strip Project Gutenberg boilerplate, and download the corrected file. | 2026-11-07 |
+| [F1 Race Tracker](f1-race-tracker.html) | Formula 1 race timing tower with live gaps, intervals, tyre data, and race control feed powered by OpenF1. | 2026-11-07 |
+| [F1 Tracker](f1-tracker.html) | Live Formula 1 countdown, circuit weather, standings, and news — all in one page. | 2026-11-07 |
+| [KQL Formatter](kql-formatter.html) | Paste a KQL query and get it back cleanly formatted with consistent indentation and operator alignment. | 2026-11-07 |
+| [KQL Playground](kql-playground.html) | Query CSV files locally using Kusto Query Language (KQL) — no data leaves your browser. | 2026-11-07 |
+| [Local Wikipedia Explorer](local-wikipedia.html) | Discover geotagged Wikipedia articles near a searched place on a map and in a list. | 2026-11-07 |
+| [Log Format Inspector](log-inspector.html) | Paste a CEF, LEEF, Syslog, JSON, or key=value log line and get it parsed into an annotated field table. | 2026-11-07 |
+| [Running Start Planner](running-start-planner.html) | Track Riverview (Cedarcrest) high school graduation and Bellevue College AA-DTA requirements together and get course suggestions that count for both. | — |
+| [SIGMA Rule Viewer](sigma-viewer.html) | Paste a SIGMA rule YAML and get a structured view with schema validation, Sentinel table mapping, and a KQL scaffold. | 2026-11-07 |
+| [Windows Event Log XML Parser](evtx-xml-parser.html) | Paste raw Windows Event Log XML and get a clean structured view with field annotations and a generated KQL query. | 2026-11-07 |
 <!-- tools-end -->
 
 ## Development
