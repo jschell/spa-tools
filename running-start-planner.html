@@ -64,6 +64,12 @@
     .byyear { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .5rem; margin: .6rem 0 1rem; }
     .byyear .card { padding: .5rem .7rem; font-size: .88rem; }
     .pend { color: var(--warn); }
+    .profilebar { display: flex; flex-wrap: wrap; gap: .5rem .75rem; align-items: center; margin: 0 0 1rem; background: #eef3fd; border-color: #c9d6f2; }
+    .profilebar select { max-width: 60vw; }
+    .profilebar .pbtns { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .profilebar #pStatus { flex-basis: 100%; }
+    .btnlike { cursor: pointer; border: 1px solid #bbb; background: #fff; border-radius: 5px; padding: .3rem .7rem; display: inline-flex; align-items: center; }
+    @media (pointer: coarse) { .btnlike { min-height: 36px; } }
     footer { margin-top: 3rem; border-top: 1px solid var(--line); }
     .links a { font-size: .78rem; margin-left: .3rem; white-space: nowrap; }
     #toast { position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%); max-width: min(92vw, 560px); background: #222; color: #fff; padding: .55rem .9rem; border-radius: 8px; font-size: .9rem; box-shadow: 0 4px 14px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 10; }
@@ -97,7 +103,16 @@
   <p><a href="index.html">&larr; All tools</a></p>
   <h1>Running Start Planner</h1>
   <p>Track Riverview School District (Cedarcrest) graduation requirements and the Bellevue College Associate in Arts &amp; Sciences (DTA) together, and find courses that count toward both.</p>
-  <p class="note">Advising aid only. College courses map to high school credit using the Riverview Running Start equivalency sheet (5 college credits = 1.0 HS credit) and the BC 2025–26 AA-DTA worksheet. HS requirements come from the <a href="https://ceb127e6-ce7f-4fb6-a881-d469edc65251.usrfiles.com/ugd/ceb127_e3bfdf274cc64d76851f93b64ac3a4e5.pdf">Cedarcrest 2026–27 course catalog</a> (Classes of 2027–2030, 24 credits) and the <a href="https://ospi.k12.wa.us/sites/default/files/2026-09/classof2027graduationtoolkit.pdf">OSPI Class of 2027 graduation toolkit</a>. The totals are editable in case your class year differs. Check your plan with a Cedarcrest counselor and a BC advisor. Your data stays in this browser and in the share link.</p>
+  <div class="card profilebar">
+    <label><b>Profile</b> <select id="profileSel" aria-label="Profile"></select></label>
+    <span class="pbtns">
+      <button id="pNew">New</button><button id="pRename">Rename</button><button id="pDup">Duplicate</button><button id="pDel">Delete</button>
+      <button id="pExport" title="Download this profile as a file (backup, or move it to another device)">Export</button>
+      <label class="btnlike" title="Load a profile file exported from this tool">Import<input type="file" id="pImport" accept=".json,application/json" hidden></label>
+    </span>
+    <div id="pStatus" class="muted"></div>
+  </div>
+  <p class="note">Advising aid only. College courses map to high school credit using the Riverview Running Start equivalency sheet (5 college credits = 1.0 HS credit) and the BC 2025–26 AA-DTA worksheet. HS requirements come from the <a href="https://ceb127e6-ce7f-4fb6-a881-d469edc65251.usrfiles.com/ugd/ceb127_e3bfdf274cc64d76851f93b64ac3a4e5.pdf">Cedarcrest 2026–27 course catalog</a> (Classes of 2027–2030, 24 credits) and the <a href="https://ospi.k12.wa.us/sites/default/files/2026-09/classof2027graduationtoolkit.pdf">OSPI Class of 2027 graduation toolkit</a>. The totals are editable in case your class year differs. Check your plan with a Cedarcrest counselor and a BC advisor. Profiles are saved only in this browser on this device (nothing is uploaded). Use Export to back one up or move it to another device, or Copy share link to send a plan.</p>
 
   <div class="summary" id="summary"></div>
 
@@ -318,7 +333,8 @@
     const CHIP_LIMIT = 16;
 
     // ---------- State ----------
-    let state = { courses: [], hsReq: {}, hsClasses: [], wah: true, finlit: false, hsbp: false, pwEla: false, pwMath: false, lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 };
+    const defaultState = () => ({ courses: [], hsReq: {}, hsClasses: [], wah: true, finlit: false, hsbp: false, pwEla: false, pwMath: false, csExempt: false, lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 });
+    let state = defaultState();
 
     function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function parseCode(s) {
@@ -806,32 +822,97 @@
     }
 
     // ---------- Persistence ----------
+    // ---------- Profiles (localStorage) + share link ----------
+    // profiles = { "<name>": { data: <state>, updated: ISO } }. The active profile auto-saves on every change.
+    const STORE = 'running-start-planner:profiles', ACTIVE = 'running-start-planner:active', LEGACY = 'running-start-planner';
+    let profiles = {}, activeProfile = '', storageOk = true, savedAt = null, loadNote = '';
+    function writeStore() {
+      try { localStorage.setItem(STORE, JSON.stringify(profiles)); localStorage.setItem(ACTIVE, activeProfile); storageOk = true; }
+      catch (e) { storageOk = false; }
+    }
     function save() {
       const json = JSON.stringify(state);
-      try { localStorage.setItem('running-start-planner', json); } catch (e) { }
+      profiles[activeProfile] = { data: JSON.parse(json), updated: new Date().toISOString() };
+      writeStore(); savedAt = new Date();
       try { history.replaceState(null, '', '#s=' + btoa(unescape(encodeURIComponent(json)))); } catch (e) { }
+      renderProfileStatus();
     }
-    function load() {
-      let json = null;
-      const m = location.hash.match(/#s=([^&]+)/);
-      if (m) { try { json = decodeURIComponent(escape(atob(m[1]))); } catch (e) { } }
-      if (!json) { try { json = localStorage.getItem('running-start-planner'); } catch (e) { } }
-      if (json) { try { Object.assign(state, JSON.parse(json)); } catch (e) { } }
-      if (!Array.isArray(state.courses)) state.courses = [];
+    function uniqueName(base) {
+      const taken = n => Object.keys(profiles).some(k => k.toLowerCase() === n.toLowerCase());
+      if (!taken(base)) return base;
+      for (let i = 2; ; i++) if (!taken(`${base} ${i}`)) return `${base} ${i}`;
+    }
+    // Bring any saved state (older formats included) up to the current shape.
+    function migrate(st) {
+      st = Object.assign(defaultState(), st || {});
+      if (!Array.isArray(st.courses)) st.courses = [];
       // Older plans stored per-subject totals (hsPrior = credits, then hsSem = semesters); turn them into class rows.
-      if (state.hsPrior) { state.hsSem = state.hsSem || {}; for (const k in state.hsPrior) if (state.hsSem[k] === undefined) state.hsSem[k] = Math.round(2 * state.hsPrior[k]); delete state.hsPrior; }
-      if (!Array.isArray(state.hsClasses)) state.hsClasses = [];
-      if (state.hsSem) {
-        const sem = state.hsSem, lab = +sem.scilab || 0;
+      if (st.hsPrior) { st.hsSem = st.hsSem || {}; for (const k in st.hsPrior) if (st.hsSem[k] === undefined) st.hsSem[k] = Math.round(2 * st.hsPrior[k]); delete st.hsPrior; }
+      if (!Array.isArray(st.hsClasses)) st.hsClasses = [];
+      if (st.hsSem) {
+        const sem = st.hsSem, lab = +sem.scilab || 0;
         for (const k in sem) {
           if (k === 'scilab' || !(+sem[k] > 0)) continue;
           const n = k === 'sci' ? Math.max(0, sem[k] - lab) : +sem[k];
-          if (n > 0) state.hsClasses.push({ name: 'Earlier HS classes', req: k, lab: false, sem: n, grade: '', status: 'done' });
+          if (n > 0) st.hsClasses.push({ name: 'Earlier HS classes', req: k, lab: false, sem: n, grade: '', status: 'done' });
         }
-        if (lab > 0) state.hsClasses.push({ name: 'Earlier HS lab science', req: 'sci', lab: true, sem: lab, grade: '', status: 'done' });
-        delete state.hsSem;
+        if (lab > 0) st.hsClasses.push({ name: 'Earlier HS lab science', req: 'sci', lab: true, sem: lab, grade: '', status: 'done' });
+        delete st.hsSem;
       }
+      return st;
     }
+    function load() {
+      try {
+        profiles = JSON.parse(localStorage.getItem(STORE) || '{}') || {};
+        activeProfile = localStorage.getItem(ACTIVE) || '';
+        const legacy = localStorage.getItem(LEGACY);          // single-plan storage from before profiles existed
+        if (legacy && !Object.keys(profiles).length) profiles['My plan'] = { data: JSON.parse(legacy) };
+        if (legacy) localStorage.removeItem(LEGACY);
+      } catch (e) { storageOk = false; profiles = {}; }
+      // A share link opens as its own profile unless it matches one already saved here.
+      const m = location.hash.match(/#s=([^&]+)/);
+      if (m) {
+        try {
+          const json = decodeURIComponent(escape(atob(m[1])));
+          const same = Object.keys(profiles).find(k => JSON.stringify(profiles[k].data) === json);
+          if (same) activeProfile = same;
+          else { activeProfile = uniqueName('Shared plan'); profiles[activeProfile] = { data: JSON.parse(json) }; loadNote = `Opened a shared link as the new profile "${activeProfile}".`; }
+        } catch (e) { loadNote = 'The share link in the address bar could not be read.'; }
+      }
+      if (!profiles[activeProfile]) activeProfile = Object.keys(profiles)[0] || 'My plan';
+      if (!profiles[activeProfile]) profiles[activeProfile] = { data: defaultState() };
+      state = migrate(profiles[activeProfile].data);
+    }
+    function syncInputs() {
+      ['wah', 'finlit', 'hsbp', 'pwEla', 'pwMath'].forEach(id => $(id).checked = !!state[id]); $('lang').value = state.lang;
+      $('startQ').value = state.startQ; $('startY').value = state.startY; $('nq').value = state.nq; $('cap').value = state.cap;
+    }
+    function renderProfiles() {
+      $('profileSel').innerHTML = Object.keys(profiles).sort((a, b) => a.localeCompare(b))
+        .map(k => `<option value="${escapeHtml(k)}" ${k === activeProfile ? 'selected' : ''}>${escapeHtml(k)}</option>`).join('');
+      renderProfileStatus();
+    }
+    function renderProfileStatus() {
+      const n = Object.keys(profiles).length;
+      $('pStatus').innerHTML = !storageOk
+        ? '<span class="warn">⚠ This browser isn\'t allowing local storage (private browsing?). Changes won\'t be kept, so use Export to save a copy.</span>'
+        : `${n} profile${n > 1 ? 's' : ''} on this device · "${escapeHtml(activeProfile)}" saved${savedAt ? ' at ' + savedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : ''}`;
+    }
+    function switchTo(name, st) {
+      activeProfile = name;
+      if (st) profiles[name] = { data: st };
+      state = migrate(profiles[name].data);
+      ui.expanded.clear();
+      syncInputs(); renderProfiles(); renderHSTable(); renderHsClasses(); renderCourses();   // renderCourses -> compute -> save
+    }
+    function askName(title, def) {
+      const v = prompt(title, def || '');
+      if (v === null) return null;
+      const name = v.trim().replace(/\s+/g, ' ').slice(0, 40);
+      if (!name) { toast('Profile name can\'t be empty.'); return null; }
+      return name;
+    }
+    const nameTaken = (n, except) => Object.keys(profiles).some(k => k !== except && k.toLowerCase() === n.toLowerCase());
 
     // ---------- Events ----------
     function addQuick() {
@@ -945,12 +1026,61 @@
       });
     };
 
+    // Profile buttons
+    $('profileSel').onchange = e => switchTo(e.target.value);
+    $('pNew').onclick = () => {
+      const n = askName('Name for the new profile (e.g. a student\'s name):', uniqueName('New plan'));
+      if (!n) return; if (nameTaken(n)) return toast(`A profile named "${n}" already exists.`);
+      switchTo(n, defaultState()); toast(`Created profile "${n}".`);
+    };
+    $('pDup').onclick = () => {
+      const n = askName('Name for the copy:', uniqueName(activeProfile + ' copy'));
+      if (!n) return; if (nameTaken(n)) return toast(`A profile named "${n}" already exists.`);
+      switchTo(n, JSON.parse(JSON.stringify(state))); toast(`Copied to "${n}".`);
+    };
+    $('pRename').onclick = () => {
+      const n = askName('Rename this profile:', activeProfile);
+      if (!n || n === activeProfile) return; if (nameTaken(n, activeProfile)) return toast(`A profile named "${n}" already exists.`);
+      profiles[n] = profiles[activeProfile]; delete profiles[activeProfile]; activeProfile = n;
+      save(); renderProfiles(); toast(`Renamed to "${n}".`);
+    };
+    $('pDel').onclick = () => {
+      if (!confirm(`Delete the profile "${activeProfile}" from this device? This can't be undone. Export it first if you want a copy.`)) return;
+      const gone = activeProfile; delete profiles[gone];
+      const next = Object.keys(profiles).sort((a, b) => a.localeCompare(b))[0];
+      if (next) switchTo(next); else switchTo('My plan', defaultState());
+      toast(`Deleted "${gone}".`);
+    };
+    $('pExport').onclick = () => {
+      const file = JSON.stringify({ app: 'running-start-planner', version: 1, exported: new Date().toISOString(), profiles: { [activeProfile]: state } }, null, 2);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([file], { type: 'application/json' }));
+      a.download = 'running-start-plan-' + (activeProfile.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'profile') + '.json';
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    };
+    $('pImport').onchange = e => {
+      const f = e.target.files[0]; e.target.value = '';
+      if (!f) return;
+      f.text().then(txt => {
+        const obj = JSON.parse(txt);
+        const incoming = obj && obj.profiles ? obj.profiles : { [f.name.replace(/\.json$/i, '')]: obj };
+        const names = [];
+        for (const [k, v] of Object.entries(incoming)) {
+          if (!v || typeof v !== 'object' || !Array.isArray(v.courses || [])) continue;
+          const n = uniqueName(String(k).trim().slice(0, 40) || 'Imported plan'); profiles[n] = { data: v }; names.push(n);
+        }
+        if (!names.length) throw new Error('no plans');
+        switchTo(names[0]); toast(`Imported ${names.map(n => `"${n}"`).join(', ')}.`);
+      }).catch(() => toast('That file isn\'t a Running Start Planner export.'));
+    };
+
     load();
-    ['wah', 'finlit', 'hsbp', 'pwEla', 'pwMath'].forEach(id => $(id).checked = !!state[id]); $('lang').value = state.lang;
-    $('startQ').value = state.startQ; $('startY').value = state.startY; $('nq').value = state.nq; $('cap').value = state.cap;
+    syncInputs();
+    renderProfiles();
     renderHSTable();
     renderHsClasses();
     renderCourses();
+    if (loadNote) toast(loadNote);
   </script>
 </body>
 </html>
