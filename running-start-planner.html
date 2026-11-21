@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Running Start Planner</title>
-  <meta name="description" content="Track Riverview (Cedarcrest) high school graduation and Bellevue College AA-DTA requirements together and get course suggestions that count for both.">
+  <meta name="description" content="Track Cedarcrest High School (Riverview SD) graduation and Bellevue College AA-DTA requirements together and get course suggestions that count for both.">
   <style>
     :root { --ok: #1a7f37; --warn: #b35900; --bad: #c62828; --muted: #666; --line: #ddd; --bg2: #f6f7f9; --accent: #2457c5; }
     * { box-sizing: border-box; }
@@ -39,6 +39,9 @@
     .sugg li { margin: .3rem 0; }
     .terms { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .6rem; }
     .scroll { overflow-x: auto; }
+    .checks label { display: block; margin: .25rem 0; }
+    .checks label.sub { margin-left: 1.5rem; }
+    tr.sub td:first-child { padding-left: 1.2rem; color: var(--muted); }
     footer { margin-top: 3rem; border-top: 1px solid var(--line); }
     @media (max-width: 600px) { th, td { padding: .3rem .2rem; } input.term { width: 5.5rem; } }
   </style>
@@ -47,7 +50,7 @@
   <p><a href="index.html">&larr; All tools</a></p>
   <h1>Running Start Planner</h1>
   <p>Track Riverview School District (Cedarcrest) graduation requirements and the Bellevue College Associate in Arts &amp; Sciences (DTA) together, and find courses that count toward both.</p>
-  <p class="note">Advising aid only. College courses map to high school credit using the Riverview Running Start equivalency sheet (5 college credits = 1.0 HS credit) and the BC 2025–26 AA-DTA worksheet. The HS credit totals below are Washington's 24-credit framework defaults, so edit them to match your class year. Check your plan with a Cedarcrest counselor and a BC advisor. Your data stays in this browser and in the share link.</p>
+  <p class="note">Advising aid only. College courses map to high school credit using the Riverview Running Start equivalency sheet (5 college credits = 1.0 HS credit) and the BC 2025–26 AA-DTA worksheet. HS requirements come from the <a href="https://ceb127e6-ce7f-4fb6-a881-d469edc65251.usrfiles.com/ugd/ceb127_e3bfdf274cc64d76851f93b64ac3a4e5.pdf">Cedarcrest 2026–27 course catalog</a> (Classes of 2027–2030, 24 credits) and the <a href="https://ospi.k12.wa.us/sites/default/files/2026-09/classof2027graduationtoolkit.pdf">OSPI Class of 2027 graduation toolkit</a>. The totals are editable in case your class year differs. Check your plan with a Cedarcrest counselor and a BC advisor. Your data stays in this browser and in the share link.</p>
 
   <div class="summary" id="summary"></div>
 
@@ -65,13 +68,22 @@
   </table></div>
   <p id="courseMsg" class="muted"></p>
 
-  <h2>2. Riverview HS graduation</h2>
+  <h2>2. Cedarcrest HS graduation (Classes of 2027–2030)</h2>
   <div class="scroll"><table id="hsTable">
     <thead><tr><th>Requirement</th><th>Required</th><th>HS semesters</th><th>From RS</th><th>Progress</th><th>Running Start courses that count</th></tr></thead>
     <tbody></tbody>
   </table></div>
-  <div class="row"><label><input type="checkbox" id="wah"> Washington State History already done (usually in middle school). If not, HIST 214 counts.</label></div>
-  <p class="muted">Equivalencies: English = any ENGL 101+; US History = HIST 146/147/148/150; Civics = POLS 202; World History = HIST 101/102/103/128; WA History = HIST 214; Math = any MATH (below 100 counts but isn't paid by Running Start); Science = ASTR, BIOL, BOTAN, CHEM, ENVS, GEOL, METR, NSCI, NUTR, OCEA, PHYS; World Language = ARAB, ASL, CHIN, FRCH, GERM, ITAL, JAPN, SPAN; Health = HLTH 250; PE = PE, DANCE, NUTR; Art = ART, DANCE, DRMA, MUSC; CTE = ACCT, AHE*, ASL, BA, BUS, BUSIT, BTS, CS, CJ, DBA, DMA, DEV, ECED, EDUC, ECON, ENGR, IMAGE, IT, INDES, MKTG, NSCOM, PROG, TECH; Electives = any 100+ course. High school classes earn 0.5 credit per semester (1.0 for a full year), so enter semesters completed. One 5-credit college quarter = 1.0 HS credit, the same as a full year at the high school. Extra credits in any area spill into electives. "Other social studies" is assumed to accept HIST/POLS. Washington allows Personal Pathway substitutions for 1 Arts and 2 World Language credits, so lower those numbers if that applies to you.</p>
+  <h3>Non-credit requirements</h3>
+  <div class="checks">
+    <label><input type="checkbox" id="wah"> Washington State History. Riverview students complete it in 7th grade, and HIST 214 also counts.</label>
+    <label><input type="checkbox" id="finlit"> Financial literacy, met by Personal Finance (usually 9th grade) or an equivalent.</label>
+    <label><input type="checkbox" id="hsbp"> High School and Beyond Plan complete.</label>
+    <div><b>Graduation Pathway</b> (an ELA option and a math option): <span id="pwStatus"></span></div>
+    <label class="sub"><input type="checkbox" id="pwEla"> ELA met another way (state test, SAT/ACT, AP/IB score, CTE sequence…)</label>
+    <label class="sub"><input type="checkbox" id="pwMath"> Math met another way</label>
+  </div>
+  <p class="muted">Dual Credit pathway (OSPI Class of 2027 toolkit): earning at least 1.0 HS credit through Running Start in a 100-level or higher course that the high school credits as English meets the ELA part, and the same for math. A 5-credit ENGL 101 and a 5-credit MATH 1xx together meet the whole pathway.</p>
+  <p class="muted">Equivalencies: English = any ENGL 101+; US History = HIST 146/147/148/150; Civics = POLS 202; World History = HIST 101/102/103/128; WA History = HIST 214; Math = any MATH (below 100 counts but isn't paid by Running Start); Science = ASTR, BIOL, BOTAN, CHEM, ENVS, GEOL, METR, NSCI, NUTR, OCEA, PHYS; World Language = ARAB, ASL, CHIN, FRCH, GERM, ITAL, JAPN, SPAN; Health = HLTH 250; PE = PE, DANCE, NUTR; Art = ART, DANCE, DRMA, MUSC; CTE = ACCT, AHE*, ASL, BA, BUS, BUSIT, BTS, CS, CJ, DBA, DMA, DEV, ECED, EDUC, ECON, ENGR, IMAGE, IT, INDES, MKTG, NSCOM, PROG, TECH; Electives = any 100+ course. High school classes earn 0.5 credit per semester (1.0 for a full year), so enter semesters completed. One 5-credit college quarter = 1.0 HS credit, the same as a full year at the high school. Extra credits in any area spill into electives. Social Studies totals 3.0: World History 1.0, US History 1.0, Civics 0.5 and a 0.5 social studies elective. Cedarcrest's electives are Economics, Global Issues, Law &amp; Business Ethics, Psychology and AP Human Geography, so this tool assumes ECON, PSYC, GEOG, HIST and POLS courses can fill the elective. That's an inference, so confirm with a counselor. Science is 3.0 credits, and 2.0 must be lab science. Running Start courses count as lab only if BC marks them (L). Per the catalog, 1.0 of the 2.0 Arts credits and both World Language credits can be Personal Pathway Requirement (PPR) courses, so lower those numbers if your HSBP uses PPR.</p>
 
   <h2>3. Bellevue College AA-DTA</h2>
   <div class="areas" id="aaAreas"></div>
@@ -99,7 +111,7 @@
   <div class="terms" id="terms"></div>
 
   <footer>
-    <p>Sources: <a href="https://6140bf52-cefa-489a-82f8-e9b6a56edce1.filesusr.com/ugd/243013_0c41a1dc3b0d4f6b939995ac7d79394d.pdf">Riverview SD Running Start course equivalencies</a> · <a href="https://www.bellevuecollege.edu/wp-content/uploads/2025/08/AssociateArtsScienceWorksheet_2025-26.pdf">BC AA-DTA worksheet 2025–26</a></p>
+    <p>Sources: <a href="https://6140bf52-cefa-489a-82f8-e9b6a56edce1.filesusr.com/ugd/243013_0c41a1dc3b0d4f6b939995ac7d79394d.pdf">Riverview SD Running Start course equivalencies</a> · <a href="https://www.bellevuecollege.edu/wp-content/uploads/2025/08/AssociateArtsScienceWorksheet_2025-26.pdf">BC AA-DTA worksheet 2025–26</a> · <a href="https://ceb127e6-ce7f-4fb6-a881-d469edc65251.usrfiles.com/ugd/ceb127_e3bfdf274cc64d76851f93b64ac3a4e5.pdf">Cedarcrest course catalog 2026–27</a> · <a href="https://ospi.k12.wa.us/sites/default/files/2026-09/classof2027graduationtoolkit.pdf">OSPI Class of 2027 graduation toolkit</a> · <a href="https://www.chs.rsd407.org/counseling">CHS Counseling</a></p>
     <p><a href="https://github.com/jschell/spa-tools/blob/main/running-start-planner.html">View source</a></p>
   </footer>
 
@@ -136,14 +148,14 @@
 
     // ---------- Riverview HS categories (editable defaults: WA 24-credit framework) ----------
     const HS_CATS = [
-      ['eng', 'English', 4], ['math', 'Math', 3], ['sci', 'Science', 3], ['ush', 'US History', 1], ['wh', 'World History', 1],
-      ['civ', 'Civics', 0.5], ['ssx', 'Other social studies', 0.5], ['art', 'Arts', 2], ['wl', 'World Language', 2],
+      ['eng', 'English', 4], ['math', 'Math', 3], ['sci', 'Science', 3], ['scilab', '↳ of which lab science', 2, true], ['ush', 'US History', 1], ['wh', 'World History', 1],
+      ['civ', 'Civics', 0.5], ['ssx', 'Social studies elective', 0.5], ['art', 'Arts', 2], ['wl', 'World Language', 2],
       ['hlth', 'Health', 0.5], ['pe', 'Physical Education', 1.5], ['cte', 'Career & Technical Ed', 1], ['elec', 'Electives', 4]
-    ].map(([id, name, req]) => ({ id, name, req }));
+    ].map(([id, name, req, sub]) => ({ id, name, req, sub: !!sub }));
     const HS_NAME = Object.fromEntries(HS_CATS.map(c => [c.id, c.name]));
 
     // ---------- State ----------
-    let state = { courses: [], hsReq: {}, hsSem: {}, wah: false, lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 };
+    let state = { courses: [], hsReq: {}, hsSem: {}, wah: true, finlit: false, hsbp: false, pwEla: false, pwMath: false, lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 };
 
     function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function parseCode(s) {
@@ -180,7 +192,7 @@
       if (['ART', 'DANCE', 'DRMA', 'MUSC'].includes(d)) hs.push('art');
       if (['PE', 'DANCE', 'NUTR'].includes(d)) hs.push('pe');
       if (CTE.includes(d) || /^AHE/.test(d)) hs.push('cte');
-      if (d === 'HIST' || d === 'POLS') hs.push('ssx');
+      if (['HIST', 'POLS', 'ECON', 'PSYC', 'GEOG'].includes(d)) hs.push('ssx');
       if (n >= 100) hs.push('elec');
       if (!hs.length) hs.push('none');
       return {
@@ -232,13 +244,17 @@
     function hsEval(cs, a) {
       const have = {}; HS_CATS.forEach(c => have[c.id] = priorCr(c.id));
       const lists = {}; HS_CATS.forEach(c => lists[c.id] = []);
-      cs.forEach((c, i) => { if (have[a[i]] !== undefined) { have[a[i]] += c.hsCr; lists[a[i]].push(c); } });
+      cs.forEach((c, i) => {
+        if (have[a[i]] === undefined) return;
+        have[a[i]] += c.hsCr; lists[a[i]].push(c);
+        if (a[i] === 'sci' && c.lab) { have.scilab += c.hsCr; lists.scilab.push(c); }
+      });
       let def = 0, overflow = 0; const r = {};
       HS_CATS.forEach(cat => {
         const req = reqOf(cat);
         if (cat.id === 'elec') return;
         def += 5 * Math.max(0, req - have[cat.id]);
-        overflow += Math.max(0, have[cat.id] - req);
+        if (!cat.sub) overflow += Math.max(0, have[cat.id] - req);
         r[cat.id] = { have: have[cat.id], req };
       });
       const er = reqOf(HS_CATS.find(c => c.id === 'elec'));
@@ -246,8 +262,13 @@
       def += 5 * Math.max(0, er - have.elec - overflow);
       const wahOk = state.wah || cs.some(c => c.code === 'HIST 214');
       if (!wahOk) def += 2;
-      const total = Object.values(have).reduce((s, v) => s + v, 0);
-      return { def, r, lists, wahOk, total };
+      // OSPI Dual Credit Graduation Pathway: >= 1.0 HS credit in a 100+ course credited as English (ELA) / math.
+      const pwElaRS = cs.find(c => c.dept === 'ENGL' && c.num >= 101 && c.hsCr >= 1);
+      const pwMathRS = cs.find(c => c.dept === 'MATH' && c.num >= 100 && c.hsCr >= 1);
+      const pwEla = state.pwEla || !!pwElaRS, pwMath = state.pwMath || !!pwMathRS;
+      def += (pwEla ? 0 : 2) + (pwMath ? 0 : 2);
+      const total = HS_CATS.filter(c => !c.sub).reduce((s, c) => s + have[c.id], 0);
+      return { def, r, lists, wahOk, pwEla, pwMath, pwElaRS, pwMathRS, total };
     }
     // High school classes: one semester = 0.5 credit, a full year (2 semesters) = 1.0 credit.
     function priorCr(id) { return 0.5 * (+state.hsSem[id] || 0); }
@@ -288,7 +309,7 @@
     }
 
     // ---------- Suggestion catalog ----------
-    const BASE_CATALOG = `ENGL 101; ENGL 201>ENGL 101; ENGL 235>ENGL 101; ENGL 271>ENGL 101; ENGL 272>ENGL 101; ENGL 111; ENGL 112; ENGL 113; ENGL 260;
+    const BASE_CATALOG = `ENGL 101; ENGL 201>ENGL 101; ENGL 235>ENGL 101; ENGL 271>ENGL 101; ENGL 272>ENGL 101; ENGL 111; ENGL 112; ENGL 113; ENGL 260>ENGL 101;
       MATH 130; MATH 138; MATH 141; MATH 142>MATH 141; MATH 148; MATH 151>MATH 142; HIST 146; HIST 147; HIST 148; HIST 101; HIST 102; HIST 103; HIST 214; POLS 202; POLS 101;
       BIOL 100; CHEM 110; CHEM 121; ASTR 100; ASTR 101; GEOL 101; OCEA 101; PHYS 114; ENVS 100; METR 101; NUTR 101; ART 101; ART 110; MUSC 105; DRMA 101; DANCE 100;
       HLTH 250; ECON 201; ECON 202; BUS 101; CS 101; CJ 101; EDUC 150; PSYC 100; SOC 101; ANTH 100; GEOG 100; PHIL 101; PHIL 102; CMST 220; CMST 101`;
@@ -369,12 +390,24 @@
 
     function renderSummary() {
       const h = sol.hsR, a = sol.aaR;
-      const hsLeft = HS_CATS.reduce((s, c) => s + Math.max(0, h.r[c.id].req - h.r[c.id].have), 0);
-      const hsReqTot = HS_CATS.reduce((s, c) => s + reqOf(c), 0);
+      const hsLeft = HS_CATS.filter(c => !c.sub).reduce((s, c) => s + Math.max(0, h.r[c.id].req - h.r[c.id].have), 0);
+      const hsReqTot = HS_CATS.filter(c => !c.sub).reduce((s, c) => s + reqOf(c), 0);
+      const labShort = Math.max(0, h.r.scilab.req - h.r.scilab.have);
+      const todo = [];
+      if (labShort > 0.001) todo.push(fmt(labShort) + ' lab science');
+      if (!h.wahOk) todo.push('WA State History');
+      if (!h.pwEla || !h.pwMath) todo.push('Graduation Pathway (' + [!h.pwEla && 'ELA', !h.pwMath && 'math'].filter(Boolean).join(' + ') + ')');
+      if (!state.finlit) todo.push('financial literacy');
+      if (!state.hsbp) todo.push('HSBP');
+      const hsDone = hsLeft < 0.01 && !todo.length;
+      $('pwStatus').innerHTML = [['ELA', 'Ela'], ['Math', 'Math']].map(([k, key]) => {
+        const rs = h['pw' + key + 'RS'], ok = h['pw' + key];
+        return `${k}: ` + (ok ? `<span class="ok">✓</span> ${rs ? 'via Running Start ' + escapeHtml(rs.code) : 'met another way'}` : '<span class="bad">not yet</span>');
+      }).join(' · ');
       const aaDistLeft = ['WCA', 'WCB', 'QSR', 'HUM', 'SS', 'NS'].reduce((s, id) => s + Math.max(0, a.r[id].req - a.r[id].have), 0);
       const rsCr = sum(enriched.filter(Boolean));
       $('summary').innerHTML = `
-        <div class="card">HS diploma<div class="big ${hsLeft < 0.01 && h.wahOk ? 'ok' : ''}">${hsLeft < 0.01 && h.wahOk ? 'Complete ✓' : fmt(hsLeft) + ' credits left'}</div><span class="muted">of ${fmt(hsReqTot)} required${h.wahOk ? '' : '. WA History still needed'}</span></div>
+        <div class="card">HS diploma<div class="big ${hsDone ? 'ok' : ''}">${hsDone ? 'Complete ✓' : hsLeft < 0.01 ? 'Credits done' : fmt(hsLeft) + ' credits left'}</div><span class="muted">of ${fmt(hsReqTot)} required${todo.length ? '. Still needed: ' + escapeHtml(todo.join(', ')) : ''}</span></div>
         <div class="card">AA-DTA<div class="big ${a.def < 0.01 ? 'ok' : ''}">${a.def < 0.01 ? 'Complete ✓' : fmt(Math.max(0, 90 - a.total)) + ' credits left'}</div><span class="muted">${fmt(aaDistLeft)} distribution credits short${a.div ? '' : '. Diversity needed'}</span></div>
         <div class="card">College credits entered<div class="big">${fmt(rsCr)}</div><span class="muted">= ${fmt(rsCr * 0.2)} HS credits</span></div>`;
     }
@@ -432,7 +465,7 @@
     }
 
     function renderHSTable() {
-      $('hsTable').querySelector('tbody').innerHTML = HS_CATS.map(c => `<tr><td>${c.name}</td>
+      $('hsTable').querySelector('tbody').innerHTML = HS_CATS.map(c => `<tr class="${c.sub ? 'sub' : ''}"><td>${c.name}</td>
         <td><input type="number" step="0.5" min="0" data-req="${c.id}" value="${reqOf(c)}"></td>
         <td><input type="number" step="1" min="0" data-prior="${c.id}" value="${state.hsSem[c.id] || 0}"> <span class="muted" id="hs-sc-${c.id}">= ${fmt(priorCr(c.id))} cr</span></td>
         <td id="hs-rs-${c.id}"></td><td id="hs-pr-${c.id}" style="min-width:110px"></td><td id="hs-cs-${c.id}"></td></tr>`).join('');
@@ -517,7 +550,7 @@
       if (t.dataset.prior) { state.hsSem[t.dataset.prior] = Math.max(0, Math.round(+t.value || 0)); t.value = state.hsSem[t.dataset.prior]; $('hs-sc-' + t.dataset.prior).textContent = '= ' + fmt(priorCr(t.dataset.prior)) + ' cr'; }
       compute();
     });
-    $('wah').onchange = e => { state.wah = e.target.checked; compute(); };
+    ['wah', 'finlit', 'hsbp', 'pwEla', 'pwMath'].forEach(id => $(id).onchange = e => { state[id] = e.target.checked; compute(); });
     $('lang').onchange = e => { state.lang = e.target.value; compute(); };
     [['startQ', 'value'], ['startY', 'value'], ['nq', 'value'], ['cap', 'value']].forEach(([id]) => $(id).onchange = e => {
       state[id] = id === 'startQ' ? e.target.value : +e.target.value; compute();
@@ -532,7 +565,7 @@
     };
 
     load();
-    $('wah').checked = !!state.wah; $('lang').value = state.lang;
+    ['wah', 'finlit', 'hsbp', 'pwEla', 'pwMath'].forEach(id => $(id).checked = !!state[id]); $('lang').value = state.lang;
     $('startQ').value = state.startQ; $('startY').value = state.startY; $('nq').value = state.nq; $('cap').value = state.cap;
     renderHSTable();
     renderCourses();

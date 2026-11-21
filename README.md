@@ -26,7 +26,7 @@ These tools follow the design ethos described by [Simon Willison](https://web.ar
 | [KQL Playground](kql-playground.html) | Query CSV files locally using Kusto Query Language (KQL) — no data leaves your browser. | 2026-11-07 |
 | [Local Wikipedia Explorer](local-wikipedia.html) | Discover geotagged Wikipedia articles near a searched place on a map and in a list. | 2026-11-07 |
 | [Log Format Inspector](log-inspector.html) | Paste a CEF, LEEF, Syslog, JSON, or key=value log line and get it parsed into an annotated field table. | 2026-11-07 |
-| [Running Start Planner](running-start-planner.html) | Track Riverview (Cedarcrest) high school graduation and Bellevue College AA-DTA requirements together and get course suggestions that count for both. | 2026-11-21 |
+| [Running Start Planner](running-start-planner.html) | Track Cedarcrest High School (Riverview SD) graduation and Bellevue College AA-DTA requirements together and get course suggestions that count for both. | 2026-11-21 |
 | [SIGMA Rule Viewer](sigma-viewer.html) | Paste a SIGMA rule YAML and get a structured view with schema validation, Sentinel table mapping, and a KQL scaffold. | 2026-11-07 |
 | [Windows Event Log XML Parser](evtx-xml-parser.html) | Paste raw Windows Event Log XML and get a clean structured view with field annotations and a generated KQL query. | 2026-11-07 |
 <!-- tools-end -->
