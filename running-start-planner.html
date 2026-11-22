@@ -70,6 +70,25 @@
     .profilebar #pStatus { flex-basis: 100%; }
     .btnlike { cursor: pointer; border: 1px solid #bbb; background: #fff; border-radius: 5px; padding: .3rem .7rem; display: inline-flex; align-items: center; }
     @media (pointer: coarse) { .btnlike { min-height: 36px; } }
+    dialog#courseDlg { width: min(560px, calc(100% - 2rem)); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+    dialog#courseDlg::backdrop { background: rgba(0,0,0,.35); }
+    .dlghead { display: flex; justify-content: space-between; align-items: start; gap: .5rem; }
+    .dlghead h3 { margin: 0; }
+    .facts { display: grid; grid-template-columns: max-content 1fr; gap: .35rem .8rem; margin: .8rem 0; font-size: .92rem; }
+    .facts dt { color: var(--muted); }
+    .facts dd { margin: 0; }
+    @media (max-width: 640px) {
+      dialog#courseDlg { width: 100%; max-width: 100%; margin: auto 0 0; border-radius: 14px 14px 0 0; max-height: 88vh; overflow: auto; }
+      .facts { grid-template-columns: 1fr; gap: .1rem; } .facts dd { margin-bottom: .5rem; }
+    }
+    #pathInfo table { margin-top: .5rem; }
+    .linkbtn { background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; font: inherit; min-height: 0; }
+    @media (max-width: 640px) {
+      #pathTable thead { display: none; }
+      #pathTable tr { display: grid; grid-template-columns: 1fr auto; gap: .2rem .5rem; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+      #pathTable td { border: 0; padding: 0; }
+      #pathTable td.why, #pathTable td.counts { grid-column: 1 / -1; }
+    }
     footer { margin-top: 3rem; border-top: 1px solid var(--line); }
     .links a { font-size: .78rem; margin-left: .3rem; white-space: nowrap; }
     #toast { position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%); max-width: min(92vw, 560px); background: #222; color: #fff; padding: .55rem .9rem; border-radius: 8px; font-size: .9rem; box-shadow: 0 4px 14px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 10; }
@@ -116,19 +135,25 @@
 
   <div class="summary" id="summary"></div>
 
+  <h2>1. Intended program (optional)</h2>
+  <p class="muted">Planning for a bachelor's program after the AA? Pick a goal. Its recommended Bellevue College courses get a ★ everywhere, rank higher in suggestions, and are included by auto-fill, while still counting toward the HS diploma and the AA-DTA wherever they fit. These are <b>commonly recommended prerequisites, not any one university's official list</b>, so check the programs you plan to apply to.</p>
+  <div class="row"><select id="pathSel" aria-label="Intended program"></select><button id="pathAddAll">Add missing courses to plan</button></div>
+  <div id="pathInfo"></div>
+
   <section id="mapSection"><!-- scopes the sticky filter bar to the map -->
-  <h2>1. Requirement map: pick your courses</h2>
-  <p class="muted">Each card is one requirement. It lists every course option from the Riverview equivalency sheet and the BC worksheet, and a badge shows how much choice you have. Click a course to add it to your plan as Planned, and click a planned course again to remove it. Each course is counted only once per credential, and the planner places it where it helps most.</p>
+  <h2>2. Requirement map: pick your courses</h2>
+  <p class="muted">Each card is one requirement. It lists every course option from the Riverview equivalency sheet and the BC worksheet, and a badge shows how much choice you have. Tap any course to see its details (lab, what it counts toward, sequence, AP equivalent) and add it to or remove it from your plan. Each course is counted only once per credential, and the planner places it where it helps most.</p>
   <div class="toolbar">
     <input id="filterQ" type="search" placeholder="Filter courses, e.g. HIST or 101">
     <label><input type="checkbox" id="filterDbl"> Only courses that count for both HS and AA</label>
+    <label><input type="checkbox" id="filterPath"> Only ★ pathway courses</label>
   </div>
   <div class="legend muted">
     <span class="badge req">Required</span> a specific course or list you must pick from ·
     <span class="badge flex">Flexible</span> required credits that any course can fill ·
     <span class="badge met">✓ Met</span> done, so more picks here are optional ·
     <span class="chip here">counts here</span><span class="chip elsewhere">in plan, counted elsewhere</span><span class="chip">not in plan</span>
-    <b>2×</b> = counts toward an HS subject and an AA distribution · ✓ completed · ◐ in progress · ᴸ lab · * performance
+    ★ = recommended for your intended program · <b>2×</b> = counts toward an HS subject and an AA distribution · ✓ completed · ◐ in progress · ᴸ lab · * performance
   </div>
   <h3>Cedarcrest HS graduation (Classes of 2027–2030)</h3>
   <div class="areas" id="hsCards"></div>
@@ -150,7 +175,7 @@
 
   </section>
 
-  <h2>2. Your classes &amp; status</h2>
+  <h2>3. Your classes &amp; status</h2>
   <h3>Cedarcrest classes</h3>
   <p class="muted">List the high school classes you've completed, are taking now, or are signed up for. A semester = 0.5 credit and a full year = 1.0. Each class fills the requirement you choose, and the requirement cards above update automatically. Mark science classes as lab where they qualify (most Cedarcrest science classes are labs; check the catalog). AP classes go here too; enter the AP <em>exam</em> score in the AP box below.</p>
   <div class="row">
@@ -187,13 +212,13 @@
   </table></div>
   <p id="courseMsg" class="muted"></p>
 
-  <h2>3. Suggested next courses</h2>
+  <h2>4. Suggested next courses</h2>
   <p class="muted">Ranked by how much of your remaining HS + AA requirements each course would fill. These are courses that "double-dip". Check prerequisites and placement in the BC catalog.</p>
   <div class="row"><label>Preferred world language
     <select id="lang"><option>SPAN</option><option>FRCH</option><option>JAPN</option><option>CHIN</option><option>GERM</option><option>ASL</option><option>ITAL</option><option>ARAB</option></select></label></div>
   <ol class="sugg" id="sugg"></ol>
 
-  <h2>4. Build a plan</h2>
+  <h2>5. Build a plan</h2>
   <div class="row">
     <label>Start <select id="startQ"><option>Fall</option><option>Winter</option><option>Spring</option></select></label>
     <input type="number" id="startY" min="2020" max="2040">
@@ -213,6 +238,11 @@
     <p><a href="https://github.com/jschell/spa-tools/blob/main/running-start-planner.html">View source</a> · <a href="https://github.com/jschell/spa-tools/blob/main/running-start-planner.design.md">Design decisions &amp; roadmap</a></p>
   </footer>
   <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="courseDlg" aria-labelledby="dlgTitle">
+    <div class="dlghead"><h3 id="dlgTitle"></h3><button class="x" id="dlgClose" aria-label="Close">✕</button></div>
+    <div id="dlgBody"></div>
+    <div class="row"><button class="primary" id="dlgToggle"></button><button id="dlgClose2">Close</button></div>
+  </dialog>
 
   <script>
     // ---------- Requirement data (BC AA-DTA 2025-26 worksheet) ----------
@@ -279,7 +309,8 @@
     // FYS 101 is 3 credits and has a Running Start section. Running Start students who started at BC before summer 2022 are exempt.
     const CS_SINGLE = ['FYS 101', 'FYS 102', 'HD 103', 'HD 120', 'HD 125', 'HD 173'];
     const CS_PAIRS = [['STEM 101', 'STEM 102'], ['CEO 101', 'CEO 102'], ['EXPRL 170', 'EXPRL 171']];
-    const CREDIT_DEFAULT = { 'FYS 101': 3, 'FYS 102': 3 };
+    // Credits that differ from 5 (FYS: bellevuecollege.edu/fys; physics: BC AP chart awards 6 cr for PHYS 114/115/121/122).
+    const CREDIT_DEFAULT = { 'FYS 101': 3, 'FYS 102': 3, 'PHYS 114': 6, 'PHYS 115': 6, 'PHYS 121': 6, 'PHYS 122': 6 };
     const creditsFor = code => CREDIT_DEFAULT[code] || 5;
     function csCourses(cs) {
       const one = cs.find(c => CS_SINGLE.includes(c.code));
@@ -287,6 +318,65 @@
       const pair = CS_PAIRS.find(p => p.every(k => cs.some(c => c.code === k)));
       return pair ? pair.map(k => cs.find(c => c.code === k)) : null;
     }
+
+    // ---------- Course facts we can state from official sources ----------
+    // Washington common course numbering (SBCTC "&" courses) titles, for well-known courses. Confirm in the BC catalog.
+    const COMMON_TITLES = {
+      'ENGL 101': 'English Composition I', 'ENGL 111': 'Intro to Literature', 'MATH 107': 'Math in Society', 'MATH 141': 'Precalculus I', 'MATH 142': 'Precalculus II',
+      'MATH 148': 'Business Calculus', 'MATH 151': 'Calculus I', 'MATH 152': 'Calculus II', 'MATH 153': 'Calculus III',
+      'BIOL 100': 'Survey of Biology', 'BIOL 160': 'General Biology w/Lab', 'BIOL 211': 'Majors Cellular', 'BIOL 212': 'Majors Animal', 'BIOL 213': 'Majors Plant',
+      'BIOL 241': 'Human Anatomy & Physiology 1', 'BIOL 242': 'Human Anatomy & Physiology 2', 'BIOL 260': 'Microbiology',
+      'CHEM 110': 'Chemical Concepts w/Lab', 'CHEM 121': 'Intro to Chemistry', 'CHEM 161': 'General Chemistry w/Lab I', 'CHEM 162': 'General Chemistry w/Lab II', 'CHEM 163': 'General Chemistry w/Lab III',
+      'PHYS 114': 'General Physics I', 'PHYS 115': 'General Physics II', 'PHYS 116': 'General Physics III',
+      'ASTR 100': 'Survey of Astronomy', 'ASTR 101': 'Intro to Astronomy', 'GEOL 101': 'Intro Physical Geology', 'OCEA 101': 'Intro to Oceanography', 'ENVS 100': 'Survey of Environmental Science', 'NUTR 101': 'Nutrition',
+      'PSYC 100': 'General Psychology', 'PSYC 200': 'Lifespan Psychology', 'PSYC 220': 'Abnormal Psychology', 'SOC 101': 'Intro to Sociology', 'ANTH 100': 'Survey of Anthropology',
+      'POLS 101': 'Intro to Political Science', 'POLS 202': 'American Government', 'HIST 146': 'US History I', 'HIST 147': 'US History II', 'HIST 148': 'US History III',
+      'GEOG 100': 'Intro to Geography', 'GEOG 200': 'Human Geography', 'ECON 201': 'Micro Economics', 'ECON 202': 'Macro Economics',
+      'ACCT 201': 'Principles of Accounting I', 'ACCT 202': 'Principles of Accounting II', 'ACCT 203': 'Principles of Accounting III', 'BUS 101': 'Intro to Business',
+      'CMST 220': 'Public Speaking', 'PHIL 101': 'Intro to Philosophy', 'MUSC 105': 'Music Appreciation',
+      'ENGR 204': 'Electrical Circuits', 'ENGR 214': 'Statics', 'ENGR 215': 'Dynamics', 'ENGR 225': 'Mechanics of Materials',
+      'SPAN 121': 'Spanish I', 'SPAN 122': 'Spanish II', 'SPAN 123': 'Spanish III', 'FRCH 121': 'French I', 'FRCH 122': 'French II', 'FRCH 123': 'French III',
+      'JAPN 121': 'Japanese I', 'JAPN 122': 'Japanese II', 'JAPN 123': 'Japanese III', 'CHIN 121': 'Chinese I', 'CHIN 122': 'Chinese II', 'CHIN 123': 'Chinese III',
+      'GERM 121': 'German I', 'GERM 122': 'German II', 'GERM 123': 'German III', 'ASL 121': 'American Sign Language I', 'ASL 122': 'American Sign Language II', 'ASL 123': 'American Sign Language III',
+      'FYS 101': 'First-Year Seminar'
+    };
+    // Sequence order (take the first before the second). Used for scheduling; check the catalog for exact prerequisites.
+    const PREREQ = {
+      'BIOL 241': 'BIOL 160', 'BIOL 242': 'BIOL 241', 'BIOL 260': 'BIOL 160', 'BIOL 212': 'BIOL 211', 'BIOL 213': 'BIOL 212',
+      'CHEM 162': 'CHEM 161', 'CHEM 163': 'CHEM 162', 'PHYS 115': 'PHYS 114', 'PHYS 116': 'PHYS 115', 'PHYS 122': 'PHYS 121', 'PHYS 123': 'PHYS 122',
+      'MATH 142': 'MATH 141', 'MATH 152': 'MATH 151', 'MATH 153': 'MATH 152', 'ACCT 202': 'ACCT 201', 'ACCT 203': 'ACCT 202', 'CS 211': 'CS 210',
+      'ENGR 215': 'ENGR 214', 'PSYC 200': 'PSYC 100', 'PSYC 220': 'PSYC 100', 'ECON 202': 'ECON 201'
+    };
+    // Intended-program pathways: commonly recommended prerequisites, not any university's official list.
+    const PATHWAYS = [
+      { id: 'ot', name: 'Occupational therapy (pre-OT)', blurb: 'OT master\'s/doctoral programs commonly ask for anatomy & physiology with lab, psychology (general, lifespan/developmental, abnormal), statistics and a social science.',
+        courses: [['BIOL 160', 'General biology with lab, usually needed before A&P'], ['BIOL 241', 'Anatomy & physiology I with lab'], ['BIOL 242', 'Anatomy & physiology II with lab'],
+          ['PSYC 100', 'General psychology'], ['PSYC 200', 'Lifespan / developmental psychology'], ['PSYC 220', 'Abnormal psychology'], ['MATH 130', 'Statistics'], ['SOC 101', 'Sociology or another social science']] },
+      { id: 'pt', name: 'Physical therapy (pre-PT)', blurb: 'DPT programs commonly ask for biology and A&P with lab, a year of chemistry and of physics with lab, psychology and statistics.',
+        courses: [['BIOL 160', 'General biology with lab'], ['BIOL 241', 'Anatomy & physiology I with lab'], ['BIOL 242', 'Anatomy & physiology II with lab'], ['CHEM 161', 'General chemistry I with lab'],
+          ['CHEM 162', 'General chemistry II with lab'], ['PHYS 114', 'Physics I with lab (algebra-based)'], ['PHYS 115', 'Physics II with lab'], ['PSYC 100', 'General psychology'],
+          ['PSYC 200', 'Lifespan / developmental psychology'], ['MATH 130', 'Statistics']] },
+      { id: 'nurse', name: 'Nursing (BSN prerequisites)', blurb: 'BSN programs commonly ask for A&P and microbiology with lab, chemistry, nutrition, psychology (general and lifespan) and statistics.',
+        courses: [['BIOL 160', 'General biology with lab'], ['BIOL 241', 'Anatomy & physiology I with lab'], ['BIOL 242', 'Anatomy & physiology II with lab'], ['BIOL 260', 'Microbiology with lab'],
+          ['CHEM 121', 'Intro to chemistry with lab'], ['NUTR 101', 'Nutrition'], ['PSYC 100', 'General psychology'], ['PSYC 200', 'Lifespan / developmental psychology'], ['MATH 130', 'Statistics']] },
+      { id: 'premed', name: 'Pre-med / biology major', blurb: 'Biology majors and pre-health tracks commonly start the majors biology series, general chemistry series, calculus and physics with lab.',
+        courses: [['BIOL 211', 'Majors biology I with lab'], ['BIOL 212', 'Majors biology II with lab'], ['BIOL 213', 'Majors biology III with lab'], ['CHEM 161', 'General chemistry I with lab'],
+          ['CHEM 162', 'General chemistry II with lab'], ['CHEM 163', 'General chemistry III with lab'], ['MATH 151', 'Calculus I'], ['PHYS 114', 'Physics I with lab'], ['PSYC 100', 'General psychology']] },
+      { id: 'eng', name: 'Engineering', blurb: 'Engineering transfer usually needs the calculus series, calculus-based physics with lab, general chemistry and engineering fundamentals. Many engineering students use BC\'s Associate in Science–Transfer (AS-T Track 2) instead of the DTA, so ask an advisor.',
+        courses: [['MATH 151', 'Calculus I'], ['MATH 152', 'Calculus II'], ['MATH 153', 'Calculus III'], ['PHYS 121', 'Calculus-based physics I with lab (AP Physics C equivalent)'], ['PHYS 122', 'Calculus-based physics II with lab'],
+          ['PHYS 123', 'Calculus-based physics III with lab'], ['CHEM 161', 'General chemistry I with lab'], ['ENGR 214', 'Statics'], ['ENGR 215', 'Dynamics'], ['CS 210', 'Programming (AP CS A equivalent)']] },
+      { id: 'cs', name: 'Computer science', blurb: 'CS transfer commonly needs the calculus series, programming fundamentals and a lab science sequence (often physics).',
+        courses: [['MATH 151', 'Calculus I'], ['MATH 152', 'Calculus II'], ['MATH 153', 'Calculus III'], ['CS 210', 'Programming I (AP CS A equivalent)'], ['CS 211', 'Programming II'],
+          ['PHYS 121', 'Calculus-based physics I with lab'], ['PHYS 122', 'Calculus-based physics II with lab'], ['ENGL 101', 'Composition']] },
+      { id: 'bus', name: 'Business', blurb: 'Business schools commonly ask for micro and macro economics, the accounting series, business calculus, statistics and public speaking.',
+        courses: [['ECON 201', 'Microeconomics'], ['ECON 202', 'Macroeconomics'], ['ACCT 201', 'Accounting I'], ['ACCT 202', 'Accounting II'], ['ACCT 203', 'Accounting III'],
+          ['MATH 148', 'Business calculus'], ['BA 240', 'Business statistics (AP Statistics equivalent)'], ['BUS 101', 'Intro to business'], ['CMST 220', 'Public speaking']] },
+      { id: 'psych', name: 'Psychology / social work', blurb: 'Psychology and social work programs commonly ask for general, lifespan and abnormal psychology, sociology, anthropology, statistics and a biology course.',
+        courses: [['PSYC 100', 'General psychology'], ['PSYC 200', 'Lifespan / developmental psychology'], ['PSYC 220', 'Abnormal psychology'], ['SOC 101', 'Sociology'],
+          ['ANTH 100', 'Anthropology'], ['MATH 130', 'Statistics'], ['BIOL 100', 'Biology']] }
+    ];
+    const pathway = () => PATHWAYS.find(p => p.id === state.pathway);
+    const pathSet = () => new Set((pathway() || { courses: [] }).courses.map(c => c[0]));
 
     function parseList(src) {
       const m = new Map();
@@ -323,17 +413,17 @@
     let UNIVERSE = null;
     function universe() {
       if (!UNIVERSE) {
-        const codes = new Set([...HUM.keys(), ...SS.keys(), ...NS.keys(), ...EXTRA.keys(), ...DIV.keys(), 'HIST 128', 'HIST 214', 'POLS 202', 'HLTH 250', 'FYS 101', 'FYS 102', 'HD 120', 'HD 125', 'HD 173']);
+        const codes = new Set([...HUM.keys(), ...SS.keys(), ...NS.keys(), ...EXTRA.keys(), ...DIV.keys(), 'HIST 128', 'HIST 214', 'POLS 202', 'HLTH 250', 'FYS 101', 'FYS 102', 'HD 120', 'HD 125', 'HD 173', ...PATHWAYS.flatMap(p => p.courses.map(c => c[0]))]);
         UNIVERSE = [...codes].map(k => enrich({ code: k, credits: creditsFor(k) })).filter(Boolean).sort(byCode);
       }
       return UNIVERSE;
     }
     const isDouble = c => c.hs.some(h => h !== 'elec' && h !== 'none') && c.aa.some(a => a !== 'ELEC');
-    const ui = { q: '', dbl: false, expanded: new Set() };
+    const ui = { q: '', dbl: false, path: false, expanded: new Set() };
     const CHIP_LIMIT = 16;
 
     // ---------- State ----------
-    const defaultState = () => ({ courses: [], hsReq: {}, hsClasses: [], wah: true, finlit: false, hsbp: false, pwEla: false, pwMath: false, csExempt: false, lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 });
+    const defaultState = () => ({ courses: [], hsReq: {}, hsClasses: [], wah: true, finlit: false, hsbp: false, pwEla: false, pwMath: false, csExempt: false, pathway: '', lang: 'SPAN', startQ: 'Fall', startY: new Date().getFullYear(), nq: 6, cap: 15 });
     let state = defaultState();
 
     function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -515,10 +605,14 @@
       const used = cs.find(c => WL.includes(c.dept));
       const L = used ? used.dept : state.lang;
       const wl = `${L} 121; ${L} 122>${L} 121; ${L} 123>${L} 122` + (HUM.has(L + ' 221') ? `; ${L} 221>${L} 123` : '');
-      return (BASE_CATALOG + ';' + wl).split(';').map(s => s.trim()).filter(Boolean).map(s => {
+      const list = (BASE_CATALOG + ';' + wl).split(';').map(s => s.trim()).filter(Boolean).map(s => {
         const [code, pre] = s.split('>');
-        return { code: code.trim(), credits: creditsFor(code.trim()), pre: pre && pre.trim() };
+        return { code: code.trim(), credits: creditsFor(code.trim()), pre: (pre && pre.trim()) || PREREQ[code.trim()] };
       });
+      const ps = pathSet();
+      ps.forEach(code => { if (!list.some(x => x.code === code)) list.push({ code, credits: creditsFor(code), pre: PREREQ[code] }); });
+      list.forEach(x => x.path = ps.has(x.code));
+      return list;
     }
     function gainOf(cs, base, item) {
       const c = enrich({ code: item.code, credits: item.credits, status: 'plan' });
@@ -526,12 +620,13 @@
       const s = solve(cs2, { aa: base.aa.concat([c.aa[0]]), hs: base.hs.concat([c.hs[0]]) });
       return { gain: (base.aaR.def - s.aaR.def) + (base.hsR.def - s.hsR.def), s, c };
     }
+    const PATH_BONUS = 6; // pathway courses outrank general picks but not urgent requirement gaps
     function suggestions(cs, base, n) {
       const have = new Set(cs.map(c => c.code));
       return catalog(cs).filter(it => !have.has(it.code) && (!it.pre || have.has(it.pre)))
         .map(it => ({ it, ...gainOf(cs, base, it) }))
-        .filter(x => x.gain > 1e-6)
-        .sort((x, y) => y.gain - x.gain).slice(0, n);
+        .filter(x => x.gain > 1e-6 || x.it.path)
+        .sort((x, y) => (y.gain + (y.it.path ? PATH_BONUS : 0)) - (x.gain + (x.it.path ? PATH_BONUS : 0))).slice(0, n);
     }
 
     // ---------- Rendering ----------
@@ -551,13 +646,13 @@
         const aa = sol.aa[vi], hs = sol.hs[vi]; vi++;
         const aaLabel = aa === 'ELEC' ? (c.transferable ? 'Elective' : c.restricted ? 'Restricted elective' : 'Not degree-applicable (<100)') : AA_NAMES[aa];
         const hsLabel = c.sgrade ? 'none (AP class counts via semesters)' : hs === 'none' ? 'No HS credit' : `${HS_NAME[hs]} (${fmt(c.hsCr)})`;
-        cell.innerHTML = `<span class="tag hs">HS: ${escapeHtml(hsLabel)}</span><span class="tag">AA: ${escapeHtml(aaLabel)}</span>${c.div ? '<span class="tag">Diversity</span>' : ''}${c.sgrade ? `<span class="tag st-plan">AP ${escapeHtml(c.apExam)} · S grade</span>` : ''}${c.generic ? '' : `<span class="links">${courseLinks(c.code)}</span>`}`;
+        cell.innerHTML = `<span class="tag hs">HS: ${escapeHtml(hsLabel)}</span><span class="tag">AA: ${escapeHtml(aaLabel)}</span>${c.div ? '<span class="tag">Diversity</span>' : ''}${c.sgrade ? `<span class="tag st-plan">AP ${escapeHtml(c.apExam)} · S grade</span>` : ''}${c.generic ? '' : `<span class="links"><button class="linkbtn" data-detail="${escapeHtml(c.code)}">details</button>${courseLinks(c.code)}</span>`}`;
       });
       const dups = valid.filter(c => !c.generic).map(c => c.code).filter((c, i, a) => a.indexOf(c) !== i);
       const apDup = [...new Set(dups)].filter(k => valid.some(c => c.code === k && c.sgrade) && valid.some(c => c.code === k && !c.sgrade));
       $('courseMsg').textContent = (apDup.length ? `BC gives no AP credit for a course you also take at BC: ${apDup.join(', ')}. Drop one of them. ` : '') +
         (dups.length > apDup.length ? 'Duplicate course(s): ' + [...new Set(dups)].filter(k => !apDup.includes(k)).join(', ') + '. Repeats usually earn credit only once.' : '');
-      renderHS(valid); renderAA(); renderSummary(); renderSuggestions(valid); renderTerms(valid); save();
+      renderHS(valid); renderAA(); renderPathway(); renderSummary(); renderSuggestions(valid); renderTerms(valid); save();
     }
 
     // Build the chips for one requirement card. qualifies(c) -> bool, here(c, idx) -> counted in this requirement.
@@ -567,10 +662,11 @@
       const opts = universe().filter(qualifies);
       valid.forEach(c => { if (qualifies(c) && !opts.some(o => o.code === c.code)) opts.push(c); });
       const q = ui.q.trim().toUpperCase().replace(/&/g, '');
-      const info = opts.filter(c => (!q || c.code.includes(q)) && (!ui.dbl || isDouble(c) || planIdx.has(c.code)))
+      const ps = pathSet();
+      const info = opts.filter(c => (!q || c.code.includes(q)) && (!ui.dbl || isDouble(c) || planIdx.has(c.code)) && (!ui.path || ps.has(c.code) || planIdx.has(c.code)))
         .map(c => {
           const i = planIdx.get(c.code), inPlan = i !== undefined, h = inPlan && here(valid[i], i);
-          return { c, inPlan, h, st: inPlan ? valid[i].status : null, rank: (h ? 4 : 0) + (inPlan ? 2 : 0) + (isDouble(c) ? 1 : 0) };
+          return { c, inPlan, h, st: inPlan ? valid[i].status : null, rank: (h ? 8 : 0) + (inPlan ? 4 : 0) + (ps.has(c.code) ? 2 : 0) + (isDouble(c) ? 1 : 0) };
         }).sort((a, b) => b.rank - a.rank || byCode(a.c, b.c));
       const open = ui.expanded.has(cardId) || q;
       const shown = open ? info : info.slice(0, CHIP_LIMIT);
@@ -579,7 +675,7 @@
         const aa = c.aa.filter(x => x !== 'ELEC').map(x => AA_NAMES[x]);
         return `${c.code} (${c.credits} cr = ${fmt(c.hsCr)} HS credit). HS: ${hs.join(', ') || 'elective'}. AA: ${aa.join(', ') || (c.transferable ? 'elective' : 'restricted elective')}${c.div ? '. Meets Diversity' : ''}.`;
       };
-      let html = shown.map(x => `<button class="chip ${x.h ? 'here' : x.inPlan ? 'elsewhere' : ''}" data-chip="${escapeHtml(x.c.code)}" title="${escapeHtml(quals(x.c))}">${x.st === 'done' ? '✓ ' : x.st === 'prog' ? '◐ ' : x.st === 'ap' ? 'AP ' : ''}${escapeHtml(x.c.code)}${x.c.lab ? 'ᴸ' : ''}${x.c.perf ? '*' : ''}${isDouble(x.c) ? ' <b>2×</b>' : ''}</button>`).join('');
+      let html = shown.map(x => `<button class="chip ${x.h ? 'here' : x.inPlan ? 'elsewhere' : ''}" data-chip="${escapeHtml(x.c.code)}" title="${escapeHtml(quals(x.c))}">${x.st === 'done' ? '✓ ' : x.st === 'prog' ? '◐ ' : x.st === 'ap' ? 'AP ' : ''}${ps.has(x.c.code) ? '★' : ''}${escapeHtml(x.c.code)}${x.c.lab ? 'ᴸ' : ''}${x.c.perf ? '*' : ''}${isDouble(x.c) ? ' <b>2×</b>' : ''}</button>`).join('');
       if (!q && info.length > CHIP_LIMIT) html += `<button class="more" data-expand="${cardId}">${open ? 'Show fewer' : 'Show all ' + info.length}</button>`;
       if (!info.length) html = '<span class="muted">No matching options.</span>';
       return { html, count: opts.length, opts };
@@ -667,6 +763,22 @@
       $('aaAreas').innerHTML = cards.join('');
     }
 
+    function renderPathway() {
+      const pw = pathway(), cs = enriched.filter(Boolean);
+      if (!pw) { $('pathInfo').innerHTML = '<p class="muted">No program selected. The planner focuses on the HS diploma and the AA-DTA only.</p>'; $('pathAddAll').hidden = true; return; }
+      const rows = pw.courses.map(([code, why]) => {
+        const c = enrich({ code, credits: creditsFor(code) }), i = cs.findIndex(x => x.code === code), row = state.courses.find(x => x.code === code);
+        const aa = c.aa.filter(a => a !== 'ELEC').map(a => AA_NAMES[a]).join(' / ') || (c.transferable ? 'elective' : 'restricted elective');
+        const hs = c.hs.filter(h => h !== 'elec' && h !== 'none').map(h => HS_NAME[h]).join(' / ') || 'elective';
+        const st = row ? `<span class="ok">${{ done: '✓ Completed', prog: '◐ In progress', plan: 'Planned', ap: 'AP credit' }[row.status]}</span>${row.term ? ' · ' + escapeHtml(row.term) : ''}` : `<button data-padd="${code}">Add</button>`;
+        return `<tr><td><button class="linkbtn" data-detail="${code}"><b>★${code}</b></button>${c.lab ? ' <span class="tag">lab</span>' : ''}</td><td class="why">${escapeHtml(COMMON_TITLES[code] || why)}${COMMON_TITLES[code] ? ` <span class="muted">· ${escapeHtml(why)}</span>` : ''}</td>
+          <td class="counts"><span class="tag hs">HS ${escapeHtml(hs)}</span><span class="tag">AA ${escapeHtml(aa)}</span></td><td>${st}</td></tr>`;
+      });
+      const missing = pw.courses.filter(([code]) => !cs.some(x => x.code === code)).length;
+      $('pathAddAll').hidden = !missing; $('pathAddAll').textContent = `Add ${missing} missing course${missing === 1 ? '' : 's'} to plan`;
+      $('pathInfo').innerHTML = `<p>${escapeHtml(pw.blurb)}</p><div class="scroll"><table id="pathTable"><thead><tr><th>Course</th><th>What it is</th><th>Counts toward</th><th>Status</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
+        <p class="muted">${pw.courses.length - missing} of ${pw.courses.length} in your plan. Planned courses without a quarter get one when you click Auto-fill in section 5, in sequence order.</p>`;
+    }
     function renderSummary() {
       const h = sol.hsR, a = sol.aaR;
       const hsLeft = HS_CATS.filter(c => !c.sub).reduce((s, c) => s + Math.max(0, h.r[c.id].req - h.r[c.id].have), 0);
@@ -701,7 +813,7 @@
       $('sugg').innerHTML = list.length ? list.map((x, i) => {
         const k = x.s.aa.length - 1, aa = x.s.aa[k], hs = x.s.hs[k];
         const aaL = aa === 'ELEC' ? 'elective' : AA_NAMES[aa];
-        return `<li><b>${escapeHtml(x.it.code)}</b> (${x.it.credits} cr${x.c.lab ? ', lab' : ''}): <span class="tag hs">HS ${escapeHtml(hs === 'none' ? '—' : HS_NAME[hs])}</span><span class="tag">AA ${escapeHtml(aaL)}</span>${x.c.div ? '<span class="tag">Diversity</span>' : ''}
+        return `<li>${x.it.path ? '★' : ''}<button class="linkbtn" data-detail="${escapeHtml(x.it.code)}"><b>${escapeHtml(x.it.code)}</b></button>${COMMON_TITLES[x.it.code] ? ' ' + escapeHtml(COMMON_TITLES[x.it.code]) : ''} (${x.it.credits} cr${x.c.lab ? ', lab' : ''}): <span class="tag hs">HS ${escapeHtml(hs === 'none' ? '—' : HS_NAME[hs])}</span><span class="tag">AA ${escapeHtml(aaL)}</span>${x.c.div ? '<span class="tag">Diversity</span>' : ''}
           <button data-add="${i}">Add</button></li>`;
       }).join('') : '<li class="ok">Nothing left to suggest. Both credentials look complete!</li>';
       $('sugg').querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
@@ -793,19 +905,28 @@
       const idxOf = c => labels.indexOf((c.term || '').trim());
       const load = labels.map(() => 0);
       state.courses.forEach(c => { const i = idxOf(c); if (i >= 0) load[i] += +c.credits || 0; });
-      let added = 0;
-      // College Success must be in the first or second BC quarter, so place FYS 101 first.
+      let added = 0, scheduled = 0;
+      // 1) College Success must be in the first or second BC quarter, so place FYS 101 first.
       if (!state.csExempt && !csCourses(state.courses.map(enrich).filter(Boolean))) {
         const q = load.findIndex(l => l + 3 <= state.cap);
         if (q >= 0 && q < 2) { state.courses.push({ code: 'FYS 101', credits: 3, status: 'plan', term: labels[q] }); load[q] += 3; added++; }
       }
+      // 2) Give a quarter to planned courses that don't have one yet (e.g. added from a pathway), in sequence order.
+      const termIdx = code => { const c = state.courses.find(x => x.code === code); return c ? idxOf(c) : -1; };
+      for (let pass = 0; pass < 4; pass++) state.courses.filter(c => c.status === 'plan' && !(c.term || '').trim()).forEach(c => {
+        const pre = PREREQ[c.code], pi = pre ? termIdx(pre) : -1;
+        if (pre && state.courses.some(x => x.code === pre && x.status === 'plan' && !(x.term || '').trim())) return; // wait for prerequisite
+        const q = load.findIndex((l, i) => i > pi && l + (+c.credits || 0) <= state.cap);
+        if (q >= 0) { c.term = labels[q]; load[q] += +c.credits || 0; scheduled++; }
+      });
       for (let step = 0; step < 40; step++) {
         const cs = state.courses.map(enrich).filter(Boolean);
         const base = solve(cs);
-        if (base.aaR.def < 1e-6 && base.hsR.def < 1e-6) break;
+        const ps = pathSet();
+        if (base.aaR.def < 1e-6 && base.hsR.def < 1e-6 && [...ps].every(k => cs.some(c => c.code === k))) break;
         const have = new Map(cs.map(c => [c.code, idxOf(c)]));
         const ranked = catalog(cs).filter(it => !have.has(it.code) && (!it.pre || have.has(it.pre)))
-          .map(it => ({ it, g: gainOf(cs, base, it).gain })).filter(x => x.g > 1e-6).sort((a, b) => b.g - a.g);
+          .map(it => ({ it, g: gainOf(cs, base, it).gain + (it.path ? PATH_BONUS : 0) })).filter(x => x.g > 1e-6).sort((a, b) => b.g - a.g);
         let placed = false;
         for (const x of ranked) {
           const minQ = x.it.pre ? have.get(x.it.pre) + 1 : 0;
@@ -818,7 +939,7 @@
       }
       renderCourses();
       const done = sol.aaR.def < 1e-6 && sol.hsR.def < 1e-6;
-      $('courseMsg').textContent = `Auto-fill added ${added} course(s). ` + (done ? 'Both credentials are complete in this plan.' : 'Requirements remain. Add quarters, raise credits per quarter, or enter HS credits earned.');
+      $('courseMsg').textContent = `Auto-fill added ${added} course(s)${scheduled ? ` and scheduled ${scheduled} unscheduled one(s)` : ''}. ` + (done ? 'Both credentials are complete in this plan.' : 'Requirements remain. Add quarters, raise credits per quarter, or enter HS credits earned.');
     }
 
     // ---------- Persistence ----------
@@ -885,6 +1006,7 @@
     }
     function syncInputs() {
       ['wah', 'finlit', 'hsbp', 'pwEla', 'pwMath'].forEach(id => $(id).checked = !!state[id]); $('lang').value = state.lang;
+      $('pathSel').value = state.pathway || '';
       $('startQ').value = state.startQ; $('startY').value = state.startY; $('nq').value = state.nq; $('cap').value = state.cap;
     }
     function renderProfiles() {
@@ -974,14 +1096,70 @@
     document.addEventListener('pointerdown', e => { const c = e.target.closest('[data-chip]'); pressed = c && e.button === 0 ? hitOf(c) : null; });
     document.addEventListener('pointerup', e => {
       const c = e.target.closest('[data-chip]'), p = pressed; pressed = null;
-      if (p && c && c.dataset.chip === p.code) { handledAt = Date.now(); toggleChip(p); }
+      if (p && c && c.dataset.chip === p.code) { handledAt = Date.now(); openCourse(p); }
     });
     document.addEventListener('click', e => {
       const ex = e.target.closest('[data-expand]');
       if (ex) { const id = ex.dataset.expand; ui.expanded.has(id) ? ui.expanded.delete(id) : ui.expanded.add(id); compute(); return; }
       const chip = e.target.closest('[data-chip]');
       if (!chip || Date.now() - handledAt < 600) return;
-      toggleChip(hitOf(chip)); // keyboard activation
+      openCourse(hitOf(chip)); // keyboard activation
+    });
+    // ---------- Course details dialog ----------
+    let dlgHit = null, dlgOpenedAt = 0;
+    function courseDetailsHtml(code) {
+      const c = enrich({ code, credits: creditsFor(code) }), p = parseCode(code) || {};
+      const planRow = state.courses.find(x => (parseCode(x.code) || {}).code === code);
+      const vi = enriched.filter(Boolean).findIndex(x => x.code === code);
+      const aaNames = c.aa.filter(a => a !== 'ELEC').map(a => AA_NAMES[a]);
+      const hsNames = c.hs.filter(h => h !== 'elec' && h !== 'none').map(h => HS_NAME[h]);
+      const lab = NS.has(code) ? (c.lab ? '<span class="ok">Yes</span>, marked (L) on the BC AA-DTA worksheet' : 'No lab component marked on the AA-DTA worksheet')
+        : SCI.includes(p.dept) ? 'Not listed on the AA-DTA worksheet, so check the catalog' : 'Not a lab science';
+      const ap = AP_CHART.filter(r => r[2].split(',').map(x => x.trim()).includes(code)).map(r => `AP ${r[0]} (score ${r[1].split('').join('/')})`);
+      const after = Object.keys(PREREQ).filter(k => PREREQ[k] === code);
+      const paths = PATHWAYS.filter(pw => pw.courses.some(x => x[0] === code)).map(pw => `${pw.name}: ${pw.courses.find(x => x[0] === code)[1]}`);
+      const fact = (k, v) => v ? `<dt>${k}</dt><dd>${v}</dd>` : '';
+      const status = planRow ? ({ done: 'Completed', prog: 'In progress', plan: 'Planned', ap: 'AP exam credit' }[planRow.status] + (planRow.term ? ` · ${escapeHtml(planRow.term)}` : '')) : 'Not in your plan';
+      const counted = vi >= 0 ? ` (counted as HS ${sol.hs[vi] === 'none' ? '—' : HS_NAME[sol.hs[vi]]} · AA ${sol.aa[vi] === 'ELEC' ? 'elective' : AA_NAMES[sol.aa[vi]]})` : '';
+      return `<dl class="facts">
+        ${fact('Title', COMMON_TITLES[code] ? `${escapeHtml(COMMON_TITLES[code])} <span class="muted">(WA common course title; confirm in catalog)</span>` : '<span class="muted">Not stored here; open the catalog link below for the official title and description</span>')}
+        ${fact('Credits', `${planRow ? planRow.credits : creditsFor(code)}${planRow ? '' : ' <span class="muted">(typical; check catalog)</span>'} = ${fmt((planRow ? planRow.credits : creditsFor(code)) * 0.2)} HS credit`)}
+        ${fact('Lab', lab)}
+        ${fact('AA-DTA', (aaNames.length ? escapeHtml(aaNames.join(', ')) : c.transferable ? 'Transferable elective' : c.restricted ? 'Restricted elective (max 15 cr)' : 'Not degree-applicable')
+          + (c.perf ? ' · performance/skills (max 5 cr in Humanities)' : '') + (c.wl100 ? ' · 100-level language (max 5 cr in Humanities)' : '') + (c.mathy && aaNames.includes('Natural Sciences') ? ' · max 5 MATH/PHIL 120 cr in Natural Sciences' : '')
+          + (c.div ? ' · <b>meets Diversity</b>' : '') + (CS_SINGLE.includes(code) ? ' · <b>meets College Success</b>' : ''))}
+        ${fact('Cedarcrest HS', (hsNames.length ? escapeHtml(hsNames.join(' or ')) : c.num >= 100 ? 'Elective' : 'No HS credit') + ' <span class="muted">(Riverview equivalency sheet)</span>')}
+        ${fact('Sequence', [PREREQ[code] ? `after ${PREREQ[code]}` : '', after.length ? `before ${after.join(', ')}` : ''].filter(Boolean).join(' · ') + (PREREQ[code] || after.length ? ' <span class="muted">(check catalog prerequisites)</span>' : ''))}
+        ${fact('AP equivalent', escapeHtml(ap.join('; ')))}
+        ${fact('Pathways', escapeHtml(paths.join('; ')))}
+        ${fact('Your plan', status + counted)}
+      </dl><p class="links">${courseLinks(code)}</p>`;
+    }
+    function openCourse(hit) {
+      dlgHit = hit;
+      const code = hit.code, row = state.courses.find(x => (parseCode(x.code) || {}).code === code);
+      $('dlgTitle').textContent = code + (COMMON_TITLES[code] ? ' · ' + COMMON_TITLES[code] : '');
+      $('dlgBody').innerHTML = courseDetailsHtml(code);
+      const t = $('dlgToggle');
+      t.hidden = !!row && row.status !== 'plan';
+      t.textContent = row ? 'Remove from plan' : 'Add to plan';
+      const d = $('courseDlg');
+      dlgOpenedAt = Date.now();
+      if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
+    }
+    function closeCourse() { const d = $('courseDlg'); if (d.close) d.close(); else d.removeAttribute('open'); }
+    $('dlgClose').onclick = closeCourse; $('dlgClose2').onclick = closeCourse;
+    // Tap on the backdrop closes. Ignore the click that finishes the very tap that opened the dialog (on tablets it
+    // lands on the backdrop beside the centered dialog), and clicks inside the dialog's own box.
+    $('courseDlg').addEventListener('click', e => {
+      if (e.target !== $('courseDlg') || Date.now() - dlgOpenedAt < 700) return;
+      const r = $('courseDlg').getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeCourse();
+    });
+    $('dlgToggle').onclick = () => { closeCourse(); if (dlgHit) toggleChip(dlgHit); };
+    document.addEventListener('click', e => {
+      const d = e.target.closest('[data-detail]');
+      if (d) { e.preventDefault(); openCourse({ code: d.dataset.detail }); }
     });
     function toggleChip({ code, cardId, y0 }) {
       const i = state.courses.findIndex(c => (parseCode(c.code) || {}).code === code);
@@ -998,7 +1176,20 @@
       if (card2) window.scrollBy(0, card2.getBoundingClientRect().top - y0);
     }
     $('filterQ').oninput = e => { ui.q = e.target.value; compute(); };
+    $('pathSel').innerHTML = '<option value="">— None —</option>' + PATHWAYS.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+    $('pathSel').onchange = e => { state.pathway = e.target.value; compute(); };
+    $('pathAddAll').onclick = () => {
+      const pw = pathway(); if (!pw) return;
+      const add = pw.courses.map(c => c[0]).filter(code => !state.courses.some(x => x.code === code));
+      add.forEach(code => state.courses.push({ code, credits: creditsFor(code), status: 'plan', term: '' }));
+      renderCourses(); toast(`Added ${add.length} course(s). Click Auto-fill in section 5 to give them quarters.`);
+    };
+    $('pathInfo').addEventListener('click', e => {
+      const b = e.target.closest('[data-padd]'); if (!b) return;
+      state.courses.push({ code: b.dataset.padd, credits: creditsFor(b.dataset.padd), status: 'plan', term: '' }); renderCourses(); toast(`Added ${b.dataset.padd} (planned).`);
+    });
     $('filterDbl').onchange = e => { ui.dbl = e.target.checked; compute(); };
+    $('filterPath').onchange = e => { ui.path = e.target.checked; compute(); };
     // AP exam entry
     $('apExam').innerHTML = [...new Set(AP_CHART.map(r => r[0]))].sort().map(e => `<option>${escapeHtml(e)}</option>`).join('');
     function apPreview() {
