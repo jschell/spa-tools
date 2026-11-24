@@ -1,9 +1,25 @@
 {
-  "updatedAt": "2026-11-23T22:41:02.220623+00:00",
+  "updatedAt": "2026-11-24T06:27:51.980029+00:00",
   "failedSources": [
     "Formula 1"
   ],
   "items": [
+    {
+      "title": "Max Verstappen delivers contentious F1 comparison he 'probably shouldn't say'",
+      "link": "https://racingnews365.com/max-verstappen-delivers-contentious-f1-comparison-he-probably-shouldnt-say",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-24T06:25:00+00:00",
+      "summary": "Max Verstappen has picked up and dusted off a comparison from earlier in the F1 season — although he was tentative about doing so.",
+      "imageUrl": null
+    },
+    {
+      "title": "Ferrari 'utterly wrong' in decision that triggered its 'disaster' driver crisis",
+      "link": "https://racingnews365.com/ferrari-utterly-wrong-in-decision-that-triggered-its-disaster-driver-crisis",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-24T05:30:00+00:00",
+      "summary": "Ferrari has been criticised for its handling of the incident between Charles Leclerc and Lewis Hamilton in Mexico City, which has been credited as the cause of the current driver crisis the Scuderia faces.",
+      "imageUrl": null
+    },
     {
       "title": "Ferrari plan changes as George Russell issued Max Verstappen warning – RacingNews365 Review",
       "link": "https://racingnews365.com/ferrari-plan-changes-as-george-russell-issued-max-verstappen-warning-racingnews365-review",
@@ -946,22 +962,6 @@
       "source": "RacingNews365",
       "pubDate": "2026-11-22T05:42:00+00:00",
       "summary": "George Russell hopes of finishing second in the F1 drivers' championship suffered severe harm by hitting the barriers on Lap 49 of 50 at the Las Vegas Grand Prix.",
-      "imageUrl": null
-    },
-    {
-      "title": "Max Verstappen unstoppable as latest Ferrari intra-team clash steals Las Vegas headlines",
-      "link": "https://racingnews365.com/max-verstappen-unstoppable-as-latest-ferrari-intra-team-clash-steals-las-vegas-headlines",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-22T05:41:00+00:00",
-      "summary": "Max Verstappen mastered 50 laps of pure chaos for victory in Las Vegas.",
-      "imageUrl": null
-    },
-    {
-      "title": "2026 F1 championship standings after Las Vegas Grand Prix",
-      "link": "https://racingnews365.com/2026-f1-championship-standings-after-las-vegas-grand-prix",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-22T05:40:00+00:00",
-      "summary": "Find out how the 2026 F1 drivers' and constructors' championship tables have been affected by the Las Vegas Grand Prix.",
       "imageUrl": null
     }
   ]
