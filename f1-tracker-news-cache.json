@@ -1,9 +1,25 @@
 {
-  "updatedAt": "2026-11-26T23:21:31.832161+00:00",
+  "updatedAt": "2026-11-27T05:24:23.554932+00:00",
   "failedSources": [
     "Formula 1"
   ],
   "items": [
+    {
+      "title": "‘We need to find a solution’ to Ferrari clashes, Leclerc admits",
+      "link": "https://racer.com/2026/11/26/-we-need-to-find-a-solution-to-ferrari-clashes-leclerc-admits",
+      "source": "RACER",
+      "pubDate": "2026-11-27T01:58:47+00:00",
+      "summary": "Charles Leclerc says Ferrari needs to find a solution as a team to the incidents that keep occurring between himself and Lewis Hamilton, following their collision in Las Vegas.The two Ferrari drivers had clashed in Monza and Mexico City, with the latter incident costing it a chance of a one-two...",
+      "imageUrl": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/bltc7ccf1b99a8779b8/6b08e6552a5ecb5c7d3710a4/GettyImages-2306292703.jpg?environment=live"
+    },
+    {
+      "title": "Mercedes boss Toto Wolff reveals why rival F1 teams never try to hire him",
+      "link": "https://www.motorsport.com/f1/news/mercedes-boss-toto-wolff-reveals-why-rival-f1-teams-never-try-to-hire-him/10874986/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-27T00:30:04+00:00",
+      "summary": "Toto Wolff has just added to his legendary resume by securing Mercedes' return to the top of Formula 1 in 2026, officially tying former McLaren boss Ron Dennis with a record 17 world championship titles across drivers' and constructors' campaigns. <br>With that level of historical dominance, logic dictates that rival constructors and corporate conglomerates would be throwing blank cheques at the ...<a class='more' href='https://www.motorsport.com/f1/news/mercedes-boss-toto-wolff-reveals-why-rival-f1-teams-never-try-to-hire-him/10874986/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/0kZX99D6/s6/toto-wolff-mercedes-a10874986-b705-2.jpg"
+    },
     {
       "title": "Toto Wolff responds to Kimi Antonelli salary questions after F1 title success",
       "link": "https://www.motorsport.com/f1/news/toto-wolff-says-the-world-champion-should-be-rewarded-after-bild-puts-antonellis-pay-at-about-46-mi/10874830/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
@@ -189,7 +205,7 @@
       "imageUrl": "https://cdn-1.motorsport.com/images/amp/0mXyz7z6/s6/fernando-alonso-aston-martin-r-a10877947-b707-2.jpg"
     },
     {
-      "title": "Russell says Verstappen's criticism 'quite amusing'",
+      "title": "Russell finds Verstappen's criticism 'quite amusing'",
       "link": "https://www.bbc.co.uk/sport/formula1/articles/c5lykr98yd88o?at_medium=RSS&at_campaign=rss",
       "source": "BBC Sport",
       "pubDate": "2026-11-26T16:10:58+00:00",
@@ -947,22 +963,6 @@
       "pubDate": "2026-11-24T09:10:00+00:00",
       "summary": "McLaren walked away from the Las Vegas Grand Prix with a double podium finish in hand.",
       "imageUrl": null
-    },
-    {
-      "title": "Radical Charles Leclerc punishment proposed after Lewis Hamilton clash",
-      "link": "https://racingnews365.com/radical-charles-leclerc-punishment-proposed-after-lewis-hamilton-clash",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-24T08:15:00+00:00",
-      "summary": "Following the dramatic collision between the two Ferrari drivers in Las Vegas last weekend, former Haas boss Guenther Steiner has suggested a unique punishment.",
-      "imageUrl": null
-    },
-    {
-      "title": "Is Hamilton and Leclerc's Ferrari partnership sustainable? F1 Q&A",
-      "link": "https://www.bbc.co.uk/sport/formula1/articles/cw30gq2633ljo?at_medium=RSS&at_campaign=rss",
-      "source": "BBC Sport",
-      "pubDate": "2026-11-24T08:10:15+00:00",
-      "summary": "BBC F1 correspondent Andrew Benson answers your latest questions after the Las Vegas Grand Prix.",
-      "imageUrl": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/c34c/live/e0b9a770-e7e0-11f1-82bb-6b3be4dcbf70.jpg"
     }
   ]
 }
