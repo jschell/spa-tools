@@ -1,11 +1,27 @@
 {
-  "updatedAt": "2026-11-27T23:45:01.212098+00:00",
+  "updatedAt": "2026-11-28T05:01:16.439651+00:00",
   "failedSources": [
     "Formula 1"
   ],
   "items": [
     {
-      "title": "F1 Qatar GP practice analysis: Kimi Antonelli nearly a second clear of Max Verstappen on long runs",
+      "title": "2026 F1 Qatar Grand Prix Qualifying start time today",
+      "link": "https://racingnews365.com/2026-f1-qatar-grand-prix-qualifying-start-time-today",
+      "source": "RacingNews365",
+      "pubDate": "2026-11-28T05:00:00+00:00",
+      "summary": "Find out the start time for qualifying for the 2026 F1 Qatar Grand Prix today.",
+      "imageUrl": null
+    },
+    {
+      "title": "George Russell drops cryptic hint over where Toto Wolff “stands off the record” on Max Verstappen",
+      "link": "https://www.motorsport.com/f1/news/george-russell-drops-cryptic-hint-over-where-toto-wolff-stands-off-the-record-on-max-verstappen/10878290/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
+      "source": "Motorsport.com",
+      "pubDate": "2026-11-28T02:38:16+00:00",
+      "summary": "Toto Wolff has spent the past week sounding remarkably unfazed by Formula 1’s fiercest driver feud. George Russell, however, just hinted that Mercedes’ team principal sounds rather different once the microphones are switched off.<br>Speaking exclusively to Martin Brundle for Sky Sports F1 - in an interview previewed Friday ahead of its full broadcast before Sunday’s Qatar Grand Prix - ...<a class='more' href='https://www.motorsport.com/f1/news/george-russell-drops-cryptic-hint-over-where-toto-wolff-stands-off-the-record-on-max-verstappen/10878290/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
+      "imageUrl": "https://cdn-1.motorsport.com/images/amp/24QGyyPY/s6/george-russell-mercedes-a10878290-b705-2.jpg"
+    },
+    {
+      "title": "F1 Qatar GP long runs: Kimi Antonelli nearly a second clear of Max Verstappen on Friday",
       "link": "https://www.motorsport.com/f1/news/f1-qatar-gp-practice-analysis-antonelli-nearly-a-second-clear-of-verstappen-on-long-runs/10878464/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
       "source": "Motorsport.com",
       "pubDate": "2026-11-27T22:10:24+00:00",
@@ -947,22 +963,6 @@
       "pubDate": "2026-11-25T20:31:23+00:00",
       "summary": "Max Verstappen’s Las Vegas Grand Prix victory played out like a high-speed chess match on battery deployment, yet the race-winning foundation rested on a much quieter aerodynamic fix.<br>As Formula1.com’s Tech Weekly contributors Mark Hughes and Giorgio Piola highlighted, Red Bull paired a subtle front wing endplate tweak in Nevada with an ongoing sidepod rework - refining airflow from nose to ...<a class='more' href='https://www.motorsport.com/f1/news/fia-filings-reveal-the-lone-rb22-aero-update-behind-max-verstappens-las-vegas-gp-win/10877619/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
       "imageUrl": "https://cdn-1.motorsport.com/images/amp/24QGyQAY/s6/max-verstappen-red-bull-racing-a10877619-b707-3.jpg"
-    },
-    {
-      "title": "Fred Vasseur is running out of answers at Ferrari, says Jolyon Palmer",
-      "link": "https://www.motorsport.com/f1/news/worn-out-fred-vasseur-is-running-out-of-answers-at-ferrari-says-jolyon-palmer-/10877422/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www",
-      "source": "Motorsport.com",
-      "pubDate": "2026-11-25T19:57:56+00:00",
-      "summary": "In a 2026 Las Vegas Grand Prix where 22 drivers traded a record 352 overtakes largely cleanly, Formula 1’s fiercest intra-team blowup still belonged to Ferrari.<br>On Lap 38, Charles Leclerc dived down the inside of Lewis Hamilton at Turn 7 while battling over sixth place - tipping his team-mate into a spin, drawing a 10-second time penalty, and sparking a blunt post-race verdict from F1 TV ...<a class='more' href='https://www.motorsport.com/f1/news/worn-out-fred-vasseur-is-running-out-of-answers-at-ferrari-says-jolyon-palmer-/10877422/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www'>Keep reading</a>",
-      "imageUrl": "https://cdn-1.motorsport.com/images/amp/YN7vBdV6/s6/frederic-vasseur-ferrari-a10877422-b704-2.jpg"
-    },
-    {
-      "title": "Why the Qatar GP is home to a unique and unusual F1 rule",
-      "link": "https://racingnews365.com/why-the-qatar-gp-is-home-to-a-unique-and-unusual-f1-rule",
-      "source": "RacingNews365",
-      "pubDate": "2026-11-25T19:00:00+00:00",
-      "summary": "The Qatar Grand Prix will see maximum tyre stints enforced throughout the weekend - but why is the rule in place?",
-      "imageUrl": null
     }
   ]
 }
